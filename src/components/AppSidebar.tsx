@@ -12,7 +12,8 @@ import {
   LineChart,
   ClipboardList,
   Wrench,
-  ChevronRight
+  ChevronRight,
+  BarChart3
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,6 +33,7 @@ import { usePathname } from "next/navigation";
 
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
+  { title: "Analytics", icon: BarChart3, url: "/manager/analytics" },
   { title: "Staff", icon: Users, url: "/manager/staff" },
   { title: "Services", icon: Wrench, url: "/manager/services" },
   { title: "Sales", icon: HandCoins, url: "/manager/sales" },
