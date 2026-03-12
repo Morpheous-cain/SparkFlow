@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -68,7 +69,7 @@ export default function ManagerDashboard() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Emma Johnson</h1>
-          <p className="text-slate-500 font-medium">Welcome back to Vantus 👋</p>
+          <p className="text-slate-500 font-medium">Welcome back to SparkFlow 👋</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative w-80">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { 
@@ -5,7 +6,6 @@ import {
   Users, 
   Package, 
   Settings, 
-  LifeBuoy, 
   LogOut, 
   Waves,
   HandCoins,
@@ -27,34 +27,38 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const mainItems = [
-  { title: "Dashboard", icon: LayoutDashboard, isActive: true },
-  { title: "Staff", icon: Users },
-  { title: "Services", icon: Wrench },
-  { title: "Sales", icon: HandCoins },
-  { title: "Inventory", icon: Package },
-  { title: "Reports", icon: LineChart },
-  { title: "Tasks", icon: ClipboardList },
+  { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
+  { title: "Staff", icon: Users, url: "/manager/staff" },
+  { title: "Services", icon: Wrench, url: "/manager/services" },
+  { title: "Sales", icon: HandCoins, url: "/manager/sales" },
+  { title: "Inventory", icon: Package, url: "/manager/inventory" },
+  { title: "Reports", icon: LineChart, url: "/manager/reports" },
+  { title: "Tasks", icon: ClipboardList, url: "/manager/tasks" },
 ];
 
 const otherItems = [
-  { title: "Settings", icon: Settings },
+  { title: "Settings", icon: Settings, url: "/manager/settings" },
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-r border-slate-100">
       <SidebarHeader className="p-8">
-        <div className="flex items-center gap-4">
+        <Link href="/manager" className="flex items-center gap-4">
           <div className="flex aspect-square size-12 items-center justify-center rounded-[1rem] bg-primary text-primary-foreground shadow-xl shadow-primary/20">
             <Waves className="size-7" />
           </div>
           <div className="flex flex-col gap-0 group-data-[collapsible=icon]:hidden">
-            <span className="text-2xl font-black tracking-tight text-slate-900">VANTUS</span>
+            <span className="text-2xl font-black tracking-tight text-slate-900 leading-none">SPARKFLOW</span>
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-[0.1em]">ERP SOLUTION</span>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent className="px-6 py-4">
         <SidebarGroup>
@@ -63,12 +67,15 @@ export function AppSidebar() {
             {mainItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton 
-                  isActive={item.isActive}
+                  asChild
+                  isActive={pathname === item.url}
                   className="h-14 rounded-2xl px-5 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-xl data-[active=true]:shadow-primary/30 transition-all duration-300 hover:bg-slate-50"
                 >
-                  <item.icon className="size-5" />
-                  <span className="font-bold text-sm group-data-[collapsible=icon]:hidden ml-2">{item.title}</span>
-                  {item.title !== "Dashboard" && <ChevronRight className="ml-auto size-4 opacity-20 group-data-[collapsible=icon]:hidden" />}
+                  <Link href={item.url}>
+                    <item.icon className="size-5" />
+                    <span className="font-bold text-sm group-data-[collapsible=icon]:hidden ml-2">{item.title}</span>
+                    {item.title !== "Dashboard" && <ChevronRight className="ml-auto size-4 opacity-20 group-data-[collapsible=icon]:hidden" />}
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -80,9 +87,11 @@ export function AppSidebar() {
           <SidebarMenu>
             {otherItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton className="h-14 rounded-2xl px-5 transition-all hover:bg-slate-50">
-                  <item.icon className="size-5 text-slate-400" />
-                  <span className="font-bold text-sm text-slate-500 group-data-[collapsible=icon]:hidden ml-2">{item.title}</span>
+                <SidebarMenuButton asChild className="h-14 rounded-2xl px-5 transition-all hover:bg-slate-50" isActive={pathname === item.url}>
+                  <Link href={item.url}>
+                    <item.icon className="size-5 text-slate-400" />
+                    <span className="font-bold text-sm text-slate-500 group-data-[collapsible=icon]:hidden ml-2">{item.title}</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
