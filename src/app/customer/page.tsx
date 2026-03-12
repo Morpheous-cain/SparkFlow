@@ -20,7 +20,11 @@ import {
   Camera, 
   Share2, 
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Wallet,
+  QrCode,
+  Truck,
+  MapPin
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -29,38 +33,59 @@ export default function CustomerPortal() {
   const { toast } = useToast();
   const [searchPlate, setSearchPlate] = useState("");
   const [vehicle, setVehicle] = useState<any>(null);
+  const [logistics, setLogistics] = useState<any>(null);
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSearch = () => {
     if (!searchPlate) return;
-    // Mock lookup: Simulate a search
-    setVehicle({
-      plate: searchPlate.toUpperCase(),
-      status: "In Progress",
-      progress: 65,
-      estimatedTime: "12 mins",
-      services: ["Executive Wash", "Ceramic Wax"],
-      location: "Bay 2",
-      attendant: "Peter O."
-    });
-
-    // Simulate real-time update to "Completed" for testing checkout flow
-    setTimeout(() => {
-      setVehicle((prev: any) => prev ? { 
-        ...prev, 
-        status: "Completed", 
-        progress: 100,
-        estimatedTime: "0 mins",
-        totalTime: 32 
-      } : null);
-      toast({ 
-        title: "Service Complete!", 
-        description: "Your Spark is ready! Check the feedback prompt below.",
-        duration: 5000 
+    
+    // Logic: If it looks like a LOG ID, show logistics, else show vehicle
+    if (searchPlate.startsWith("LOG-") || searchPlate.startsWith("SPARK-")) {
+      setLogistics({
+        id: searchPlate.toUpperCase(),
+        item: "Persian Rug",
+        status: "In-Wash",
+        progress: 45,
+        eta: "2:30 PM",
+        qrTag: "SPARK-RU-101",
+        window: "09:00 AM - 11:00 AM",
+        stages: [
+          { name: "Pickup", completed: true, label: "Driver is 5 mins away" },
+          { name: "In-Wash", completed: true, label: "Your carpet is being deep-cleaned" },
+          { name: "Drying/QC", completed: false, label: "Quality check in progress" },
+          { name: "Delivery", completed: false, label: "Est: 2:30 PM" }
+        ]
       });
-    }, 4000);
+      setVehicle(null);
+    } else {
+      setVehicle({
+        plate: searchPlate.toUpperCase(),
+        status: "In Progress",
+        progress: 65,
+        estimatedTime: "12 mins",
+        services: ["Executive Wash", "Ceramic Wax"],
+        location: "Bay 2",
+        attendant: "Peter O."
+      });
+      setLogistics(null);
+
+      setTimeout(() => {
+        setVehicle((prev: any) => prev ? { 
+          ...prev, 
+          status: "Completed", 
+          progress: 100,
+          estimatedTime: "0 mins",
+          totalTime: 32 
+        } : null);
+        toast({ 
+          title: "Service Complete!", 
+          description: "Your Spark is ready! Check the feedback prompt below.",
+          duration: 5000 
+        });
+      }, 4000);
+    }
   };
 
   const handleRate = (val: number) => {
@@ -98,19 +123,25 @@ export default function CustomerPortal() {
           </div>
           <h1 className="text-xl font-bold text-primary tracking-tight">SparkFlow</h1>
         </div>
-        <div className="flex items-center gap-2 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100">
-          <Trophy className="size-3.5 text-emerald-600" />
-          <span className="text-[10px] font-black text-emerald-700 uppercase tracking-wider">1,240 Pts</span>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex flex-col items-end">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Cashback Wallet</span>
+            <span className="text-sm font-black text-primary italic">KES 450.00</span>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100 shadow-sm">
+            <Trophy className="size-4 text-emerald-600" />
+            <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">1,240 Pts</span>
+          </div>
         </div>
       </header>
 
       <div className="p-6 max-w-xl mx-auto w-full space-y-6 flex-1">
         <section className="space-y-4 text-center py-4">
           <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary italic">Spark</span></h2>
-          <p className="text-slate-500 text-sm font-medium">Real-time status for car wash & logistics</p>
+          <p className="text-slate-500 text-sm font-medium">Real-time status for car wash & concierge logistics</p>
           <div className="flex gap-2">
             <Input 
-              placeholder="PLATE NUMBER" 
+              placeholder="PLATE OR LOG ID" 
               className="h-14 text-xl font-mono font-bold text-center tracking-[0.2em] bg-white shadow-sm border-2 focus:ring-primary uppercase"
               value={searchPlate}
               onChange={(e) => setSearchPlate(e.target.value.toUpperCase())}
@@ -120,6 +151,87 @@ export default function CustomerPortal() {
             </Button>
           </div>
         </section>
+
+        {logistics && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+             <Card className="border-none shadow-2xl overflow-hidden rounded-[2.5rem] bg-white ring-1 ring-slate-100">
+              <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                   <div className="p-2.5 bg-white/10 rounded-2xl backdrop-blur-md border border-white/10">
+                    <Truck className="size-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xl font-mono font-black tracking-widest">{logistics.id}</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concierge Logistics</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end">
+                   <Badge className="bg-primary text-white border-none font-black text-[10px] tracking-widest mb-1">{logistics.status.toUpperCase()}</Badge>
+                   <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
+                    <QrCode className="size-3" /> {logistics.qrTag}
+                   </div>
+                </div>
+              </div>
+              <CardContent className="p-8 space-y-8">
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Service Stage</span>
+                      <h4 className="text-2xl font-black text-slate-900">{logistics.stages.find((s:any) => !s.completed)?.name || "Final Delivery"}</h4>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Est. Return</span>
+                      <div className="flex items-center gap-2 text-primary font-black">
+                        <Clock className="size-4" />
+                        {logistics.eta}
+                      </div>
+                    </div>
+                  </div>
+                  <Progress value={logistics.progress} className="h-4 rounded-full bg-slate-100" />
+                </div>
+
+                <div className="space-y-4">
+                   <div className="flex items-center gap-2 mb-2">
+                     <Sparkles className="size-4 text-primary" />
+                     <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Live Journey</h4>
+                   </div>
+                   <div className="space-y-6 relative pl-8">
+                      <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-slate-100" />
+                      {logistics.stages.map((stage: any, i: number) => (
+                        <div key={i} className="relative flex flex-col gap-1">
+                           <div className={cn(
+                             "absolute -left-[1.35rem] size-3 rounded-full border-2 border-white shadow-sm ring-2",
+                             stage.completed ? "bg-primary ring-primary/20" : "bg-white ring-slate-100"
+                           )} />
+                           <span className={cn(
+                             "text-[10px] font-black uppercase tracking-widest",
+                             stage.completed ? "text-primary" : "text-slate-300"
+                           )}>{stage.name}</span>
+                           <p className={cn(
+                             "text-sm font-bold leading-tight",
+                             stage.completed ? "text-slate-900" : "text-slate-400"
+                           )}>{stage.label}</p>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-50 grid grid-cols-2 gap-4">
+                   <div className="p-4 bg-slate-50 rounded-2xl">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Pickup Window</span>
+                      <p className="text-xs font-black text-slate-900">{logistics.window}</p>
+                   </div>
+                   <div className="p-4 bg-primary/5 rounded-2xl flex flex-col justify-center items-center text-center">
+                      <div className="size-8 bg-primary text-white rounded-xl flex items-center justify-center mb-1">
+                        <QrCode className="size-4" />
+                      </div>
+                      <span className="text-[8px] font-black text-primary uppercase">Laundry Tag Ready</span>
+                   </div>
+                </div>
+              </CardContent>
+             </Card>
+          </div>
+        )}
 
         {vehicle ? (
           <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-6">
@@ -270,15 +382,17 @@ export default function CustomerPortal() {
             </Card>
           </div>
         ) : (
-          <div className="text-center py-24 flex flex-col items-center gap-6 opacity-40">
-            <div className="p-10 bg-slate-100 rounded-[4rem] border-4 border-dashed border-slate-200 shadow-inner">
-              <Car className="w-24 h-24 text-slate-300" />
+          !logistics && (
+            <div className="text-center py-24 flex flex-col items-center gap-6 opacity-40">
+              <div className="p-10 bg-slate-100 rounded-[4rem] border-4 border-dashed border-slate-200 shadow-inner">
+                <Car className="w-24 h-24 text-slate-300" />
+              </div>
+              <div className="space-y-2">
+                <p className="font-black text-2xl text-slate-900 tracking-tight">Awaiting ID or Plate</p>
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Enter details above to see the Spark</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <p className="font-black text-2xl text-slate-900 tracking-tight">Awaiting Plate Number</p>
-              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Enter details above to see the Spark</p>
-            </div>
-          </div>
+          )
         )}
       </div>
 

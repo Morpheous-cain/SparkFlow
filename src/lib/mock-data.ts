@@ -10,12 +10,48 @@ export const SERVICES: Service[] = [
 ];
 
 export const STAFF: Staff[] = [
-  { id: 'S1', name: 'John Kamau', role: 'Attendant', performance: 4.8, earnings: 12500 },
-  { id: 'S2', name: 'Sarah Wambui', role: 'Attendant', performance: 4.5, earnings: 10200 },
-  { id: 'S3', name: 'Peter Otieno', role: 'Attendant', performance: 4.9, earnings: 15000 },
-  { id: 'S4', name: 'Grace Mutua', role: 'Agent', performance: 4.7, earnings: 25000 },
-  { id: 'S5', name: 'David Mwangi', role: 'Driver', performance: 4.6, earnings: 18500 },
-  { id: 'S6', name: 'Alice Njeri', role: 'Technician', performance: 4.9, earnings: 22000 },
+  { 
+    id: 'S1', 
+    name: 'John Kamau', 
+    role: 'Attendant', 
+    performance: 4.8, 
+    earnings: { base: 8000, commission: 2500, tips: 2000, total: 12500 } 
+  },
+  { 
+    id: 'S2', 
+    name: 'Sarah Wambui', 
+    role: 'Attendant', 
+    performance: 4.5, 
+    earnings: { base: 8000, commission: 1200, tips: 1000, total: 10200 } 
+  },
+  { 
+    id: 'S3', 
+    name: 'Peter Otieno', 
+    role: 'Attendant', 
+    performance: 4.9, 
+    earnings: { base: 8000, commission: 4500, tips: 2500, total: 15000 } 
+  },
+  { 
+    id: 'S4', 
+    name: 'Grace Mutua', 
+    role: 'Agent', 
+    performance: 4.7, 
+    earnings: { base: 20000, commission: 5000, tips: 0, total: 25000 } 
+  },
+  { 
+    id: 'S5', 
+    name: 'David Mwangi', 
+    role: 'Driver', 
+    performance: 4.6, 
+    earnings: { base: 12000, commission: 3500, tips: 3000, total: 18500 } 
+  },
+  { 
+    id: 'S6', 
+    name: 'Alice Njeri', 
+    role: 'Technician', 
+    performance: 4.9, 
+    earnings: { base: 15000, commission: 7000, tips: 0, total: 22000 } 
+  },
 ];
 
 export const INVENTORY: InventoryItem[] = [
@@ -77,6 +113,9 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     status: 'Processing',
     address: 'Kilimani, Nairobi',
     requestTime: '2024-05-21T09:00:00Z',
+    pickupWindow: '09:00 AM - 11:00 AM',
+    qrTag: 'SPARK-RU-101',
+    trackingProgress: 45,
     amount: 3500,
     assignedStaffId: 'S6'
   },
@@ -87,6 +126,9 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     status: 'Booking',
     address: 'Westlands, Nairobi',
     requestTime: '2024-05-21T10:30:00Z',
+    pickupWindow: '02:00 PM - 04:00 PM',
+    qrTag: 'SPARK-VA-102',
+    trackingProgress: 0,
     amount: 2500
   },
   {
@@ -96,6 +138,9 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     status: 'Pickup',
     address: 'Karen, Nairobi',
     requestTime: '2024-05-21T08:15:00Z',
+    pickupWindow: '08:00 AM - 10:00 AM',
+    qrTag: 'SPARK-SO-103',
+    trackingProgress: 20,
     amount: 5000,
     assignedStaffId: 'S5'
   }

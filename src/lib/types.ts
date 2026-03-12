@@ -1,6 +1,6 @@
 export type VehicleStatus = 'Queue' | 'In-Bay' | 'Ready' | 'Completed';
 export type BayStatus = 'Available' | 'Occupied' | 'Under Maintenance';
-export type DeliveryStatus = 'Booking' | 'Pickup' | 'Processing' | 'Delivery' | 'Completed';
+export type DeliveryStatus = 'Booking' | 'Pickup' | 'Processing' | 'Drying' | 'Delivery' | 'Completed';
 
 export interface Service {
   id: string;
@@ -15,7 +15,12 @@ export interface Staff {
   name: string;
   role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
   performance: number;
-  earnings: number;
+  earnings: {
+    base: number;
+    commission: number;
+    tips: number;
+    total: number;
+  };
 }
 
 export interface VehicleLive {
@@ -63,6 +68,10 @@ export interface LogisticsRequest {
   status: DeliveryStatus;
   address: string;
   requestTime: string;
+  pickupWindow?: string;
+  qrTag?: string;
+  eta?: string;
   amount: number;
   assignedStaffId?: string;
+  trackingProgress?: number;
 }
