@@ -6,8 +6,7 @@ import { SERVICES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, Plus, Smartphone, Trash2 } from "lucide-react";
+import { Check, Plus, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AgentPortal() {
@@ -23,27 +22,46 @@ export default function AgentPortal() {
   };
 
   const handleSubmit = async () => {
-    if (!plate) {
-      toast({ title: "Plate Number Required", description: "Please enter the vehicle plate number.", variant: "destructive" });
+    if (!plate.trim()) {
+      toast({ 
+        title: "Plate Number Required", 
+        description: "Please enter the vehicle plate number to proceed.", 
+        variant: "destructive" 
+      });
       return;
     }
     if (selectedServices.length === 0) {
-      toast({ title: "No Services Selected", description: "Please select at least one service.", variant: "destructive" });
+      toast({ 
+        title: "No Services Selected", 
+        description: "Please select at least one service for this vehicle.", 
+        variant: "destructive" 
+      });
       return;
     }
 
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(r => setTimeout(r, 1500));
     
-    toast({
-      title: "Vehicle Checked In",
-      description: `Vehicle ${plate} has been added to the queue.`,
-    });
-    
-    setPlate("");
-    setSelectedServices([]);
-    setIsSubmitting(false);
+    try {
+      // Simulate API call/processing delay
+      await new Promise(r => setTimeout(r, 1500));
+      
+      toast({
+        title: "Vehicle Checked In Successfully",
+        description: `Vehicle ${plate} has been added to the active wash queue.`,
+      });
+      
+      // Reset form
+      setPlate("");
+      setSelectedServices([]);
+    } catch (error) {
+      toast({
+        title: "Check-in Failed",
+        description: "There was an error processing the check-in. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const totalAmount = SERVICES
@@ -51,7 +69,7 @@ export default function AgentPortal() {
     .reduce((acc, curr) => acc + curr.price, 0);
 
   return (
-    <div className="min-h-screen pb-24 p-4 max-w-3xl mx-auto flex flex-col gap-6">
+    <div className="min-h-screen pb-40 p-4 max-w-3xl mx-auto flex flex-col gap-6">
       <header className="flex items-center gap-4 py-4">
         <div className="p-2 bg-primary rounded-lg text-white">
           <Smartphone className="w-6 h-6" />
@@ -85,6 +103,7 @@ export default function AgentPortal() {
                 {SERVICES.map((service) => (
                   <button
                     key={service.id}
+                    type="button"
                     onClick={() => toggleService(service.id)}
                     className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all text-left ${
                       selectedServices.includes(service.id)
@@ -109,18 +128,19 @@ export default function AgentPortal() {
         </CardContent>
       </Card>
 
-      <div className="sticky bottom-24 w-full animate-in slide-in-from-bottom-2">
-        <Card className="shadow-2xl border-primary/20 bg-primary/5 backdrop-blur-md">
+      <div className="fixed bottom-24 left-0 right-0 px-4 max-w-3xl mx-auto z-40 animate-in slide-in-from-bottom-2">
+        <Card className="shadow-2xl border-primary/20 bg-white/80 backdrop-blur-md border-2">
           <CardContent className="p-4 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-xs font-semibold text-primary uppercase">Total Estimation</span>
-              <span className="text-2xl font-bold">KES {totalAmount.toLocaleString()}</span>
+              <span className="text-[10px] font-bold text-primary uppercase tracking-tighter">Total Estimation</span>
+              <span className="text-2xl font-black italic">KES {totalAmount.toLocaleString()}</span>
             </div>
             <Button 
               size="lg" 
-              className="px-8 shadow-lg shadow-primary/20" 
+              className="px-8 shadow-lg shadow-primary/20 rounded-2xl h-14 font-bold uppercase text-xs tracking-widest transition-all hover:scale-105 active:scale-95" 
               disabled={isSubmitting}
               onClick={handleSubmit}
+              type="button"
             >
               {isSubmitting ? "Processing..." : "Complete Check-in"}
               {!isSubmitting && <Plus className="ml-2 w-4 h-4" />}
