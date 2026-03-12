@@ -1,4 +1,5 @@
 export type VehicleStatus = 'Queue' | 'In-Bay' | 'Ready' | 'Completed';
+export type BayStatus = 'Available' | 'Occupied' | 'Under Maintenance';
 
 export interface Service {
   id: string;
@@ -26,6 +27,7 @@ export interface VehicleLive {
   attendantId: string | null;
   services: string[];
   totalAmount: number;
+  progress?: number;
 }
 
 export interface Transaction {
@@ -44,4 +46,11 @@ export interface InventoryItem {
   stock: number;
   wholesale: number;
   retail: number;
+}
+
+export interface Bay {
+  id: string;
+  name: string;
+  status: BayStatus;
+  currentVehiclePlate?: string;
 }

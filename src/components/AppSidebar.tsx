@@ -1,4 +1,3 @@
-
 "use client";
 
 import { 
@@ -13,7 +12,8 @@ import {
   ClipboardList,
   Wrench,
   ChevronRight,
-  BarChart3
+  BarChart3,
+  Warehouse
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,6 +34,7 @@ import { usePathname } from "next/navigation";
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
   { title: "Analytics", icon: BarChart3, url: "/manager/analytics" },
+  { title: "Bays", icon: Warehouse, url: "/manager/bays" },
   { title: "Staff", icon: Users, url: "/manager/staff" },
   { title: "Services", icon: Wrench, url: "/manager/services" },
   { title: "Sales", icon: HandCoins, url: "/manager/sales" },

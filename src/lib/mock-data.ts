@@ -1,4 +1,4 @@
-import { Service, Staff, VehicleLive, Transaction, InventoryItem } from "./types";
+import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay } from "./types";
 
 export const SERVICES: Service[] = [
   { id: '1', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash' },
@@ -22,15 +22,32 @@ export const INVENTORY: InventoryItem[] = [
   { id: 'I3', name: 'Tire Wax', stock: 12, wholesale: 800, retail: 1200 },
 ];
 
+export const BAYS: Bay[] = [
+  { id: 'BAY-1', name: 'Bay 1 (Standard)', status: 'Occupied', currentVehiclePlate: 'KDC 123A' },
+  { id: 'BAY-2', name: 'Bay 2 (Detailing)', status: 'Occupied', currentVehiclePlate: 'KDJ 999Z' },
+  { id: 'BAY-3', name: 'Bay 3 (Express)', status: 'Available' },
+];
+
 export const MOCK_VEHICLES: VehicleLive[] = [
   {
     plate: 'KDC 123A',
     status: 'In-Bay',
     arrivalTime: new Date(Date.now() - 30 * 60000).toISOString(),
-    bayId: 'Bay 1',
+    bayId: 'BAY-1',
     attendantId: 'S1',
     services: ['Executive Wash', 'Tire Wax'],
-    totalAmount: 2400
+    totalAmount: 2400,
+    progress: 65
+  },
+  {
+    plate: 'KDJ 999Z',
+    status: 'In-Bay',
+    arrivalTime: new Date(Date.now() - 45 * 60000).toISOString(),
+    bayId: 'BAY-2',
+    attendantId: 'S3',
+    services: ['Full Detailing'],
+    totalAmount: 4500,
+    progress: 30
   },
   {
     plate: 'KDH 456B',
@@ -39,7 +56,18 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     bayId: null,
     attendantId: null,
     services: ['Basic Wash'],
-    totalAmount: 500
+    totalAmount: 500,
+    progress: 0
+  },
+  {
+    plate: 'KDA 777C',
+    status: 'Queue',
+    arrivalTime: new Date(Date.now() - 5 * 60000).toISOString(),
+    bayId: null,
+    attendantId: null,
+    services: ['Executive Wash'],
+    totalAmount: 1200,
+    progress: 0
   }
 ];
 
