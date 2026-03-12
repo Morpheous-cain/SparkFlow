@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { LayoutDashboard, Users, Smartphone, Car, Waves } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function Home() {
@@ -36,7 +35,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-slate-50">
       <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="flex items-center justify-center mb-4">
           <div className="p-3 bg-primary rounded-2xl shadow-xl shadow-primary/20">
@@ -55,8 +54,8 @@ export default function Home() {
         {views.map((view, i) => {
           const Icon = view.icon;
           return (
-            <Link key={view.href} href={view.href} className="group transition-all hover:-translate-y-1">
-              <Card className="h-full border-2 border-transparent hover:border-primary/20 hover:shadow-xl transition-all">
+            <Link key={view.href} href={view.href} className="group transition-all hover:-translate-y-1 block h-full">
+              <Card className="h-full border-2 border-transparent hover:border-primary/20 hover:shadow-xl transition-all cursor-pointer bg-white">
                 <CardHeader>
                   <div className={`w-12 h-12 rounded-xl ${view.color} flex items-center justify-center mb-4 shadow-lg text-white group-hover:scale-110 transition-transform`}>
                     <Icon className="w-6 h-6" />
@@ -65,9 +64,9 @@ export default function Home() {
                   <CardDescription className="text-sm">{view.desc}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-white transition-colors">
+                  <div className="w-full py-2.5 px-4 rounded-xl border border-input bg-background text-sm font-semibold text-center group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
                     Open Portal
-                  </Button>
+                  </div>
                 </CardContent>
               </Card>
             </Link>
