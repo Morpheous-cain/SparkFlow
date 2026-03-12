@@ -5,10 +5,17 @@ import { MOCK_TRANSACTIONS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { HandCoins, Download, Filter, Calendar } from "lucide-react";
+import { HandCoins, Download, Filter, Calendar, TrendingUp, CreditCard, Clock, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function SalesPage() {
+  const kpis = [
+    { label: "Today's Revenue", value: "KES 18,400", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+12%" },
+    { label: "Avg. Ticket Size", value: "KES 1,250", icon: CreditCard, color: "text-blue-600", bg: "bg-blue-50", trend: "+5%" },
+    { label: "Volume Forecast", value: "42 Jobs", icon: Clock, color: "text-amber-600", bg: "bg-amber-50", trend: "On Track" },
+    { label: "Payment Success", value: "98.2%", icon: CheckCircle2, color: "text-indigo-600", bg: "bg-indigo-50", trend: "+0.4%" },
+  ];
+
   return (
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-end">
@@ -17,30 +24,34 @@ export default function SalesPage() {
           <p className="text-slate-500">Detailed transaction history and financial tracking</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2 rounded-xl h-11">
-            <Calendar className="size-4" /> May 2024
+          <Button variant="outline" className="gap-2 rounded-xl h-11 bg-white">
+            <Calendar className="size-4 text-slate-400" /> May 2024
           </Button>
-          <Button variant="outline" className="gap-2 rounded-xl h-11">
-            <Filter className="size-4" /> Filter
+          <Button variant="outline" className="gap-2 rounded-xl h-11 bg-white">
+            <Filter className="size-4 text-slate-400" /> Filter
           </Button>
-          <Button className="gap-2 rounded-xl h-11 px-6">
+          <Button className="gap-2 rounded-xl h-11 px-6 shadow-lg shadow-primary/20">
             <Download className="size-4" /> Export
           </Button>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { label: "Today's Revenue", value: "KES 18,400", trend: "+12%" },
-          { label: "Avg. Transaction", value: "KES 1,250", trend: "+5%" },
-          { label: "Pending Payments", value: "KES 4,500", trend: "3 jobs" },
-        ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm rounded-3xl">
-            <CardContent className="p-6">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-2xl font-black text-slate-900">{stat.value}</span>
-                <Badge className="bg-emerald-50 text-emerald-600 border-none font-bold">{stat.trend}</Badge>
+      {/* KPI Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {kpis.map((kpi, i) => (
+          <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
+            <CardContent className="p-8">
+              <div className="flex justify-between items-start mb-6">
+                <div className={`size-12 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                  <kpi.icon className="size-6" />
+                </div>
+                <Badge className="bg-slate-100 border-none font-bold rounded-full">
+                  {kpi.trend}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{kpi.label}</span>
+                <div className="text-3xl font-black text-slate-900">{kpi.value}</div>
               </div>
             </CardContent>
           </Card>
