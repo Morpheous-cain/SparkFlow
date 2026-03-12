@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, UserCog, Car, Smartphone } from "lucide-react";
+import { LayoutDashboard, Users, Car, Smartphone } from "lucide-react";
 
 const roles = [
   { name: "Agent Portal", href: "/agent", icon: Smartphone },
@@ -16,7 +16,7 @@ export function RoleSwitcher() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-md border border-border shadow-2xl rounded-full px-4 py-2 flex gap-2 items-center z-50">
+    <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-full px-2 py-2 flex gap-1 items-center z-50">
       {roles.map((role) => {
         const Icon = role.icon;
         const isActive = pathname.startsWith(role.href);
@@ -25,14 +25,14 @@ export function RoleSwitcher() {
             key={role.href}
             href={role.href}
             className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+              "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300",
               isActive 
-                ? "bg-primary text-primary-foreground shadow-lg scale-105" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
             <Icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{role.name}</span>
+            <span className="hidden md:inline">{role.name}</span>
           </Link>
         );
       })}
