@@ -6,7 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Search, Car, Star, CheckCircle2, Waves, MessageSquare, Clock, Trophy, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Search, 
+  Car, 
+  Star, 
+  CheckCircle2, 
+  Waves, 
+  MessageSquare, 
+  Clock, 
+  Trophy, 
+  Sparkles, 
+  Camera, 
+  Share2, 
+  AlertTriangle,
+  ExternalLink
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +31,7 @@ export default function CustomerPortal() {
   const [vehicle, setVehicle] = useState<any>(null);
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSearch = () => {
     if (!searchPlate) return;
@@ -39,16 +55,37 @@ export default function CustomerPortal() {
         estimatedTime: "0 mins",
         totalTime: 32 
       } : null);
-      toast({ title: "Service Complete!", description: "Your car is ready. Please rate your experience." });
-    }, 5000);
+      toast({ 
+        title: "Service Complete!", 
+        description: "Your Spark is ready! Check the feedback prompt below.",
+        duration: 5000 
+      });
+    }, 4000);
   };
 
   const handleRate = (val: number) => {
     setRating(val);
-    toast({ 
-      title: "Rating Received!", 
-      description: `You've earned 50 SparkPoints for your feedback!`,
-      action: <Trophy className="size-4 text-amber-500" />
+    if (val < 3) {
+      toast({ 
+        variant: "destructive",
+        title: "We're Sorry!", 
+        description: "An Urgent Alert has been sent to our Manager. We'll call you shortly to resolve this.",
+        action: <AlertTriangle className="size-4" />
+      });
+    } else {
+      toast({ 
+        title: "Rating Received!", 
+        description: `You've earned 50 SparkPoints for your feedback!`,
+        action: <Trophy className="size-4 text-amber-500" />
+      });
+    }
+  };
+
+  const handleSubmitReview = () => {
+    setIsSubmitted(true);
+    toast({
+      title: "Review Published",
+      description: "Thanks for helping us maintain high standards!",
     });
   };
 
@@ -59,48 +96,48 @@ export default function CustomerPortal() {
           <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/20">
             <Waves className="w-5 h-5" />
           </div>
-          <h1 className="text-xl font-bold text-primary">SparkFlow</h1>
+          <h1 className="text-xl font-bold text-primary tracking-tight">SparkFlow</h1>
         </div>
-        <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1 rounded-full">
-          <Trophy className="size-3 text-emerald-600" />
-          <span className="text-[10px] font-bold text-emerald-700 uppercase">1,240 Pts</span>
+        <div className="flex items-center gap-2 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100">
+          <Trophy className="size-3.5 text-emerald-600" />
+          <span className="text-[10px] font-black text-emerald-700 uppercase tracking-wider">1,240 Pts</span>
         </div>
       </header>
 
       <div className="p-6 max-w-xl mx-auto w-full space-y-6 flex-1">
-        <section className="space-y-4 text-center">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary">Spark</span></h2>
-          <p className="text-slate-500 text-sm font-medium">Enter your license plate to see real-time progress</p>
+        <section className="space-y-4 text-center py-4">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary italic">Spark</span></h2>
+          <p className="text-slate-500 text-sm font-medium">Real-time status for car wash & logistics</p>
           <div className="flex gap-2">
             <Input 
-              placeholder="e.g. KDC 123A" 
-              className="h-14 text-xl font-mono font-bold text-center tracking-widest bg-white shadow-sm border-2 focus:ring-primary"
+              placeholder="PLATE NUMBER" 
+              className="h-14 text-xl font-mono font-bold text-center tracking-[0.2em] bg-white shadow-sm border-2 focus:ring-primary uppercase"
               value={searchPlate}
               onChange={(e) => setSearchPlate(e.target.value.toUpperCase())}
             />
-            <Button size="lg" className="h-14 px-8 shadow-xl shadow-primary/20 font-bold" onClick={handleSearch}>
+            <Button size="lg" className="h-14 px-8 shadow-xl shadow-primary/20 font-black uppercase text-xs tracking-widest" onClick={handleSearch}>
               <Search className="size-5 mr-2" /> Track
             </Button>
           </div>
         </section>
 
         {vehicle ? (
-          <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
+          <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-6">
             <Card className={cn(
-              "border-none shadow-2xl overflow-hidden transition-all duration-500",
+              "border-none shadow-2xl overflow-hidden transition-all duration-500 rounded-[2.5rem]",
               vehicle.status === 'Completed' ? "ring-4 ring-emerald-500/20" : "ring-1 ring-slate-200"
             )}>
               <div className={cn(
-                "p-4 flex justify-between items-center text-white transition-colors duration-500",
+                "p-6 flex justify-between items-center text-white transition-colors duration-500",
                 vehicle.status === 'Completed' ? "bg-emerald-500" : "bg-primary"
               )}>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                <div className="flex items-center gap-4">
+                  <div className="p-2.5 bg-white/20 rounded-2xl backdrop-blur-md border border-white/20 shadow-inner">
                     <Car className="w-5 h-5" />
                   </div>
-                  <span className="text-xl font-mono font-bold tracking-widest">{vehicle.plate}</span>
+                  <span className="text-2xl font-mono font-black tracking-widest">{vehicle.plate}</span>
                 </div>
-                <Badge className="bg-white/20 text-white border-none font-bold">
+                <Badge className="bg-white/20 text-white border-none font-black text-[10px] tracking-widest px-4 py-1.5">
                   {vehicle.status === 'Completed' ? 'READY' : vehicle.status.toUpperCase()}
                 </Badge>
               </div>
@@ -108,12 +145,12 @@ export default function CustomerPortal() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-end">
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Progress</span>
-                      <h4 className="text-2xl font-black text-slate-900">{vehicle.progress}%</h4>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Progress</span>
+                      <h4 className="text-3xl font-black text-slate-900">{vehicle.progress}%</h4>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. Completion</span>
-                      <div className="flex items-center gap-2 text-primary font-bold">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Est. Completion</span>
+                      <div className="flex items-center gap-2 text-primary font-black">
                         <Clock className="size-4" />
                         {vehicle.estimatedTime}
                       </div>
@@ -124,21 +161,21 @@ export default function CustomerPortal() {
 
                 <div className="grid grid-cols-2 gap-8 py-6 border-y border-slate-50">
                   <div className="space-y-1">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tight">Location</span>
-                    <p className="font-bold text-slate-900">{vehicle.location}</p>
+                    <span className="text-[10px] text-slate-400 uppercase font-black tracking-tight">Location</span>
+                    <p className="font-black text-slate-900">{vehicle.location}</p>
                   </div>
                   <div className="space-y-1 text-right">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tight">Assigned To</span>
-                    <p className="font-bold text-slate-900">{vehicle.attendant}</p>
+                    <span className="text-[10px] text-slate-400 uppercase font-black tracking-tight">Assigned To</span>
+                    <p className="font-black text-slate-900">{vehicle.attendant}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Order Items</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Order Items</h4>
                   <div className="flex flex-wrap gap-2">
                     {vehicle.services.map((s: string) => (
-                      <div key={s} className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-4 py-2 rounded-2xl text-xs font-bold text-slate-600">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <div key={s} className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-2xl text-[10px] font-black text-slate-600 uppercase tracking-tight">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                         {s}
                       </div>
                     ))}
@@ -147,22 +184,24 @@ export default function CustomerPortal() {
               </CardContent>
             </Card>
 
-            {/* Post-Completion Rating Module */}
+            {/* 360 Feedback Loop Module */}
             <Card className={cn(
-              "border-none shadow-xl transition-all duration-700 delay-300",
+              "border-none shadow-2xl transition-all duration-700 delay-300 rounded-[2.5rem] overflow-hidden",
               vehicle.status === 'Completed' ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0 pointer-events-none"
             )}>
-              <CardHeader className="text-center pb-2 bg-slate-900 text-white rounded-t-[2rem]">
-                <div className="flex justify-center mb-2">
-                  <div className="p-3 bg-primary/20 rounded-full animate-bounce">
-                    <Sparkles className="size-6 text-primary" />
+              <CardHeader className="text-center pb-6 bg-slate-900 text-white">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 bg-primary/20 rounded-3xl animate-pulse">
+                    <Sparkles className="size-8 text-primary" />
                   </div>
                 </div>
-                <CardTitle className="text-2xl font-black">Rate Your Spark</CardTitle>
-                <CardDescription className="text-slate-400 font-medium">How did we do today? Your TAT was {vehicle.totalTime}m.</CardDescription>
+                <CardTitle className="text-3xl font-black tracking-tight">Rate Your Experience</CardTitle>
+                <CardDescription className="text-slate-400 font-bold mt-2 uppercase text-[10px] tracking-[0.1em]">
+                  Service turnaround: {vehicle.totalTime || 32} minutes
+                </CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col items-center gap-8 p-8 bg-white rounded-b-[2rem]">
-                <div className="flex gap-3">
+              <CardContent className="flex flex-col items-center gap-8 p-10 bg-white">
+                <div className="flex gap-4">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button 
                       key={star} 
@@ -171,34 +210,73 @@ export default function CustomerPortal() {
                       onClick={() => handleRate(star)}
                       className={cn(
                         "transition-all transform duration-300 hover:scale-125",
-                        (hoveredRating || rating) >= star ? 'text-amber-400 fill-amber-400 drop-shadow-lg' : 'text-slate-200'
+                        (hoveredRating || rating) >= star ? 'text-amber-400 fill-amber-400 drop-shadow-xl' : 'text-slate-100'
                       )}
                     >
-                      <Star className="w-12 h-12" />
+                      <Star className="w-14 h-14" />
                     </button>
                   ))}
                 </div>
                 
-                <div className="w-full flex flex-col gap-4">
-                  <div className="relative group">
-                    <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-primary transition-colors" />
-                    <Input placeholder="What made it great? (Optional)" className="h-14 pl-12 rounded-2xl bg-slate-50 border-none shadow-inner" />
+                {rating > 0 && !isSubmitted && (
+                  <div className="w-full space-y-6 animate-in fade-in zoom-in-95">
+                    {/* Review Incentive */}
+                    <div className="p-5 bg-primary/5 border-2 border-dashed border-primary/20 rounded-3xl flex items-center gap-4 group cursor-pointer hover:bg-primary/10 transition-all">
+                      <div className="size-14 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+                        <Camera className="size-7" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-black text-slate-900 text-sm">Earn $2 Off Next Time!</p>
+                        <p className="text-xs font-bold text-slate-500">Post a photo of your clean vehicle/item</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="relative group">
+                        <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-primary transition-colors" />
+                        <Input placeholder="What made it great?" className="h-16 pl-12 rounded-2xl bg-slate-50 border-none shadow-inner font-bold" />
+                      </div>
+
+                      <div className="flex flex-col gap-3">
+                        <Button 
+                          className="w-full h-16 rounded-2xl font-black text-sm tracking-widest uppercase shadow-xl shadow-primary/20"
+                          onClick={handleSubmitReview}
+                        >
+                          Submit to SparkFlow
+                        </Button>
+                        <div className="flex gap-2">
+                          <Button variant="outline" className="flex-1 h-12 rounded-2xl gap-2 font-black text-[10px] uppercase tracking-wider text-slate-500 border-slate-200">
+                            <ExternalLink className="size-3" /> Sync Google
+                          </Button>
+                          <Button variant="outline" className="flex-1 h-12 rounded-2xl gap-2 font-black text-[10px] uppercase tracking-wider text-slate-500 border-slate-200">
+                            <Share2 className="size-3" /> Share Post
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <Button className="w-full h-14 rounded-2xl font-bold text-lg shadow-lg shadow-primary/20">
-                    Submit Feedback
-                  </Button>
-                </div>
+                )}
+
+                {isSubmitted && (
+                  <div className="text-center space-y-4 py-6 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="size-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/10">
+                      <CheckCircle2 className="size-10" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900">Review Published!</h3>
+                    <p className="text-slate-500 font-bold text-sm max-w-[250px]">Your feedback keeps SparkFlow running at peak performance.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
         ) : (
-          <div className="text-center py-20 flex flex-col items-center gap-6 opacity-30">
-            <div className="p-8 bg-slate-100 rounded-[3rem] border-4 border-dashed border-slate-200">
-              <Car className="w-20 h-20 text-slate-300" />
+          <div className="text-center py-24 flex flex-col items-center gap-6 opacity-40">
+            <div className="p-10 bg-slate-100 rounded-[4rem] border-4 border-dashed border-slate-200 shadow-inner">
+              <Car className="w-24 h-24 text-slate-300" />
             </div>
-            <div className="space-y-1">
-              <p className="font-black text-xl text-slate-900">Awaiting Plate Number</p>
-              <p className="text-sm font-medium">Enter your details above to track live progress</p>
+            <div className="space-y-2">
+              <p className="font-black text-2xl text-slate-900 tracking-tight">Awaiting Plate Number</p>
+              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Enter details above to see the Spark</p>
             </div>
           </div>
         )}
