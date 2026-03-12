@@ -13,7 +13,8 @@ import {
   Wrench,
   ChevronRight,
   BarChart3,
-  Warehouse
+  Warehouse,
+  Truck
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +34,7 @@ import { usePathname } from "next/navigation";
 
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
+  { title: "Logistics", icon: Truck, url: "/manager/logistics" },
   { title: "Analytics", icon: BarChart3, url: "/manager/analytics" },
   { title: "Bays", icon: Warehouse, url: "/manager/bays" },
   { title: "Staff", icon: Users, url: "/manager/staff" },

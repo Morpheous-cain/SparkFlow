@@ -1,4 +1,4 @@
-import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay } from "./types";
+import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest } from "./types";
 
 export const SERVICES: Service[] = [
   { id: '1', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash' },
@@ -14,6 +14,8 @@ export const STAFF: Staff[] = [
   { id: 'S2', name: 'Sarah Wambui', role: 'Attendant', performance: 4.5, earnings: 10200 },
   { id: 'S3', name: 'Peter Otieno', role: 'Attendant', performance: 4.9, earnings: 15000 },
   { id: 'S4', name: 'Grace Mutua', role: 'Agent', performance: 4.7, earnings: 25000 },
+  { id: 'S5', name: 'David Mwangi', role: 'Driver', performance: 4.6, earnings: 18500 },
+  { id: 'S6', name: 'Alice Njeri', role: 'Technician', performance: 4.9, earnings: 22000 },
 ];
 
 export const INVENTORY: InventoryItem[] = [
@@ -58,16 +60,6 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     services: ['Basic Wash'],
     totalAmount: 500,
     progress: 0
-  },
-  {
-    plate: 'KDA 777C',
-    status: 'Queue',
-    arrivalTime: new Date(Date.now() - 5 * 60000).toISOString(),
-    bayId: null,
-    attendantId: null,
-    services: ['Executive Wash'],
-    totalAmount: 1200,
-    progress: 0
   }
 ];
 
@@ -75,4 +67,36 @@ export const MOCK_TRANSACTIONS: Transaction[] = [
   { id: 'T1', plate: 'KBA 001C', amount: 1200, status: 'Paid', receipt: 'MPESA_9821X', duration: 35, date: '2024-05-20' },
   { id: 'T2', plate: 'KBB 002D', amount: 500, status: 'Paid', receipt: 'MPESA_9822Y', duration: 20, date: '2024-05-20' },
   { id: 'T3', plate: 'KBC 003E', amount: 4500, status: 'Pending', receipt: null, duration: 150, date: '2024-05-20' },
+];
+
+export const MOCK_LOGISTICS: LogisticsRequest[] = [
+  {
+    id: 'LOG-101',
+    customerName: 'James Wilson',
+    itemType: 'Persian Rug',
+    status: 'Processing',
+    address: 'Kilimani, Nairobi',
+    requestTime: '2024-05-21T09:00:00Z',
+    amount: 3500,
+    assignedStaffId: 'S6'
+  },
+  {
+    id: 'LOG-102',
+    customerName: 'Mary Atieno',
+    itemType: 'SUV Valet',
+    status: 'Booking',
+    address: 'Westlands, Nairobi',
+    requestTime: '2024-05-21T10:30:00Z',
+    amount: 2500
+  },
+  {
+    id: 'LOG-103',
+    customerName: 'Brian Kipkorir',
+    itemType: 'Sofa Set',
+    status: 'Pickup',
+    address: 'Karen, Nairobi',
+    requestTime: '2024-05-21T08:15:00Z',
+    amount: 5000,
+    assignedStaffId: 'S5'
+  }
 ];

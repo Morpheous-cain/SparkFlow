@@ -1,5 +1,6 @@
 export type VehicleStatus = 'Queue' | 'In-Bay' | 'Ready' | 'Completed';
 export type BayStatus = 'Available' | 'Occupied' | 'Under Maintenance';
+export type DeliveryStatus = 'Booking' | 'Pickup' | 'Processing' | 'Delivery' | 'Completed';
 
 export interface Service {
   id: string;
@@ -12,7 +13,7 @@ export interface Service {
 export interface Staff {
   id: string;
   name: string;
-  role: 'Agent' | 'Attendant' | 'Manager';
+  role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
   performance: number;
   earnings: number;
 }
@@ -53,4 +54,15 @@ export interface Bay {
   name: string;
   status: BayStatus;
   currentVehiclePlate?: string;
+}
+
+export interface LogisticsRequest {
+  id: string;
+  customerName: string;
+  itemType: string;
+  status: DeliveryStatus;
+  address: string;
+  requestTime: string;
+  amount: number;
+  assignedStaffId?: string;
 }
