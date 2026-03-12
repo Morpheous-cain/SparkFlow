@@ -20,6 +20,8 @@ export interface VehicleLive {
   plate: string;
   status: VehicleStatus;
   arrivalTime: string;
+  exitTime?: string;
+  durationMinutes?: number;
   bayId: string | null;
   attendantId: string | null;
   services: string[];

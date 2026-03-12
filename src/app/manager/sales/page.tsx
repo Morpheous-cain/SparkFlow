@@ -1,4 +1,3 @@
-
 "use client";
 
 import { MOCK_TRANSACTIONS } from "@/lib/mock-data";
@@ -13,7 +12,7 @@ export default function SalesPage() {
     { label: "Today's Revenue", value: "KES 18,400", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+12%" },
     { label: "Avg. Ticket Size", value: "KES 1,250", icon: CreditCard, color: "text-blue-600", bg: "bg-blue-50", trend: "+5%" },
     { label: "Volume Forecast", value: "42 Jobs", icon: Clock, color: "text-amber-600", bg: "bg-amber-50", trend: "On Track" },
-    { label: "Payment Success", value: "98.2%", icon: CheckCircle2, color: "text-indigo-600", bg: "bg-indigo-50", trend: "+0.4%" },
+    { label: "Avg. Turnaround (TAT)", value: "32m", icon: CheckCircle2, color: "text-indigo-600", bg: "bg-indigo-50", trend: "-4m" },
   ];
 
   return (
@@ -66,7 +65,7 @@ export default function SalesPage() {
               <TableHead className="font-bold text-slate-500 uppercase text-[10px]">Vehicle Plate</TableHead>
               <TableHead className="font-bold text-slate-500 uppercase text-[10px]">Amount</TableHead>
               <TableHead className="font-bold text-slate-500 uppercase text-[10px]">Status</TableHead>
-              <TableHead className="font-bold text-slate-500 uppercase text-[10px]">M-Pesa Receipt</TableHead>
+              <TableHead className="font-bold text-slate-500 uppercase text-[10px]">TAT (Mins)</TableHead>
               <TableHead className="pr-8 text-right font-bold text-slate-500 uppercase text-[10px]">Date</TableHead>
             </TableRow>
           </TableHeader>
@@ -77,11 +76,16 @@ export default function SalesPage() {
                 <TableCell className="font-mono font-bold text-primary">{tx.plate}</TableCell>
                 <TableCell className="font-black text-slate-900">KES {tx.amount.toLocaleString()}</TableCell>
                 <TableCell>
-                  <Badge variant={tx.status === 'Paid' ? 'default' : 'secondary'} className={tx.status === 'Paid' ? 'bg-emerald-500' : 'bg-amber-100 text-amber-700 border-none'}>
+                  <Badge variant={tx.status === 'Paid' ? 'default' : 'secondary'} className={tx.status === 'Paid' ? 'bg-emerald-500 text-white' : 'bg-amber-100 text-amber-700 border-none'}>
                     {tx.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="font-medium text-slate-400">{tx.receipt || '—'}</TableCell>
+                <TableCell className="font-medium text-slate-600">
+                  <div className="flex items-center gap-1">
+                    <Clock className="size-3 text-slate-400" />
+                    {tx.duration}m
+                  </div>
+                </TableCell>
                 <TableCell className="pr-8 text-right text-slate-500 text-sm font-medium">{tx.date}</TableCell>
               </TableRow>
             ))}
