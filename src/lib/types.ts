@@ -4,6 +4,7 @@ export type BayStatus = 'Available' | 'Occupied' | 'Under Maintenance';
 export type DeliveryStatus = 'Booking' | 'Pickup' | 'Processing' | 'Drying' | 'Delivery' | 'Completed';
 export type SubscriptionTier = 'None' | 'Silver' | 'Gold' | 'Platinum';
 export type SaaSPlan = 'Basic' | 'Professional' | 'Enterprise';
+export type AttendanceStatus = 'Present' | 'Late' | 'Absent' | 'On-Leave';
 
 export interface Tenant {
   id: string;
@@ -75,6 +76,8 @@ export interface Staff {
   name: string;
   role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
   performance: number;
+  attendanceStatus: AttendanceStatus;
+  lastClockIn?: string;
   earnings: {
     base: number;
     commission: number;

@@ -101,6 +101,8 @@ export const STAFF: Staff[] = [
     name: 'John Kamau', 
     role: 'Attendant', 
     performance: 4.8, 
+    attendanceStatus: 'Present',
+    lastClockIn: '2024-05-21T07:45:00Z',
     earnings: { base: 8000, commission: 2500, tips: 2000, total: 12500 } 
   },
   { 
@@ -110,6 +112,8 @@ export const STAFF: Staff[] = [
     name: 'Sarah Wambui', 
     role: 'Attendant', 
     performance: 4.5, 
+    attendanceStatus: 'Late',
+    lastClockIn: '2024-05-21T08:30:00Z',
     earnings: { base: 8000, commission: 1200, tips: 1000, total: 10200 } 
   },
   { 
@@ -119,6 +123,8 @@ export const STAFF: Staff[] = [
     name: 'Peter Otieno', 
     role: 'Attendant', 
     performance: 4.9, 
+    attendanceStatus: 'Present',
+    lastClockIn: '2024-05-21T07:15:00Z',
     earnings: { base: 8000, commission: 4500, tips: 2500, total: 15000 } 
   },
   { 
@@ -128,6 +134,7 @@ export const STAFF: Staff[] = [
     name: 'Grace Mutua', 
     role: 'Agent', 
     performance: 4.7, 
+    attendanceStatus: 'Absent',
     earnings: { base: 20000, commission: 5000, tips: 0, total: 25000 } 
   },
 ];
