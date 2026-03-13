@@ -1,3 +1,4 @@
+
 "use client";
 
 import { 
@@ -17,7 +18,8 @@ import {
   Truck,
   Ticket,
   Zap,
-  Banknote
+  Banknote,
+  Send
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +40,7 @@ import { usePathname } from "next/navigation";
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
   { title: "Logistics", icon: Truck, url: "/manager/logistics" },
+  { title: "Marketing", icon: Send, url: "/manager/marketing" },
   { title: "Accounts", icon: Banknote, url: "/manager/accounts" },
   { title: "Subscriptions", icon: Ticket, url: "/manager/subscriptions" },
   { title: "Analytics", icon: BarChart3, url: "/manager/analytics" },

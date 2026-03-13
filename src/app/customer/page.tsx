@@ -65,7 +65,7 @@ export default function CustomerPortal() {
   const [homePlate, setHomePlate] = useState("");
   const [isLocating, setIsLocating] = useState(false);
 
-  const travelFee = homeLocation ? 450 : 0; // Simulated dynamic fee based on GPS
+  const travelFee = homeLocation ? 450 : 0; 
   const totalHomeCost = selectedHomeService.price + travelFee;
 
   const handleSearch = () => {
@@ -178,6 +178,10 @@ export default function CustomerPortal() {
     });
   };
 
+  const handleWhatsAppSupport = () => {
+    window.open("https://wa.me/254700000000?text=Hi SparkFlow, I need assistance with my wash.", "_blank");
+  };
+
   return (
     <div className="min-h-screen pb-44 bg-slate-50 flex flex-col">
       <header className="bg-white border-b p-6 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md bg-white/80">
@@ -185,7 +189,7 @@ export default function CustomerPortal() {
           <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/20">
             <Waves className="w-5 h-5" />
           </div>
-          <h1 className="text-xl font-bold text-primary tracking-tight">SparkFlow</h1>
+          <h1 className="text-xl font-bold text-primary tracking-tight text-primary italic uppercase tracking-tighter">SparkFlow</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100 shadow-sm">
@@ -591,8 +595,15 @@ export default function CustomerPortal() {
         )}
       </div>
 
+      {/* WhatsApp Support Button */}
+      <Button 
+        onClick={handleWhatsAppSupport}
+        className="fixed bottom-28 right-6 size-16 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-2xl z-50 p-0 flex items-center justify-center animate-bounce"
+      >
+        <MessageSquare className="size-8" />
+      </Button>
+
       <RoleSwitcher />
     </div>
   );
 }
-

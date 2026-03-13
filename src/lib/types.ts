@@ -14,6 +14,18 @@ export interface Tenant {
   ownerUid: string;
   location: string;
   revenueMTD: number;
+  smsBalance: number;
+}
+
+export interface MarketingCampaign {
+  id: string;
+  title: string;
+  channel: 'SMS' | 'WhatsApp' | 'Push';
+  audience: 'All' | 'Subscribers' | 'Inactive';
+  message: string;
+  status: 'Draft' | 'Sent' | 'Scheduled';
+  sentAt?: string;
+  recipients: number;
 }
 
 export interface Service {
@@ -23,7 +35,7 @@ export interface Service {
   price: number;
   duration: number;
   category: 'Wash' | 'Detailing' | 'Tinting';
-  usp?: string; // Unique Selling Point
+  usp?: string; 
 }
 
 export interface ServiceBundle {
