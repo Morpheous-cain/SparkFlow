@@ -26,6 +26,10 @@ const ManagerOperationalInsightsInputSchema = z.object({
     .describe(
       'JSON string representing transaction patterns, e.g., [{\"date\": \"2023-10-26\", \"totalRevenue\": 1500, \"carsCleaned\": 30}]'
     ),
+  lowRatingReviews: z
+    .string()
+    .optional()
+    .describe('JSON string of recent low-rating customer reviews.'),
 });
 export type ManagerOperationalInsightsInput = z.infer<
   typeof ManagerOperationalInsightsInputSchema
@@ -41,6 +45,15 @@ const ManagerOperationalInsightsOutputSchema = z.object({
   recommendations: z
     .array(z.string())
     .describe('An array of recommendations based on the identified insights.'),
+  flaggedReviews: z
+    .array(z.object({
+      customer: z.string(),
+      rating: z.number(),
+      comment: z.string(),
+      sentiment: z.string().describe('The AI determined sentiment or core issue.'),
+    }))
+    .optional()
+    .describe('A list of critical customer reviews that need manager intervention.'),
 });
 export type ManagerOperationalInsightsOutput = z.infer<
   typeof ManagerOperationalInsightsOutputSchema
@@ -62,17 +75,20 @@ Operational Data:
 Staff Performance Data: {{{staffPerformanceData}}}
 Service Duration Data: {{{serviceDurationData}}}
 Transaction Pattern Data: {{{transactionPatternData}}}
+Low Rating Reviews: {{{lowRatingReviews}}}
 
 Carefully analyze the data to:
 1. Provide an overall summary of the operational performance.
 2. Identify significant trends, anomalies, and insights related to staff efficiency, service turnaround times, and revenue patterns.
 3. Offer concrete recommendations to optimize operations, improve profitability, and enhance service efficiency.
+4. If low rating reviews are provided, summarize the most critical ones and assign a sentiment or core issue.
 
 Format your response as a JSON object with the following structure:
 {
   "overallSummary": "[your concise summary]",
   "identifiedTrends": ["[trend 1]", "[trend 2]"],
-  "recommendations": ["[recommendation 1]", "[recommendation 2]"]
+  "recommendations": ["[recommendation 1]", "[recommendation 2]"],
+  "flaggedReviews": [{"customer": "Name", "rating": 1, "comment": "...", "sentiment": "..."}]
 }`,
 });
 

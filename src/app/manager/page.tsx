@@ -27,7 +27,9 @@ import {
   Droplets,
   Users,
   PackageCheck,
-  ShieldAlert
+  ShieldAlert,
+  MessageSquareWarning,
+  Frown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,7 +78,11 @@ export default function ManagerDashboard() {
       const data = await getManagerOperationalInsights({
         staffPerformanceData: JSON.stringify(STAFF),
         serviceDurationData: JSON.stringify(SERVICES.map(s => ({ serviceName: s.name, avgDurationMinutes: s.duration, totalServices: Math.floor(Math.random() * 50) + 10 }))),
-        transactionPatternData: JSON.stringify(MOCK_TRANSACTIONS)
+        transactionPatternData: JSON.stringify(MOCK_TRANSACTIONS),
+        lowRatingReviews: JSON.stringify([
+          { customer: "Alex K.", rating: 2, comment: "Wait time was too long, over 60 mins.", date: "2024-05-20" },
+          { customer: "Mercy W.", rating: 1, comment: "Interior was still dusty after executive wash.", date: "2024-05-19" }
+        ])
       });
       setAiInsights(data);
     } catch (err) {
@@ -306,62 +312,96 @@ export default function ManagerDashboard() {
         </Card>
       </div>
 
-      {/* AI Strategy Layer - Fixed at bottom for decision support */}
+      {/* AI Strategy Layer - COMPACT VERSION */}
       {aiInsights && (
-        <Card className="border-none shadow-2xl rounded-[3rem] bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden p-8 md:p-14 relative group">
+        <Card className="border-none shadow-2xl rounded-[3rem] bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden p-6 md:p-10 relative group">
           <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-primary/20 rounded-full blur-[120px] group-hover:scale-110 transition-transform duration-1000" />
           <div className="absolute bottom-0 left-0 p-24 -ml-24 -mb-24 bg-emerald-500/10 rounded-full blur-[100px]" />
           
-          <CardHeader className="p-0 mb-10 md:mb-14 flex flex-row items-center gap-6 md:gap-8 space-y-0 relative z-10">
-            <div className="size-20 md:size-24 bg-gradient-to-tr from-primary to-blue-400 text-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(59,130,246,0.5)] flex items-center justify-center rotate-6 group-hover:rotate-12 transition-transform duration-500">
-              <Sparkles className="size-10 md:size-12" />
+          <CardHeader className="p-0 mb-6 md:mb-8 flex flex-row items-center gap-4 md:gap-6 space-y-0 relative z-10">
+            <div className="size-14 md:size-16 bg-gradient-to-tr from-primary to-blue-400 text-white rounded-[1.2rem] md:rounded-[1.5rem] shadow-[0_10px_30px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center rotate-6 group-hover:rotate-12 transition-transform duration-500">
+              <Sparkles className="size-7 md:size-8" />
             </div>
             <div>
-              <CardTitle className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none mb-2">AI Predictive Core</CardTitle>
-              <div className="flex items-center gap-3">
-                <Badge className="bg-primary text-white border-none text-[10px] font-black uppercase px-4 py-1">ANALYSIS LIVE</Badge>
-                <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Quantum Strategy Engine v4.2</p>
+              <CardTitle className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase leading-none mb-1">AI Predictive Core</CardTitle>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-primary text-white border-none text-[8px] font-black uppercase px-2 py-0.5">ANALYSIS LIVE</Badge>
+                <p className="text-slate-400 text-[8px] font-black uppercase tracking-[0.2em]">Quantum Strategy Engine v4.2</p>
               </div>
             </div>
           </CardHeader>
           
-          <CardContent className="p-0 space-y-10 md:space-y-16 relative z-10">
-            <div className="p-8 md:p-12 bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-inner">
-               <p className="text-2xl md:text-3xl leading-snug text-white/95 font-black tracking-tight italic">"{aiInsights.overallSummary}"</p>
+          <CardContent className="p-0 space-y-6 md:space-y-8 relative z-10">
+            <div className="p-5 md:p-8 bg-white/5 backdrop-blur-2xl rounded-[1.5rem] border border-white/10 shadow-inner">
+               <p className="text-lg md:text-xl leading-snug text-white/95 font-black tracking-tight italic">"{aiInsights.overallSummary}"</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14">
-              <div className="space-y-6 md:space-y-8">
-                <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-primary flex items-center gap-3">
-                  <div className="h-0.5 w-10 bg-primary" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+              {/* Network Anomalies */}
+              <div className="space-y-4">
+                <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
+                  <div className="h-0.5 w-6 bg-primary" />
                   NETWORK ANOMALIES
                 </h4>
-                <ul className="space-y-4 md:space-y-6">
+                <ul className="space-y-3">
                   {aiInsights.identifiedTrends.map((trend, i) => (
-                    <li key={i} className="flex items-start gap-4 text-sm md:text-base bg-white/5 p-6 rounded-[2rem] border border-white/5 hover:bg-white/10 transition-all duration-300 group/item cursor-default">
-                      <Zap className="size-6 text-amber-400 shrink-0 group-hover/item:scale-125 transition-transform" />
-                      <span className="font-bold text-slate-200 leading-relaxed">{trend}</span>
+                    <li key={i} className="flex items-start gap-3 text-xs bg-white/5 p-4 rounded-[1.2rem] border border-white/5 hover:bg-white/10 transition-all duration-300 group/item cursor-default">
+                      <Zap className="size-4 text-amber-400 shrink-0 group-hover/item:scale-125 transition-transform" />
+                      <span className="font-bold text-slate-200 leading-normal">{trend}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="space-y-6 md:space-y-8">
-                <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-400 flex items-center gap-3">
-                  <div className="h-0.5 w-10 bg-emerald-400" />
+
+              {/* Owner Strategy */}
+              <div className="space-y-4">
+                <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 flex items-center gap-2">
+                  <div className="h-0.5 w-6 bg-emerald-400" />
                   OWNER STRATEGY
                 </h4>
-                <ul className="space-y-4 md:space-y-6">
+                <ul className="space-y-3">
                   {aiInsights.recommendations.map((rec, i) => (
-                    <li key={i} className="flex items-start gap-4 text-sm md:text-base bg-emerald-400/5 p-6 rounded-[2rem] border border-emerald-400/10 hover:bg-emerald-400/10 transition-all duration-300 group/item cursor-default">
-                      <div className="size-3 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_20px_#34d399] mt-1.5 group-hover/item:scale-150 transition-transform" />
-                      <span className="font-bold text-slate-100 leading-relaxed">{rec}</span>
+                    <li key={i} className="flex items-start gap-3 text-xs bg-emerald-400/5 p-4 rounded-[1.2rem] border border-emerald-400/10 hover:bg-emerald-400/10 transition-all duration-300 group/item cursor-default">
+                      <div className="size-2 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_10px_#34d399] mt-1 group-hover/item:scale-150 transition-transform" />
+                      <span className="font-bold text-slate-100 leading-normal">{rec}</span>
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              {/* Flagged Low-Rating Reviews */}
+              <div className="space-y-4">
+                <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-red-400 flex items-center gap-2">
+                  <div className="h-0.5 w-6 bg-red-400" />
+                  CRITICAL FEEDBACK
+                </h4>
+                <div className="space-y-3">
+                  {aiInsights.flaggedReviews?.map((review, i) => (
+                    <div key={i} className="bg-red-500/5 p-4 rounded-[1.2rem] border border-red-500/10 hover:bg-red-500/10 transition-all space-y-2 group/rev">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black text-white uppercase">{review.customer}</span>
+                        <div className="flex items-center gap-1">
+                          <Star className="size-2 text-red-400 fill-current" />
+                          <span className="text-[10px] font-black text-red-400">{review.rating}</span>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-tight font-medium italic">"{review.comment}"</p>
+                      <div className="pt-2 border-t border-white/5 flex items-center gap-2">
+                        <Frown className="size-3 text-red-400" />
+                        <span className="text-[8px] font-black text-red-400 uppercase tracking-widest">{review.sentiment}</span>
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="p-8 text-center bg-white/5 rounded-[1.2rem] border border-white/5">
+                       <ShieldAlert className="size-6 text-slate-600 mx-auto mb-2" />
+                       <p className="text-[10px] font-black text-slate-500 uppercase">No Critical Reviews</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             
-            <Button className="w-full h-16 md:h-20 bg-white text-slate-900 hover:bg-blue-50 rounded-[2rem] font-black uppercase text-xs md:text-sm tracking-[0.3em] shadow-[0_25px_60px_-15px_rgba(255,255,255,0.2)] transition-all">
+            <Button className="w-full h-12 md:h-14 bg-white text-slate-900 hover:bg-blue-50 rounded-[1.2rem] font-black uppercase text-[10px] tracking-[0.2em] shadow-[0_15px_40px_-10px_rgba(255,255,255,0.2)] transition-all">
                Approve Consolidated Strategy
             </Button>
           </CardContent>
