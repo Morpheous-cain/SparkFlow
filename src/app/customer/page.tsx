@@ -24,7 +24,10 @@ import {
   Wallet,
   QrCode,
   Truck,
-  MapPin
+  MapPin,
+  Crown,
+  Ticket,
+  ChevronRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -136,6 +139,46 @@ export default function CustomerPortal() {
       </header>
 
       <div className="p-6 max-w-xl mx-auto w-full space-y-6 flex-1">
+        {/* Subscription & Loyalty Quick View */}
+        <section className="grid grid-cols-2 gap-4">
+           <Card className="border-none shadow-sm rounded-3xl bg-slate-900 text-white overflow-hidden relative group">
+              <div className="absolute top-0 right-0 p-8 -mr-10 -mt-10 bg-primary/20 rounded-full blur-xl" />
+              <CardContent className="p-5 relative z-10 space-y-3">
+                 <div className="flex justify-between items-start">
+                    <div className="size-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/10">
+                      <Crown className="size-5 text-amber-400" />
+                    </div>
+                    <Badge className="bg-amber-400 text-slate-900 border-none font-black text-[8px] uppercase">GOLD</Badge>
+                 </div>
+                 <div>
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Membership Tier</span>
+                    <h4 className="text-lg font-black italic uppercase leading-none mt-1">Spark Gold</h4>
+                 </div>
+                 <Button variant="link" className="p-0 h-auto text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1">
+                    View Perks <ChevronRight className="size-3" />
+                 </Button>
+              </CardContent>
+           </Card>
+
+           <Card className="border-none shadow-sm rounded-3xl bg-white overflow-hidden group">
+              <CardContent className="p-5 space-y-3">
+                 <div className="flex justify-between items-start">
+                    <div className="size-10 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10">
+                      <Ticket className="size-5 text-primary" />
+                    </div>
+                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">2 ACTIVE</Badge>
+                 </div>
+                 <div>
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Available Coupons</span>
+                    <h4 className="text-lg font-black italic uppercase leading-none mt-1">My Vouchers</h4>
+                 </div>
+                 <Button variant="link" className="p-0 h-auto text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1">
+                    Redeem Now <ChevronRight className="size-3" />
+                 </Button>
+              </CardContent>
+           </Card>
+        </section>
+
         <section className="space-y-4 text-center py-4">
           <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary italic">Spark</span></h2>
           <p className="text-slate-500 text-sm font-medium">Real-time status for car wash & concierge logistics</p>

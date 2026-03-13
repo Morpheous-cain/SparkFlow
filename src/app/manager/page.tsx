@@ -16,7 +16,8 @@ import {
   AlertTriangle,
   PhoneCall,
   Star,
-  Zap
+  Zap,
+  Ticket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,7 +124,7 @@ export default function ManagerDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { title: "Avg Rating", value: "4.82", change: "+0.2", icon: Star, color: "text-amber-500" },
-          { title: "Recovery TAT", value: "8.5m", change: "-2.1m", icon: PhoneCall, color: "text-blue-500" },
+          { title: "Recurring Revenue", value: "840K", change: "+14%", icon: Ticket, color: "text-primary" },
           { title: "Revenue", value: "23.8K", change: "+108%", icon: TrendingUp, color: "text-emerald-500" },
           { title: "Occupancy", value: "66.7%", change: "Optimal", icon: Warehouse, color: "text-indigo-500" },
         ].map((metric, i) => (
@@ -150,30 +151,27 @@ export default function ManagerDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        <Link href="/manager/bays" className="lg:col-span-1 group">
+        <Link href="/manager/subscriptions" className="lg:col-span-1 group">
           <Card className="border-none shadow-sm rounded-[2rem] bg-indigo-600 text-white p-8 md:p-10 h-full relative overflow-hidden group-hover:scale-[1.02] transition-transform">
             <div className="absolute top-0 right-0 p-16 -mr-20 -mt-20 bg-white/10 rounded-full blur-3xl" />
             <div className="relative z-10 flex flex-col h-full justify-between gap-8">
               <div>
                 <div className="size-14 md:size-16 bg-white/20 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 backdrop-blur-md border border-white/20">
-                  <Warehouse className="size-7 md:size-8 text-white" />
+                  <Ticket className="size-7 md:size-8 text-white" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black mb-2 italic tracking-tight uppercase">Bays Monitor</h3>
-                <p className="text-indigo-100 text-sm font-bold leading-relaxed">Live occupancy across all stations.</p>
+                <h3 className="text-2xl md:text-3xl font-black mb-2 italic tracking-tight uppercase">Subscriptions</h3>
+                <p className="text-indigo-100 text-sm font-bold leading-relaxed">Manage tiered loyalty & regular revenue.</p>
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex -space-x-3">
-                  {BAYS.map((bay, i) => (
-                    <div key={i} className={cn(
-                      "size-10 md:size-12 rounded-full border-4 border-indigo-600 flex items-center justify-center font-black text-xs md:text-sm",
-                      bay.status === 'Occupied' ? "bg-emerald-400 text-white" : "bg-white/20 text-indigo-100"
-                    )}>
-                      {i + 1}
+                  {[1,2,3].map((_, i) => (
+                    <div key={i} className="size-10 md:size-12 rounded-full border-4 border-indigo-600 bg-white/20 flex items-center justify-center font-black text-xs md:text-sm text-white">
+                      {i === 0 ? "S" : i === 1 ? "G" : "P"}
                     </div>
                   ))}
                 </div>
                 <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-                  Live View <ChevronRight className="size-3" />
+                  Plan Details <ChevronRight className="size-3" />
                 </div>
               </div>
             </div>

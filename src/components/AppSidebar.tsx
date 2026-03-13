@@ -14,7 +14,9 @@ import {
   ChevronRight,
   BarChart3,
   Warehouse,
-  Truck
+  Truck,
+  Ticket,
+  Zap
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,6 +37,7 @@ import { usePathname } from "next/navigation";
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
   { title: "Logistics", icon: Truck, url: "/manager/logistics" },
+  { title: "Subscriptions", icon: Ticket, url: "/manager/subscriptions" },
   { title: "Analytics", icon: BarChart3, url: "/manager/analytics" },
   { title: "Bays", icon: Warehouse, url: "/manager/bays" },
   { title: "Staff", icon: Users, url: "/manager/staff" },

@@ -1,4 +1,4 @@
-import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest } from "./types";
+import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest, SubscriptionPlan, Voucher, Promotion } from "./types";
 
 export const SERVICES: Service[] = [
   { id: '1', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash' },
@@ -7,6 +7,23 @@ export const SERVICES: Service[] = [
   { id: '4', name: 'Ceramic Coating', price: 15000, duration: 360, category: 'Detailing' },
   { id: '5', name: 'Window Tinting', price: 8000, duration: 120, category: 'Tinting' },
   { id: '6', name: 'Carpet Cleaning', price: 2000, duration: 60, category: 'Wash' },
+];
+
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+  { id: 'SUB1', name: 'Silver', price: 2500, discount: 10, benefits: ['2 Free Basic Washes/Mo', '10% Off Detailing', 'Priority Queue'] },
+  { id: 'SUB2', name: 'Gold', price: 5000, discount: 20, benefits: ['4 Free Basic Washes/Mo', '20% Off All Services', 'Free Tire Wax', 'Priority Queue'] },
+  { id: 'SUB3', name: 'Platinum', price: 10000, discount: 35, benefits: ['Unlimited Basic Washes', '35% Off All Services', 'Free Engine Wash', 'VIP Lounge Access'] },
+];
+
+export const VOUCHERS: Voucher[] = [
+  { id: 'V1', code: 'SPARK20', discount: 20, type: 'Percentage', expiry: '2024-12-31', status: 'Active' },
+  { id: 'V2', code: 'WELCOME500', discount: 500, type: 'Fixed', expiry: '2024-06-30', status: 'Active' },
+  { id: 'V3', code: 'LOYALTY10', discount: 10, type: 'Percentage', expiry: '2024-05-01', status: 'Expired' },
+];
+
+export const PROMOTIONS: Promotion[] = [
+  { id: 'P1', title: 'Rainy Season Special', description: 'Get 50% off Underwash when you book a Full Detailing.', startDate: '2024-05-01', endDate: '2024-05-31' },
+  { id: 'P2', title: 'Weekend Rush Hour', description: 'Double reward points for all washes booked between 8 AM - 10 AM on Saturdays.', startDate: '2024-05-01', endDate: '2024-06-30' },
 ];
 
 export const STAFF: Staff[] = [

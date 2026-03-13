@@ -1,6 +1,7 @@
 export type VehicleStatus = 'Queue' | 'In-Bay' | 'Ready' | 'Completed';
 export type BayStatus = 'Available' | 'Occupied' | 'Under Maintenance';
 export type DeliveryStatus = 'Booking' | 'Pickup' | 'Processing' | 'Drying' | 'Delivery' | 'Completed';
+export type SubscriptionTier = 'None' | 'Silver' | 'Gold' | 'Platinum';
 
 export interface Service {
   id: string;
@@ -74,4 +75,30 @@ export interface LogisticsRequest {
   amount: number;
   assignedStaffId?: string;
   trackingProgress?: number;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: SubscriptionTier;
+  price: number;
+  discount: number;
+  benefits: string[];
+}
+
+export interface Voucher {
+  id: string;
+  code: string;
+  discount: number;
+  type: 'Percentage' | 'Fixed';
+  expiry: string;
+  status: 'Active' | 'Used' | 'Expired';
+}
+
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  bannerUrl?: string;
 }
