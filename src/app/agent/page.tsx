@@ -68,19 +68,19 @@ export default function AgentPortal() {
     .reduce((acc, curr) => acc + curr.price, 0);
 
   return (
-    <div className="min-h-screen pb-40 p-4 max-w-2xl mx-auto flex flex-col gap-6 bg-slate-50">
+    <div className="min-h-screen pb-44 md:pb-52 p-4 max-w-2xl mx-auto flex flex-col gap-6 bg-slate-50">
       <header className="flex items-center gap-4 py-6">
-        <div className="p-3 bg-primary rounded-[1.25rem] text-white shadow-xl shadow-primary/20">
+        <div className="p-3 bg-primary rounded-2xl text-white shadow-xl shadow-primary/20">
           <Smartphone className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-black italic uppercase tracking-tighter">SparkFlow Desk</h1>
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Grace Mutua • Branch Lead</p>
+          <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none">SparkFlow Desk</h1>
+          <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em] mt-1">Grace Mutua • Branch Lead</p>
         </div>
       </header>
 
       <Tabs defaultValue="checkin" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 h-14 rounded-2xl bg-slate-100 p-1 mb-6">
+        <TabsList className="grid w-full grid-cols-2 h-14 rounded-2xl bg-slate-200/50 p-1 mb-6">
           <TabsTrigger value="checkin" className="rounded-xl font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Plus className="size-3 mr-2" /> Check-In
           </TabsTrigger>
@@ -94,25 +94,25 @@ export default function AgentPortal() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="checkin" className="space-y-6">
-          <Card className="shadow-2xl border-none rounded-[2.5rem] overflow-hidden">
-            <CardHeader className="bg-slate-900 text-white p-8">
-              <CardTitle className="text-xl font-black italic uppercase">New Service Entry</CardTitle>
-              <CardDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest">Capture details to begin workflow</CardDescription>
+        <TabsContent value="checkin" className="space-y-6 outline-none focus:ring-0">
+          <Card className="shadow-2xl border-none rounded-[2rem] overflow-hidden">
+            <CardHeader className="bg-slate-900 text-white p-6 md:p-8">
+              <CardTitle className="text-lg md:text-xl font-black italic uppercase leading-none">New Entry</CardTitle>
+              <CardDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Capture details to begin workflow</CardDescription>
             </CardHeader>
-            <CardContent className="p-8 space-y-8">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">License Plate</label>
+            <CardContent className="p-6 md:p-8 space-y-6 md:space-y-8">
+              <div className="space-y-2 md:space-y-3">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">License Plate</label>
                 <Input 
                   placeholder="KDC 123A" 
                   value={plate}
                   onChange={(e) => setPlate(e.target.value.toUpperCase())}
-                  className="text-3xl h-16 font-mono font-black tracking-[0.3em] text-center border-2 border-slate-100 rounded-2xl focus:border-primary focus:ring-0 uppercase transition-all"
+                  className="text-2xl md:text-3xl h-14 md:h-16 font-mono font-black tracking-[0.2em] md:tracking-[0.3em] text-center border-2 border-slate-100 rounded-2xl focus:border-primary focus:ring-0 uppercase transition-all"
                 />
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Select Packages</label>
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Select Packages</label>
                 <div className="grid grid-cols-1 gap-2">
                   {SERVICES.map((service) => (
                     <button
@@ -121,13 +121,13 @@ export default function AgentPortal() {
                       onClick={() => toggleService(service.id)}
                       className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all text-left ${
                         selectedServices.includes(service.id)
-                          ? "border-primary bg-primary/5 shadow-inner"
+                          ? "border-primary bg-primary/5"
                           : "border-slate-50 bg-slate-50/50 hover:border-slate-200"
                       }`}
                     >
                       <div className="flex flex-col">
-                        <span className="font-black text-xs italic uppercase text-slate-900">{service.name}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">KES {service.price.toLocaleString()} • {service.duration} MINS</span>
+                        <span className="font-black text-[11px] md:text-xs italic uppercase text-slate-900 leading-tight">{service.name}</span>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1">KES {service.price.toLocaleString()} • {service.duration}m</span>
                       </div>
                       <div className={`rounded-full p-1 transition-colors ${selectedServices.includes(service.id) ? "bg-primary text-white" : "bg-slate-200 text-slate-200"}`}>
                         <Check className="w-3 h-3" />
@@ -139,27 +139,27 @@ export default function AgentPortal() {
             </CardContent>
           </Card>
 
-          <div className="fixed bottom-24 left-0 right-0 px-4 max-w-2xl mx-auto z-40">
-            <Card className="shadow-2xl border-none bg-slate-900 text-white rounded-[2rem] overflow-hidden">
+          <div className="fixed bottom-[92px] left-0 right-0 px-4 max-w-2xl mx-auto z-40">
+            <Card className="shadow-2xl border-none bg-slate-900 text-white rounded-2xl md:rounded-[2rem] overflow-hidden">
               <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex flex-col ml-4">
-                  <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">Estimate Total</span>
-                  <span className="text-2xl font-black italic italic tracking-tighter">KES {totalAmount.toLocaleString()}</span>
+                <div className="flex flex-col ml-2 md:ml-4">
+                  <span className="text-[8px] md:text-[9px] font-black text-primary uppercase tracking-[0.2em]">Estimate Total</span>
+                  <span className="text-xl md:text-2xl font-black italic tracking-tighter leading-none">KES {totalAmount.toLocaleString()}</span>
                 </div>
                 <Button 
                   size="lg" 
-                  className="px-8 h-14 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-primary/20 bg-primary hover:bg-blue-600 transition-all active:scale-95" 
+                  className="px-6 md:px-8 h-12 md:h-14 rounded-xl md:rounded-2xl font-black uppercase text-[9px] md:text-[10px] tracking-widest shadow-xl shadow-primary/20 bg-primary hover:bg-blue-600 transition-all active:scale-95" 
                   disabled={isSubmitting}
                   onClick={handleCheckIn}
                 >
-                  {isSubmitting ? "Syncing..." : "Check-In Vehicle"}
+                  {isSubmitting ? "Syncing..." : "Log Vehicle"}
                 </Button>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="payments" className="space-y-4">
+        <TabsContent value="payments" className="space-y-4 outline-none focus:ring-0">
           {pendingCheckouts.length === 0 ? (
             <div className="text-center py-20 opacity-30">
                <div className="size-20 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -169,40 +169,40 @@ export default function AgentPortal() {
             </div>
           ) : (
             pendingCheckouts.map((v) => (
-              <Card key={v.plate} className={`border-none shadow-sm rounded-[2rem] overflow-hidden ${v.status === 'Ready' ? 'ring-2 ring-emerald-500/20' : 'opacity-70'}`}>
-                <CardHeader className="pb-4">
+              <Card key={v.plate} className={`border-none shadow-sm rounded-2xl md:rounded-[2rem] overflow-hidden ${v.status === 'Ready' ? 'ring-2 ring-emerald-500/20' : 'opacity-70'}`}>
+                <CardHeader className="pb-4 p-5 md:p-6">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
-                      <div className="size-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400">
-                        <Car className="size-6" />
+                      <div className="size-10 md:size-12 bg-slate-100 rounded-xl md:rounded-2xl flex items-center justify-center text-slate-400">
+                        <Car className="size-5 md:size-6" />
                       </div>
                       <div>
-                        <h4 className="text-2xl font-mono font-black italic tracking-widest text-slate-900">{v.plate}</h4>
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <h4 className="text-xl md:text-2xl font-mono font-black italic tracking-widest text-slate-900 leading-none">{v.plate}</h4>
+                        <div className="flex items-center gap-2 mt-1.5 md:mt-2">
                           <Clock className="size-3 text-slate-400" />
-                          <span className="text-[10px] font-black text-slate-400 uppercase">Wait: {v.progress}% Progress</span>
+                          <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-tight">{v.progress}% Sync</span>
                         </div>
                       </div>
                     </div>
-                    <Badge variant={v.status === 'Ready' ? 'default' : 'secondary'} className={v.status === 'Ready' ? 'bg-emerald-500 font-black' : 'font-black'}>
+                    <Badge variant={v.status === 'Ready' ? 'default' : 'secondary'} className={cn("font-black text-[9px]", v.status === 'Ready' ? 'bg-emerald-500' : '')}>
                       {v.status === 'Ready' ? 'READY' : 'IN-WASH'}
                     </Badge>
                   </div>
                 </CardHeader>
                 {v.status === 'Ready' && (
-                  <CardContent className="p-4 bg-slate-50 grid grid-cols-2 gap-2">
+                  <CardContent className="p-3 md:p-4 bg-slate-50 grid grid-cols-2 gap-2">
                     <Button 
                       onClick={() => handlePayment(v.plate, 'MPESA')}
-                      className="h-14 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-black uppercase text-[10px] tracking-widest gap-2"
+                      className="h-12 md:h-14 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-black uppercase text-[9px] tracking-widest gap-2"
                     >
-                      <CreditCard className="size-4" /> M-Pesa Push
+                      <CreditCard className="size-3.5" /> M-Pesa
                     </Button>
                     <Button 
                       onClick={() => handlePayment(v.plate, 'CASH')}
                       variant="outline"
-                      className="h-14 rounded-xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest gap-2 text-slate-600"
+                      className="h-12 md:h-14 rounded-xl border-slate-200 bg-white font-black uppercase text-[9px] tracking-widest gap-2 text-slate-600"
                     >
-                      <Banknote className="size-4" /> Cash Clear
+                      <Banknote className="size-3.5" /> Cash
                     </Button>
                   </CardContent>
                 )}
