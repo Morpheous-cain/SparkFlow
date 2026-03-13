@@ -43,7 +43,7 @@ export default function AttendantPWA() {
                 <Waves className="size-5" />
              </div>
              <div>
-                <h1 className="text-xl font-bold italic uppercase tracking-tighter">Attendant Console</h1>
+                <h1 className="text-xl font-bold uppercase tracking-tighter">Attendant Console</h1>
                 <p className="opacity-80 text-[10px] font-bold uppercase tracking-widest">Peter Otieno • Station 04</p>
              </div>
           </div>
@@ -78,7 +78,7 @@ export default function AttendantPWA() {
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <CardTitle className="text-3xl font-mono font-black tracking-widest text-slate-900 italic">{job.plate}</CardTitle>
+                  <CardTitle className="text-3xl font-mono font-black tracking-widest text-slate-900">{job.plate}</CardTitle>
                 </div>
                 <CardDescription className="flex items-center gap-2 mt-1 font-bold uppercase text-[10px] text-slate-400">
                   <MapPin className="size-3 text-primary" />

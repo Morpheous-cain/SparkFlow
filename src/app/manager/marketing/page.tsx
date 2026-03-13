@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -47,14 +46,14 @@ export default function MarketingPage() {
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">Marketing Broadcasts</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Marketing Broadcasts</h1>
           <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-1">Direct Communication & Campaign Engine</p>
         </div>
         <Card className="border-none shadow-sm bg-primary text-white px-6 py-3 flex items-center gap-4 rounded-2xl">
            <Hash className="size-5 opacity-50" />
            <div>
               <span className="text-[8px] font-black uppercase tracking-widest opacity-70 block leading-none mb-1">SMS Balance</span>
-              <span className="text-xl font-black italic">{smsBalance.toLocaleString()} Units</span>
+              <span className="text-xl font-black">{smsBalance.toLocaleString()} Units</span>
            </div>
            <Button variant="secondary" className="h-8 rounded-xl font-black text-[8px] uppercase tracking-widest bg-white text-primary">Recharge</Button>
         </Card>
@@ -69,7 +68,7 @@ export default function MarketingPage() {
                     <Send className="size-6" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-black italic uppercase">New Campaign</CardTitle>
+                    <CardTitle className="text-xl font-black uppercase">New Campaign</CardTitle>
                     <CardDescription className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Multi-channel delivery</CardDescription>
                   </div>
                </div>
@@ -131,7 +130,7 @@ export default function MarketingPage() {
           </Card>
 
           <div className="space-y-4">
-             <h3 className="text-xl font-black text-slate-900 italic uppercase">Campaign History</h3>
+             <h3 className="text-xl font-black text-slate-900 uppercase">Campaign History</h3>
              <div className="space-y-3">
                 {CAMPAIGNS.map(camp => (
                   <Card key={camp.id} className="border-none shadow-sm rounded-2xl bg-white p-5 group hover:shadow-md transition-all">
@@ -141,7 +140,7 @@ export default function MarketingPage() {
                             {camp.channel === 'SMS' ? <Hash className="size-5" /> : camp.channel === 'WhatsApp' ? <MessageSquare className="size-5" /> : <Smartphone className="size-5" />}
                           </div>
                           <div>
-                             <h4 className="font-black italic uppercase text-xs">{camp.title}</h4>
+                             <h4 className="font-black uppercase text-xs">{camp.title}</h4>
                              <div className="flex items-center gap-2 mt-1">
                                 <Badge variant="secondary" className="text-[8px] font-black uppercase px-2 py-0">{camp.channel}</Badge>
                                 <span className="text-[9px] font-black text-slate-400 uppercase">{camp.date} • {camp.recipients} Recipients</span>
@@ -166,7 +165,7 @@ export default function MarketingPage() {
                     <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20">
                        <Sparkles className="size-6" />
                     </div>
-                    <h3 className="text-xl font-black italic uppercase tracking-tight">AI Copywriter</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight">AI Copywriter</h3>
                  </header>
                  <p className="text-xs font-bold text-indigo-100 leading-relaxed">Let SparkFlow AI generate high-conversion SMS & WhatsApp copy based on your current inventory or holidays.</p>
                  <Button className="w-full h-12 bg-white text-indigo-600 hover:bg-slate-50 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-2xl">
@@ -177,7 +176,7 @@ export default function MarketingPage() {
 
            <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
               <header className="mb-6">
-                 <h3 className="text-lg font-black italic uppercase tracking-tight leading-none">Global Performance</h3>
+                 <h3 className="text-lg font-black uppercase tracking-tight leading-none">Global Performance</h3>
                  <p className="text-[9px] font-black text-slate-400 uppercase mt-2">Aggregated campaign impact</p>
               </header>
               <div className="space-y-6">

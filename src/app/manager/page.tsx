@@ -67,7 +67,7 @@ export default function ManagerDashboard() {
     <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f8fafc]">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Emma Johnson</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter">Emma Johnson</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Operational Lead • SparkFlow HQ</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
@@ -91,7 +91,6 @@ export default function ManagerDashboard() {
         </div>
       </header>
 
-      {/* 360 Loop: Service Recovery Module */}
       <section className="animate-in fade-in slide-in-from-top-4 duration-700">
         <Card className="border-none shadow-lg bg-red-50 border-l-4 md:border-l-8 border-red-500 rounded-3xl overflow-hidden">
           <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -120,7 +119,6 @@ export default function ManagerDashboard() {
         </Card>
       </section>
 
-      {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { title: "Avg Rating", value: "4.82", change: "+0.2", icon: Star, color: "text-amber-500" },
@@ -138,9 +136,9 @@ export default function ManagerDashboard() {
               </div>
               <div className="flex flex-col gap-2">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">{metric.title}</span>
-                <span className="text-3xl font-black text-slate-900 tracking-tighter italic">{metric.value}</span>
+                <span className="text-3xl font-black text-slate-900 tracking-tighter">{metric.value}</span>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-slate-50 text-slate-900 border-none px-2 py-0.5 rounded-full text-[9px] font-black italic">
+                  <Badge variant="secondary" className="bg-slate-50 text-slate-900 border-none px-2 py-0.5 rounded-full text-[9px] font-black">
                     {metric.change}
                   </Badge>
                 </div>
@@ -159,7 +157,7 @@ export default function ManagerDashboard() {
                 <div className="size-14 md:size-16 bg-white/20 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 backdrop-blur-md border border-white/20">
                   <Ticket className="size-7 md:size-8 text-white" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-black mb-2 italic tracking-tight uppercase">Subscriptions</h3>
+                <h3 className="text-2xl md:text-3xl font-black mb-2 tracking-tight uppercase">Subscriptions</h3>
                 <p className="text-indigo-100 text-sm font-bold leading-relaxed">Manage tiered loyalty & regular revenue.</p>
               </div>
               <div className="flex flex-wrap items-center gap-4">
@@ -182,7 +180,7 @@ export default function ManagerDashboard() {
           <div className="flex justify-between items-center mb-8 md:mb-10">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="size-2 md:size-3 rounded-full bg-blue-500 animate-pulse" />
-              <h3 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tight italic">Job Mix Analysis</h3>
+              <h3 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tight">Job Mix Analysis</h3>
             </div>
             <Badge variant="outline" className="rounded-xl px-3 md:py-2 border-slate-100 text-slate-500 font-black uppercase text-[8px] md:text-[10px] tracking-widest">Global</Badge>
           </div>
@@ -207,7 +205,7 @@ export default function ManagerDashboard() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute flex flex-col items-center">
-              <span className="text-3xl md:text-5xl font-black text-slate-900 italic tracking-tighter">1.4K</span>
+              <span className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter">1.4K</span>
               <span className="text-[8px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1 md:mt-2">Active</span>
             </div>
           </div>
@@ -222,12 +220,12 @@ export default function ManagerDashboard() {
               <Sparkles className="size-6 md:size-8" />
             </div>
             <div>
-              <CardTitle className="text-xl md:text-3xl font-black text-white italic tracking-tight uppercase">AI Strategy Core</CardTitle>
+              <CardTitle className="text-xl md:text-3xl font-black text-white tracking-tight uppercase">AI Strategy Core</CardTitle>
               <p className="text-white/50 text-[9px] font-black uppercase tracking-[0.2em] mt-1">Real-time predictive logic</p>
             </div>
           </CardHeader>
           <CardContent className="p-0 space-y-8 md:space-y-12 relative z-10">
-            <p className="text-lg md:text-xl leading-relaxed text-white/90 font-black italic">"{aiInsights.overallSummary}"</p>
+            <p className="text-lg md:text-xl leading-relaxed text-white/90 font-black">"{aiInsights.overallSummary}"</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
               <div className="space-y-4 md:space-y-6">
                 <h4 className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Live Anomalies</h4>

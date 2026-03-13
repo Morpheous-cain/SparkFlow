@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -165,7 +164,7 @@ export default function CustomerPortal() {
       toast({ 
         title: "Rating Received!", 
         description: `You've earned 50 SparkPoints for your feedback!`,
-        action: <Trophy className="size-4 text-amber-500" />
+        action: <Trophy className="size-4 text-emerald-600" />
       });
     }
   };
@@ -189,7 +188,7 @@ export default function CustomerPortal() {
           <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/20">
             <Waves className="w-5 h-5" />
           </div>
-          <h1 className="text-xl font-bold text-primary tracking-tight text-primary italic uppercase tracking-tighter">SparkFlow</h1>
+          <h1 className="text-xl font-bold text-primary tracking-tight uppercase tracking-tighter">SparkFlow</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100 shadow-sm">
@@ -200,7 +199,6 @@ export default function CustomerPortal() {
       </header>
 
       <div className="p-6 max-w-xl mx-auto w-full space-y-6 flex-1">
-        {/* On-Demand Home Service Action */}
         <section>
           <Dialog open={isHomeServiceOpen} onOpenChange={setIsHomeServiceOpen}>
             <DialogTrigger asChild>
@@ -211,7 +209,7 @@ export default function CustomerPortal() {
                     <Truck className="size-6 text-primary" />
                   </div>
                   <div className="text-left">
-                    <h3 className="text-lg font-black italic uppercase leading-none">Home Wash On-Demand</h3>
+                    <h3 className="text-lg font-black uppercase leading-none">Home Wash On-Demand</h3>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">We come to your premise • Instant GPS Quote</p>
                   </div>
                   <ChevronRight className="ml-auto size-5 text-slate-500" />
@@ -224,7 +222,7 @@ export default function CustomerPortal() {
                    <div className="p-3 bg-primary rounded-2xl">
                     <Truck className="size-6" />
                    </div>
-                   <DialogTitle className="text-2xl font-black italic uppercase">On-Demand Request</DialogTitle>
+                   <DialogTitle className="text-2xl font-black uppercase">On-Demand Request</DialogTitle>
                 </div>
                 <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">
                    Step {homeStep} of 4: {homeStep === 1 ? 'Service' : homeStep === 2 ? 'Location' : homeStep === 3 ? 'Schedule' : 'Confirm'}
@@ -246,7 +244,7 @@ export default function CustomerPortal() {
                           )}
                         >
                           <div>
-                            <span className="font-black italic uppercase text-xs block">{service.name}</span>
+                            <span className="font-black uppercase text-xs block">{service.name}</span>
                             <span className="text-[10px] font-bold text-slate-400">KES {service.price.toLocaleString()}</span>
                           </div>
                           {selectedHomeService.id === service.id && <CheckCircle2 className="size-4 text-primary" />}
@@ -334,7 +332,7 @@ export default function CustomerPortal() {
                         </div>
                         <div className="pt-3 border-t-2 border-dashed border-slate-200 flex justify-between">
                           <span className="text-sm font-black uppercase">Total Quote</span>
-                          <span className="text-2xl font-black italic text-primary">KES {totalHomeCost.toLocaleString()}</span>
+                          <span className="text-2xl font-black text-primary">KES {totalHomeCost.toLocaleString()}</span>
                         </div>
                       </div>
                     </Card>
@@ -356,7 +354,6 @@ export default function CustomerPortal() {
           </Dialog>
         </section>
 
-        {/* Bundles & Promotions Module */}
         <section className="space-y-4">
            <div className="flex justify-between items-center">
               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Limited Offers</h3>
@@ -372,7 +369,7 @@ export default function CustomerPortal() {
                           <Zap className="size-3 text-primary" />
                           <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">{bundle.incentive}</span>
                         </div>
-                        <h4 className="text-lg font-black italic uppercase leading-none">{bundle.name}</h4>
+                        <h4 className="text-lg font-black uppercase leading-none">{bundle.name}</h4>
                         <p className="text-[9px] font-bold text-slate-400 uppercase leading-none mt-1">{bundle.usp}</p>
                         <div className="flex gap-2 mt-3">
                            {bundle.services.slice(0, 2).map(s => (
@@ -382,7 +379,7 @@ export default function CustomerPortal() {
                      </div>
                      <div className="text-right shrink-0 ml-4">
                         <span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Save KES {bundle.saving}</span>
-                        <div className="text-xl font-black italic text-primary">KES {bundle.price}</div>
+                        <div className="text-xl font-black text-primary">KES {bundle.price}</div>
                         <Button className="h-8 rounded-xl bg-white text-slate-900 font-black text-[8px] uppercase tracking-widest mt-2 px-4">
                            Claim
                         </Button>
@@ -394,7 +391,7 @@ export default function CustomerPortal() {
         </section>
 
         <section className="space-y-4 text-center py-4">
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary italic">Spark</span></h2>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary">Spark</span></h2>
           <p className="text-slate-500 text-sm font-medium">Real-time status for car wash & concierge logistics</p>
           <div className="flex gap-2">
             <Input 
@@ -595,7 +592,6 @@ export default function CustomerPortal() {
         )}
       </div>
 
-      {/* WhatsApp Support Button */}
       <Button 
         onClick={handleWhatsAppSupport}
         className="fixed bottom-28 right-6 size-16 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-2xl z-50 p-0 flex items-center justify-center animate-bounce"

@@ -31,7 +31,7 @@ export default function SubscriptionsManagementPage() {
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic text-primary">Loyalty & Subscriptions</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter text-primary">Loyalty & Subscriptions</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Tiered Memberships & Promotional Engine</p>
         </div>
         <div className="flex gap-3">
@@ -44,7 +44,6 @@ export default function SubscriptionsManagementPage() {
         </div>
       </header>
 
-      {/* KPI Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, i) => (
           <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
@@ -65,9 +64,8 @@ export default function SubscriptionsManagementPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Subscription Tiers */}
         <div className="lg:col-span-2 space-y-6">
-          <h3 className="text-xl font-black text-slate-900 italic uppercase">Membership Tiers</h3>
+          <h3 className="text-xl font-black text-slate-900 uppercase">Membership Tiers</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {SUBSCRIPTION_PLANS.map((plan) => (
               <Card key={plan.id} className="border-none shadow-sm rounded-[2.5rem] overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white">
@@ -77,7 +75,7 @@ export default function SubscriptionsManagementPage() {
                   plan.name === 'Gold' ? "bg-amber-500" : "bg-slate-900"
                 )}>
                   <Crown className="size-8 mx-auto mb-2" />
-                  <h4 className="text-xl font-black uppercase tracking-widest italic">{plan.name}</h4>
+                  <h4 className="text-xl font-black uppercase tracking-widest">{plan.name}</h4>
                   <p className="text-[10px] font-bold opacity-70 uppercase">KES {plan.price.toLocaleString()} / MO</p>
                 </div>
                 <CardContent className="p-6 space-y-4">
@@ -99,7 +97,7 @@ export default function SubscriptionsManagementPage() {
           </div>
 
           <div className="space-y-6 pt-4">
-             <h3 className="text-xl font-black text-slate-900 italic uppercase">Active Promotions</h3>
+             <h3 className="text-xl font-black text-slate-900 uppercase">Active Promotions</h3>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                {PROMOTIONS.map((promo) => (
                  <Card key={promo.id} className="border-none shadow-sm rounded-[2rem] bg-indigo-600 text-white overflow-hidden relative group">
@@ -112,7 +110,7 @@ export default function SubscriptionsManagementPage() {
                         <Badge className="bg-emerald-500 text-white border-none font-black text-[9px] uppercase">LIVE</Badge>
                       </div>
                       <div>
-                        <h4 className="text-2xl font-black italic uppercase tracking-tight">{promo.title}</h4>
+                        <h4 className="text-2xl font-black uppercase tracking-tight">{promo.title}</h4>
                         <p className="text-xs font-bold text-indigo-100 mt-2 leading-relaxed">{promo.description}</p>
                       </div>
                       <div className="pt-4 border-t border-white/10 flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-indigo-200">
@@ -126,10 +124,9 @@ export default function SubscriptionsManagementPage() {
           </div>
         </div>
 
-        {/* Voucher Management */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <CardHeader className="p-0 mb-8">
-            <CardTitle className="text-xl font-black italic uppercase tracking-tight">Active Vouchers</CardTitle>
+            <CardTitle className="text-xl font-black uppercase tracking-tight">Active Vouchers</CardTitle>
             <CardDescription className="font-bold text-slate-500 uppercase text-[10px] tracking-widest">Manual coupon & seasonal code audits</CardDescription>
           </CardHeader>
           <div className="space-y-4">
@@ -140,7 +137,7 @@ export default function SubscriptionsManagementPage() {
                     <Tag className="size-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h5 className="font-black text-slate-900 italic uppercase text-xs">{voucher.code}</h5>
+                    <h5 className="font-black text-slate-900 uppercase text-xs">{voucher.code}</h5>
                     <div className="flex items-center gap-2 mt-0.5">
                       <Badge variant="secondary" className="text-[8px] font-black uppercase px-2 py-0 border-none bg-primary/10 text-primary">
                         {voucher.type === 'Percentage' ? `${voucher.discount}% OFF` : `KES ${voucher.discount} OFF`}

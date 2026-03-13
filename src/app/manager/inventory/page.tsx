@@ -1,4 +1,3 @@
-
 "use client";
 
 import { INVENTORY } from "@/lib/mock-data";
@@ -19,6 +18,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export default function InventoryPage() {
   const { toast } = useToast();
@@ -43,7 +43,7 @@ export default function InventoryPage() {
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">Merchandise & Supplies</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Merchandise & Supplies</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Velocity Tracking & Automated Campaigns</p>
         </div>
         <Button className="rounded-2xl h-12 bg-slate-900 font-black uppercase text-[10px] tracking-widest px-6 shadow-xl shadow-slate-900/10">
@@ -51,7 +51,6 @@ export default function InventoryPage() {
         </Button>
       </header>
 
-      {/* KPI Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, i) => (
           <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
@@ -86,7 +85,7 @@ export default function InventoryPage() {
                     <Package className="size-6" />
                   </div>
                   <div className="flex flex-col">
-                     <h3 className="text-lg font-black text-slate-900 italic uppercase leading-none">{item.name}</h3>
+                     <h3 className="text-lg font-black text-slate-900 uppercase leading-none">{item.name}</h3>
                      <div className="flex items-center gap-2 mt-2">
                         {item.velocity === 'Fast' ? (
                           <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase tracking-tighter animate-pulse">
@@ -115,7 +114,7 @@ export default function InventoryPage() {
                 </div>
                 <div className="text-right">
                    <span className="text-[8px] font-black text-slate-400 uppercase block mb-1">Wholesale Est.</span>
-                   <span className="text-lg font-black text-slate-600 italic">KES {item.wholesale.toLocaleString()}</span>
+                   <span className="text-lg font-black text-slate-600">KES {item.wholesale.toLocaleString()}</span>
                 </div>
               </div>
 

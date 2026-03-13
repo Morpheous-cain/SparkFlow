@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -25,6 +24,7 @@ import {
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { cn } from "@/lib/utils";
 
 const SAAS_TENANTS = [
   { id: 'T-001', name: 'SparkFlow Westlands', plan: 'Enterprise', status: 'Active', revenue: 145000, smsBalance: 2450, expiry: '2024-12-01' },
@@ -51,7 +51,7 @@ export default function SaaSAdminPage() {
               <Globe className="size-8" />
            </div>
            <div>
-              <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">SaaS Command Center</h1>
+              <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">SaaS Command Center</h1>
               <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Global Tenant Management & Billing</p>
            </div>
         </div>
@@ -65,7 +65,6 @@ export default function SaaSAdminPage() {
         </div>
       </header>
 
-      {/* Global SaaS Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
          {[
            { label: "Subscription MRR", value: `KES ${(totalRevenue/1000).toFixed(1)}K`, icon: CreditCard, color: "text-blue-600" },
@@ -89,10 +88,9 @@ export default function SaaSAdminPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         {/* Tenant Roster */}
          <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
             <CardHeader className="p-8 border-b bg-slate-50/50">
-               <CardTitle className="text-xl font-black uppercase italic">Registered Tenants</CardTitle>
+               <CardTitle className="text-xl font-black uppercase">Registered Tenants</CardTitle>
                <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Global car wash database</CardDescription>
             </CardHeader>
             <Table>
@@ -110,7 +108,7 @@ export default function SaaSAdminPage() {
                     <TableRow key={tenant.id} className="h-20 border-slate-50 hover:bg-slate-50 transition-colors">
                        <TableCell className="pl-8">
                           <div className="flex flex-col">
-                             <span className="font-black text-slate-900 uppercase italic">{tenant.name}</span>
+                             <span className="font-black text-slate-900 uppercase">{tenant.name}</span>
                              <span className="text-[9px] font-black text-slate-400">ID: {tenant.id}</span>
                           </div>
                        </TableCell>
@@ -147,11 +145,10 @@ export default function SaaSAdminPage() {
             </Table>
          </Card>
 
-         {/* SMS Bundle Revenue Logic */}
          <Card className="border-none shadow-sm rounded-[2.5rem] bg-slate-900 text-white p-8 overflow-hidden relative">
             <div className="absolute top-0 right-0 p-16 -mr-20 -mt-20 bg-primary/20 rounded-full blur-3xl" />
             <header className="mb-8 relative z-10">
-               <h3 className="text-xl font-black italic uppercase tracking-tight leading-none text-primary">SMS Revenue Engine</h3>
+               <h3 className="text-xl font-black uppercase tracking-tight leading-none text-primary">SMS Revenue Engine</h3>
                <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mt-2">Provider Markups & Bundle Pricing</p>
             </header>
             <div className="space-y-4 relative z-10">
@@ -161,14 +158,14 @@ export default function SaaSAdminPage() {
                  { name: "Enterprise Bulk", units: "20,000", cost: "7,000", retail: "20,000", margin: "KES 13,000" }
                ].map((bundle) => (
                  <div key={bundle.name} className="p-5 bg-white/5 rounded-3xl border border-white/5 group hover:bg-white/10 transition-all">
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="justify-between items-start mb-2">
                        <h4 className="font-black uppercase text-xs">{bundle.name}</h4>
                        <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] font-black">{bundle.units} UNITS</Badge>
                     </div>
                     <div className="flex justify-between items-end">
                        <div>
                           <span className="text-[8px] font-black text-slate-500 uppercase block">Retail Price</span>
-                          <span className="text-lg font-black italic text-white">KES {bundle.retail}</span>
+                          <span className="text-lg font-black text-white">KES {bundle.retail}</span>
                        </div>
                        <div className="text-right">
                           <span className="text-[8px] font-black text-slate-500 uppercase block">Provider Margin</span>

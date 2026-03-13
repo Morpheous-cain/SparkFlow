@@ -10,6 +10,7 @@ import { Check, Plus, Smartphone, Wallet, CreditCard, Banknote, Car, Clock } fro
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 export default function AgentPortal() {
   const { toast } = useToast();
@@ -74,7 +75,7 @@ export default function AgentPortal() {
           <Smartphone className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-black italic uppercase tracking-tighter leading-none">SparkFlow Desk</h1>
+          <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">SparkFlow Desk</h1>
           <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em] mt-1">Grace Mutua • Branch Lead</p>
         </div>
       </header>
@@ -97,7 +98,7 @@ export default function AgentPortal() {
         <TabsContent value="checkin" className="space-y-6 outline-none focus:ring-0">
           <Card className="shadow-2xl border-none rounded-[2rem] overflow-hidden">
             <CardHeader className="bg-slate-900 text-white p-6 md:p-8">
-              <CardTitle className="text-lg md:text-xl font-black italic uppercase leading-none">New Entry</CardTitle>
+              <CardTitle className="text-lg md:text-xl font-black uppercase leading-none">New Entry</CardTitle>
               <CardDescription className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Capture details to begin workflow</CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8 space-y-6 md:space-y-8">
@@ -126,7 +127,7 @@ export default function AgentPortal() {
                       }`}
                     >
                       <div className="flex flex-col">
-                        <span className="font-black text-[11px] md:text-xs italic uppercase text-slate-900 leading-tight">{service.name}</span>
+                        <span className="font-black text-[11px] md:text-xs uppercase text-slate-900 leading-tight">{service.name}</span>
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1">KES {service.price.toLocaleString()} • {service.duration}m</span>
                       </div>
                       <div className={`rounded-full p-1 transition-colors ${selectedServices.includes(service.id) ? "bg-primary text-white" : "bg-slate-200 text-slate-200"}`}>
@@ -144,7 +145,7 @@ export default function AgentPortal() {
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex flex-col ml-2 md:ml-4">
                   <span className="text-[8px] md:text-[9px] font-black text-primary uppercase tracking-[0.2em]">Estimate Total</span>
-                  <span className="text-xl md:text-2xl font-black italic tracking-tighter leading-none">KES {totalAmount.toLocaleString()}</span>
+                  <span className="text-xl md:text-2xl font-black tracking-tighter leading-none">KES {totalAmount.toLocaleString()}</span>
                 </div>
                 <Button 
                   size="lg" 
@@ -177,7 +178,7 @@ export default function AgentPortal() {
                         <Car className="size-5 md:size-6" />
                       </div>
                       <div>
-                        <h4 className="text-xl md:text-2xl font-mono font-black italic tracking-widest text-slate-900 leading-none">{v.plate}</h4>
+                        <h4 className="text-xl md:text-2xl font-mono font-black tracking-widest text-slate-900 leading-none">{v.plate}</h4>
                         <div className="flex items-center gap-2 mt-1.5 md:mt-2">
                           <Clock className="size-3 text-slate-400" />
                           <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-tight">{v.progress}% Sync</span>

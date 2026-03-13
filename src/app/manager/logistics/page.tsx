@@ -73,7 +73,7 @@ export default function LogisticsManagementPage() {
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Concierge Workflow</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Concierge Workflow</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Smart Routing & "Laundry Style" Tagging System</p>
         </div>
         <div className="flex gap-3">
@@ -86,7 +86,6 @@ export default function LogisticsManagementPage() {
         </div>
       </header>
 
-      {/* KPI Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, i) => (
           <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
@@ -106,10 +105,9 @@ export default function LogisticsManagementPage() {
         ))}
       </div>
 
-      {/* Workflow Strategy Reference */}
       <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-0 overflow-hidden">
         <CardHeader className="p-8 border-b bg-slate-50/50">
-          <CardTitle className="text-xl font-black italic uppercase tracking-tight">Standard Operating Procedure (SOP)</CardTitle>
+          <CardTitle className="text-xl font-black uppercase tracking-tight">Standard Operating Procedure (SOP)</CardTitle>
           <CardDescription className="font-bold text-slate-500 uppercase text-[10px] tracking-widest">Automatic triggers and financial event mapping</CardDescription>
         </CardHeader>
         <Table>
@@ -129,12 +127,12 @@ export default function LogisticsManagementPage() {
                     <div className={cn("size-10 rounded-xl flex items-center justify-center", step.bg, step.color)}>
                       <step.icon className="size-5" />
                     </div>
-                    <span className="font-black text-slate-900 italic uppercase text-xs">{step.step}</span>
+                    <span className="font-black text-slate-900 uppercase text-xs">{step.step}</span>
                   </div>
                 </TableCell>
                 <TableCell className="font-bold text-slate-600 text-xs">{step.action}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="rounded-lg px-3 py-1 font-black text-slate-400 italic text-[10px] uppercase">
+                  <Badge variant="outline" className="rounded-lg px-3 py-1 font-black text-slate-400 text-[10px] uppercase">
                     "{step.notification}"
                   </Badge>
                 </TableCell>
@@ -149,11 +147,10 @@ export default function LogisticsManagementPage() {
         </Table>
       </Card>
 
-      {/* Active Deliveries Board */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-black text-slate-900 italic uppercase">Live Logistics Monitor</h3>
+            <h3 className="text-xl font-black text-slate-900 uppercase">Live Logistics Monitor</h3>
             <div className="flex gap-2">
               <Button size="sm" className="rounded-xl h-10 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20">
                 Optimize Fleet Routes
@@ -188,7 +185,7 @@ export default function LogisticsManagementPage() {
                     </div>
 
                     <div>
-                      <h4 className="text-2xl font-black text-slate-900 italic tracking-tight">{log.itemType}</h4>
+                      <h4 className="text-2xl font-black text-slate-900 tracking-tight">{log.itemType}</h4>
                       <div className="flex items-center gap-2 text-xs text-slate-400 font-black uppercase mt-1">
                         <UserCheck className="size-3" />
                         {log.customerName}
@@ -209,7 +206,7 @@ export default function LogisticsManagementPage() {
                     <div className="pt-4 border-t border-dashed flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Assigned Agent</span>
-                        <span className="font-black text-slate-900 text-sm italic">{staff?.name || "Unassigned"}</span>
+                        <span className="font-black text-slate-900 text-sm">{staff?.name || "Unassigned"}</span>
                       </div>
                       <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-primary hover:text-white transition-all transform hover:rotate-90">
                         <ChevronRight className="size-5" />
@@ -222,10 +219,9 @@ export default function LogisticsManagementPage() {
           </div>
         </div>
 
-        {/* Fleet Status & Earnings transparency */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <CardHeader className="p-0 mb-8">
-            <CardTitle className="text-xl font-black italic uppercase tracking-tight">Fleet Intelligence</CardTitle>
+            <CardTitle className="text-xl font-black uppercase tracking-tight">Fleet Intelligence</CardTitle>
             <CardDescription className="font-bold text-slate-500 uppercase text-[10px] tracking-widest">Real-time driver & tech transparency</CardDescription>
           </CardHeader>
           <div className="space-y-6">
@@ -236,7 +232,7 @@ export default function LogisticsManagementPage() {
                     <UserCheck className="size-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h5 className="font-black text-slate-900 italic">{s.name}</h5>
+                    <h5 className="font-black text-slate-900">{s.name}</h5>
                     <div className="flex items-center gap-2 mt-0.5">
                       <Badge variant="secondary" className="text-[9px] font-black uppercase px-2 py-0 border-none bg-primary/10 text-primary">{s.role}</Badge>
                       <span className="text-[9px] text-emerald-600 font-black uppercase">Online</span>

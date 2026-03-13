@@ -1,4 +1,3 @@
-
 "use client";
 
 import { STAFF } from "@/lib/mock-data";
@@ -54,7 +53,7 @@ export default function AccountsManagementPage() {
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Financial Performance</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Financial Performance</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Target Monitoring & Incentive Tracking</p>
         </div>
         <div className="flex gap-3">
@@ -67,7 +66,6 @@ export default function AccountsManagementPage() {
         </div>
       </header>
 
-      {/* Warning Module if Target is Below Threshold */}
       {!isTargetMet && (
         <Card className="border-none shadow-lg bg-amber-50 border-l-8 border-amber-500 rounded-[2rem] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700">
           <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -80,7 +78,7 @@ export default function AccountsManagementPage() {
                   <Badge className="bg-amber-500 text-white border-none font-black text-[9px] uppercase">Underperforming</Badge>
                   <span className="text-[9px] font-black text-amber-600 uppercase tracking-[0.2em]">Action Required</span>
                 </div>
-                <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight italic">Profit Gap: KES {(targetProfit - currentProfit).toLocaleString()}</h2>
+                <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Profit Gap: KES {(targetProfit - currentProfit).toLocaleString()}</h2>
                 <p className="text-slate-600 font-bold text-sm">Current sales velocity is 9.5% below monthly target. Push Detailing upsells to recover.</p>
               </div>
             </div>
@@ -91,7 +89,6 @@ export default function AccountsManagementPage() {
         </Card>
       )}
 
-      {/* Revenue Stream Performance */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {REVENUE_STREAMS.map((stream) => (
           <Card key={stream.category} className="border-none shadow-sm rounded-3xl bg-white overflow-hidden group">
@@ -106,7 +103,7 @@ export default function AccountsManagementPage() {
               <div className="space-y-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue vs Target</span>
                 <div className="flex justify-between items-baseline">
-                   <h3 className="text-xl font-black text-slate-900 italic">KES {stream.actual.toLocaleString()}</h3>
+                   <h3 className="text-xl font-black text-slate-900">KES {stream.actual.toLocaleString()}</h3>
                    <span className="text-[10px] font-bold text-slate-400">Target: {stream.target/1000}k</span>
                 </div>
                 <Progress value={(stream.actual/stream.target)*100} className="h-1.5 bg-slate-100" />
@@ -117,11 +114,10 @@ export default function AccountsManagementPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Actual vs Target Visualization */}
         <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white p-10">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <CardTitle className="text-2xl font-black italic uppercase tracking-tight">Revenue Stream Breakdown</CardTitle>
+              <CardTitle className="text-2xl font-black uppercase tracking-tight">Revenue Stream Breakdown</CardTitle>
               <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Monitoring performance by department</CardDescription>
             </div>
             <div className="flex gap-6">
@@ -158,7 +154,6 @@ export default function AccountsManagementPage() {
           </div>
         </Card>
 
-        {/* Strategic Directives / Bundling Board */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-slate-900 text-white p-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-20 -mr-24 -mt-24 bg-primary/20 rounded-full blur-[80px]" />
           <div className="relative z-10 space-y-8">
@@ -167,7 +162,7 @@ export default function AccountsManagementPage() {
                   <Zap className="size-8 text-white" />
                </div>
                <div>
-                  <h3 className="text-xl font-black italic uppercase tracking-tight leading-none text-primary">Profit Booster</h3>
+                  <h3 className="text-xl font-black uppercase tracking-tight leading-none text-primary">Profit Booster</h3>
                   <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mt-1">High-Margin Service Bundles</p>
                </div>
             </header>
@@ -179,13 +174,13 @@ export default function AccountsManagementPage() {
                ].map((bundle, i) => (
                  <div key={i} className="space-y-3 p-5 bg-white/5 rounded-3xl border border-white/5 group hover:bg-white/10 transition-all cursor-pointer">
                     <div className="flex justify-between items-start">
-                       <h4 className="font-black italic uppercase text-xs text-white">{bundle.name}</h4>
+                       <h4 className="font-black uppercase text-xs text-white">{bundle.name}</h4>
                        <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] font-black">PROFITABLE</Badge>
                     </div>
                     <div className="flex flex-col gap-1">
                        <p className="text-[10px] font-bold text-slate-400 uppercase leading-none">{bundle.usp}</p>
                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-lg font-black italic text-primary">KES {bundle.price}</span>
+                          <span className="text-lg font-black text-primary">KES {bundle.price}</span>
                           <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Save KES {bundle.saving}</span>
                        </div>
                     </div>
