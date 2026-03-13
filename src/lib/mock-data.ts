@@ -158,6 +158,9 @@ export const SERVICES: Service[] = [
   { id: '1', tenantId: 'T-001', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash', usp: 'Quick 20-min turnaround' },
   { id: '2', tenantId: 'T-001', name: 'Executive Wash', price: 1200, duration: 45, category: 'Wash', usp: 'Includes interior vacuum & dash shine' },
   { id: '3', tenantId: 'T-001', name: 'Ceramic Wax', price: 2500, duration: 60, category: 'Detailing', usp: 'Long-lasting hydrophobic protection' },
+  { id: '4', tenantId: 'T-001', name: 'Home Carpet Deep Clean', price: 1500, duration: 120, category: 'Home', usp: 'Professional stain removal' },
+  { id: '5', tenantId: 'T-001', name: 'Premium Microfiber Pack', price: 850, duration: 0, category: 'Merchandise', usp: '3-pack high absorbency' },
+  { id: '6', tenantId: 'T-001', name: 'SparkFlow Car Air Freshener', price: 350, duration: 0, category: 'Merchandise', usp: 'Signature luxury scent' },
 ];
 
 export const SERVICE_BUNDLES: ServiceBundle[] = [

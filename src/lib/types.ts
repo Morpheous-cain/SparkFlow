@@ -91,7 +91,7 @@ export interface Service {
   name: string;
   price: number;
   duration: number;
-  category: 'Wash' | 'Detailing' | 'Tinting';
+  category: 'Wash' | 'Detailing' | 'Tinting' | 'Home' | 'Merchandise';
   usp?: string; 
 }
 
