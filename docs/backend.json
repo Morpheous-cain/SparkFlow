@@ -1,599 +1,69 @@
+
 {
   "entities": {
+    "Tenant": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Tenant",
+      "type": "object",
+      "description": "Represents a distinct car wash business or organization subscribed to the SparkFlow SaaS platform.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "plan": { "type": "string", "enum": ["Basic", "Professional", "Enterprise"] },
+        "status": { "type": "string", "enum": ["Active", "Suspended", "Trial"] },
+        "subscriptionExpiry": { "type": "string", "format": "date-time" },
+        "ownerUid": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["id", "name", "plan", "status", "ownerUid"]
+    },
     "Bay": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Bay",
       "type": "object",
-      "description": "Represents a physical bay or service station within the SparkFlow car wash facility, used for managing vehicle occupancy.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Bay entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "Human-readable name of the bay (e.g., 'Bay 1', 'Detailing Bay')."
-        },
-        "status": {
-          "type": "string",
-          "description": "Current operational status of the bay (e.g., 'Available', 'Occupied', 'Under Maintenance')."
-        }
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string" }
       },
-      "required": [
-        "id",
-        "name",
-        "status"
-      ]
+      "required": ["id", "tenantId", "name", "status"]
     },
     "Service": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Service",
       "type": "object",
-      "description": "Defines the various services offered by SparkFlow, including pricing and estimated duration.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Service entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the service (e.g., 'Deluxe Wash', 'Interior Vacuum')."
-        },
-        "basePrice": {
-          "type": "number",
-          "description": "The standard base price for the service."
-        },
-        "estimatedDurationMinutes": {
-          "type": "number",
-          "description": "The estimated time in minutes required to complete the service."
-        },
-        "category": {
-          "type": "string",
-          "description": "The category of the service (e.g., 'Wash', 'Detailing', 'Tinting', 'Carpet Cleaning')."
-        }
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "basePrice": { "type": "number" },
+        "category": { "type": "string" }
       },
-      "required": [
-        "id",
-        "name",
-        "basePrice",
-        "estimatedDurationMinutes",
-        "category"
-      ]
-    },
-    "Staff": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Staff",
-      "type": "object",
-      "description": "Manages information about SparkFlow employees, including their roles, pay structures, and performance metrics.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Staff entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The full name of the staff member."
-        },
-        "role": {
-          "type": "string",
-          "description": "The role of the staff member within SparkFlow (e.g., 'Agent', 'Attendant', 'Manager')."
-        },
-        "payType": {
-          "type": "string",
-          "description": "The method of payment for the staff member (e.g., 'Daily', 'Monthly', 'Commission')."
-        },
-        "performanceRating": {
-          "type": "number",
-          "description": "An aggregated rating of the staff member's performance."
-        },
-        "totalEarned": {
-          "type": "number",
-          "description": "The total amount earned by the staff member over a period, useful for payroll calculations."
-        },
-        "phoneNumber": {
-          "type": "string",
-          "description": "The contact phone number of the staff member."
-        },
-        "email": {
-          "type": "string",
-          "description": "The email address of the staff member.",
-          "format": "email"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "role",
-        "payType",
-        "phoneNumber"
-      ]
-    },
-    "InventoryItem": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "InventoryItem",
-      "type": "object",
-      "description": "Records details of consumable items and products used or sold by SparkFlow.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the InventoryItem entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the inventory item (e.g., 'Car Soap', 'Microfiber Towel')."
-        },
-        "stockCount": {
-          "type": "number",
-          "description": "The current quantity of the item in stock."
-        },
-        "wholesalePrice": {
-          "type": "number",
-          "description": "The price at which SparkFlow purchases the item from suppliers."
-        },
-        "retailPrice": {
-          "type": "number",
-          "description": "The price at which SparkFlow sells the item to customers, if applicable."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "stockCount",
-        "wholesalePrice",
-        "retailPrice"
-      ]
-    },
-    "Customer": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Customer",
-      "type": "object",
-      "description": "Stores customer profiles for CRM purposes, including contact details, visit history, and reward points for SparkFlow's gamification features.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Customer entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The full name of the customer."
-        },
-        "phoneNumber": {
-          "type": "string",
-          "description": "The primary contact phone number for the customer, used for SMS broadcasts."
-        },
-        "email": {
-          "type": "string",
-          "description": "The email address of the customer.",
-          "format": "email"
-        },
-        "registrationDate": {
-          "type": "string",
-          "description": "The date and time when the customer was registered in the SparkFlow system.",
-          "format": "date-time"
-        },
-        "lastVisit": {
-          "type": "string",
-          "description": "The date and time of the customer's most recent visit to SparkFlow.",
-          "format": "date-time"
-        },
-        "totalRewardPoints": {
-          "type": "number",
-          "description": "The cumulative reward points earned by the customer through SparkFlow's gamification program."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "phoneNumber",
-        "registrationDate"
-      ]
-    },
-    "CustomerBadge": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "CustomerBadge",
-      "type": "object",
-      "description": "Tracks badges awarded to customers as part of SparkFlow's gamification system, linked to specific achievements.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the CustomerBadge entity."
-        },
-        "customerId": {
-          "type": "string",
-          "description": "Reference to the customer who earned this badge. (Relationship: Customer 1:N CustomerBadge)"
-        },
-        "badgeName": {
-          "type": "string",
-          "description": "The name of the badge awarded (e.g., 'Wash Streak Master', 'First Timer')."
-        },
-        "description": {
-          "type": "string",
-          "description": "A brief description of the badge and how it was earned."
-        },
-        "awardedDate": {
-          "type": "string",
-          "description": "The date and time when the badge was awarded to the customer.",
-          "format": "date-time"
-        },
-        "streakCount": {
-          "type": "number",
-          "description": "Relevant count for badges related to streaks (e.g., number of consecutive visits)."
-        }
-      },
-      "required": [
-        "id",
-        "customerId",
-        "badgeName",
-        "description",
-        "awardedDate"
-      ]
-    },
-    "Vehicle": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Vehicle",
-      "type": "object",
-      "description": "Represents a vehicle currently being managed by the SparkFlow system, from check-in to exit, including its status and selected services.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Vehicle entity (typically the plate number of the vehicle)."
-        },
-        "customerId": {
-          "type": "string",
-          "description": "Reference to the customer who owns or brought the vehicle. (Relationship: Customer 1:N Vehicle)"
-        },
-        "status": {
-          "type": "string",
-          "description": "Current status of the vehicle in the SparkFlow workflow (e.g., 'Queue', 'In-Bay', 'Ready for Payment', 'Completed')."
-        },
-        "arrivalTime": {
-          "type": "string",
-          "description": "Timestamp when the vehicle arrived and was checked into the SparkFlow system.",
-          "format": "date-time"
-        },
-        "bayId": {
-          "type": "string",
-          "description": "Reference to the bay where the vehicle is currently located, if applicable. (Relationship: Bay 1:N Vehicle)"
-        },
-        "assignedAttendantId": {
-          "type": "string",
-          "description": "Reference to the staff attendant assigned to service this vehicle. (Relationship: Staff 1:N Vehicle)"
-        },
-        "selectedServiceIds": {
-          "type": "array",
-          "description": "References to the services selected for this vehicle during check-in. (Relationship: Service N:N Vehicle)",
-          "items": {
-            "type": "string"
-          }
-        },
-        "exitTime": {
-          "type": "string",
-          "description": "Timestamp when the vehicle exited the SparkFlow system after service completion and payment.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "customerId",
-        "status",
-        "arrivalTime",
-        "selectedServiceIds"
-      ]
-    },
-    "Transaction": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Transaction",
-      "type": "object",
-      "description": "Records details of financial transactions for services rendered by SparkFlow, including payment status and M-Pesa integration details.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Transaction entity (order ID)."
-        },
-        "vehicleId": {
-          "type": "string",
-          "description": "Reference to the vehicle associated with this transaction. (Relationship: Vehicle 1:N Transaction)"
-        },
-        "serviceIds": {
-          "type": "array",
-          "description": "References to the specific services included in this transaction. (Relationship: Service N:N Transaction)",
-          "items": {
-            "type": "string"
-          }
-        },
-        "amount": {
-          "type": "number",
-          "description": "The total amount charged for the services in this transaction."
-        },
-        "paymentStatus": {
-          "type": "string",
-          "description": "The current payment status of the transaction (e.g., 'Pending', 'Paid', 'Failed')."
-        },
-        "transactionTime": {
-          "type": "string",
-          "description": "The date and time when the transaction was initiated or completed.",
-          "format": "date-time"
-        },
-        "mpesaReceiptNumber": {
-          "type": "string",
-          "description": "The M-Pesa receipt number for successful payments made via M-Pesa."
-        },
-        "durationMinutes": {
-          "type": "number",
-          "description": "The calculated duration in minutes for the service completion, from arrival to exit."
-        }
-      },
-      "required": [
-        "id",
-        "vehicleId",
-        "serviceIds",
-        "amount",
-        "paymentStatus",
-        "transactionTime"
-      ]
-    },
-    "LogisticsRequest": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "LogisticsRequest",
-      "type": "object",
-      "description": "Manages requests for pickup and delivery services, such as home carpet cleaning, including location and delivery status.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the LogisticsRequest entity."
-        },
-        "customerId": {
-          "type": "string",
-          "description": "Reference to the customer who made the logistics request. (Relationship: Customer 1:N LogisticsRequest)"
-        },
-        "pickupAddress": {
-          "type": "string",
-          "description": "The physical address for picking up the item."
-        },
-        "itemType": {
-          "type": "string",
-          "description": "The type of item being handled for logistics (e.g., 'Home Carpet', 'Furniture')."
-        },
-        "gpsLocation": {
-          "type": "string",
-          "description": "The GPS coordinates of the pickup/delivery location (e.g., 'latitude,longitude')."
-        },
-        "deliveryStatus": {
-          "type": "string",
-          "description": "The current status of the logistics request (e.g., 'Pending Pickup', 'In Transit', 'Delivered')."
-        },
-        "eta": {
-          "type": "string",
-          "description": "The estimated time of arrival for pickup or delivery.",
-          "format": "date-time"
-        },
-        "requestTime": {
-          "type": "string",
-          "description": "The date and time when the logistics request was made.",
-          "format": "date-time"
-        },
-        "assignedStaffId": {
-          "type": "string",
-          "description": "Reference to the staff member assigned to handle this logistics request. (Relationship: Staff 1:N LogisticsRequest)"
-        }
-      },
-      "required": [
-        "id",
-        "customerId",
-        "pickupAddress",
-        "itemType",
-        "gpsLocation",
-        "deliveryStatus",
-        "eta",
-        "requestTime"
-      ]
+      "required": ["id", "tenantId", "name", "basePrice", "category"]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "anonymous"]
   },
   "firestore": {
     "structure": [
       {
-        "path": "/bays/{bayId}",
+        "path": "/tenants/{tenantId}",
+        "definition": {
+          "entityName": "Tenant",
+          "schema": { "$ref": "#/backend/entities/Tenant" },
+          "description": "Tenant-level configuration and subscription data."
+        }
+      },
+      {
+        "path": "/tenants/{tenantId}/bays/{bayId}",
         "definition": {
           "entityName": "Bay",
-          "schema": {
-            "$ref": "#/backend/entities/Bay"
-          },
-          "description": "Operational status of car wash bays. Accessible by managers and system processes.",
-          "params": [
-            {
-              "name": "bayId",
-              "description": "Unique identifier for a specific car wash bay."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/services/{serviceId}",
-        "definition": {
-          "entityName": "Service",
-          "schema": {
-            "$ref": "#/backend/entities/Service"
-          },
-          "description": "Defines car wash services, pricing, and duration. Publicly readable for display, writeable by managers.",
-          "params": [
-            {
-              "name": "serviceId",
-              "description": "Unique identifier for a specific car wash service."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/staff/{staffId}",
-        "definition": {
-          "entityName": "Staff",
-          "schema": {
-            "$ref": "#/backend/entities/Staff"
-          },
-          "description": "Staff profiles with roles and performance metrics. Staff can read their own, managers can read/write all. `staffId` matches Firebase Auth UID.",
-          "params": [
-            {
-              "name": "staffId",
-              "description": "Unique identifier for a staff member, typically matching their Firebase Authentication UID."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/inventory_items/{inventoryItemId}",
-        "definition": {
-          "entityName": "InventoryItem",
-          "schema": {
-            "$ref": "#/backend/entities/InventoryItem"
-          },
-          "description": "Records of consumable inventory items. Accessible by managers for stock management.",
-          "params": [
-            {
-              "name": "inventoryItemId",
-              "description": "Unique identifier for an inventory item."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/customers/{customerId}",
-        "definition": {
-          "entityName": "Customer",
-          "schema": {
-            "$ref": "#/backend/entities/Customer"
-          },
-          "description": "Customer profiles for CRM. Customers can read/update their own. Agents can create. Managers can read/write all. `customerId` typically matches Firebase Auth UID for authenticated customers. Includes denormalized `lastVisit` and `totalRewardPoints`.",
-          "params": [
-            {
-              "name": "customerId",
-              "description": "Unique identifier for a customer, typically matching their Firebase Authentication UID."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/customers/{customerId}/badges/{customerBadgeId}",
-        "definition": {
-          "entityName": "CustomerBadge",
-          "schema": {
-            "$ref": "#/backend/entities/CustomerBadge"
-          },
-          "description": "Badges awarded to a specific customer as part of gamification. Customers can read their own badges. System (Cloud Function) writes. Includes denormalized `customerId` for authorization independence.",
-          "params": [
-            {
-              "name": "customerId",
-              "description": "Unique identifier of the customer who owns the badge."
-            },
-            {
-              "name": "customerBadgeId",
-              "description": "Unique identifier for a specific badge awarded to the customer."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/vehicles_live/{vehicleId}",
-        "definition": {
-          "entityName": "Vehicle",
-          "schema": {
-            "$ref": "#/backend/entities/Vehicle"
-          },
-          "description": "Real-time status of vehicles in the car wash workflow. Managers/Attendants can read/write. Customers can read their associated vehicle's status. Includes denormalized `customerId` and `assignedAttendantId` for authorization independence and QAPs.",
-          "params": [
-            {
-              "name": "vehicleId",
-              "description": "Unique identifier for a vehicle (e.g., license plate number)."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/transactions/{transactionId}",
-        "definition": {
-          "entityName": "Transaction",
-          "schema": {
-            "$ref": "#/backend/entities/Transaction"
-          },
-          "description": "Financial transaction records. Managers read/write all. Customers read their own. Includes denormalized `customerId` (from the associated vehicle) for authorization independence and QAPs.",
-          "params": [
-            {
-              "name": "transactionId",
-              "description": "Unique identifier for a financial transaction or order."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/logistics_requests/{logisticsRequestId}",
-        "definition": {
-          "entityName": "LogisticsRequest",
-          "schema": {
-            "$ref": "#/backend/entities/LogisticsRequest"
-          },
-          "description": "Requests for pickup/delivery logistics (e.g., home carpet cleaning). Customers can create/read their own. Managers can read/write all. Assigned staff can read/update their assigned requests. Includes denormalized `customerId` and `assignedStaffId` for authorization independence and QAPs.",
-          "params": [
-            {
-              "name": "logisticsRequestId",
-              "description": "Unique identifier for a logistics request."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_agents/{agentId}",
-        "definition": {
-          "entityName": "AgentRole",
-          "schema": {
-            "$ref": "#/backend/entities/Staff"
-          },
-          "description": "Collection to grant 'Agent' role. Document existence signifies role. `agentId` matches Firebase Auth UID. Accessible by managers for assignment.",
-          "params": [
-            {
-              "name": "agentId",
-              "description": "The UID of a staff member who has the 'Agent' role."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_attendants/{attendantId}",
-        "definition": {
-          "entityName": "AttendantRole",
-          "schema": {
-            "$ref": "#/backend/entities/Staff"
-          },
-          "description": "Collection to grant 'Attendant' role. Document existence signifies role. `attendantId` matches Firebase Auth UID. Accessible by managers for assignment.",
-          "params": [
-            {
-              "name": "attendantId",
-              "description": "The UID of a staff member who has the 'Attendant' role."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_managers/{managerId}",
-        "definition": {
-          "entityName": "ManagerRole",
-          "schema": {
-            "$ref": "#/backend/entities/Staff"
-          },
-          "description": "Collection to grant 'Manager' role. Document existence signifies role. `managerId` matches Firebase Auth UID. Accessible by managers for assignment.",
-          "params": [
-            {
-              "name": "managerId",
-              "description": "The UID of a staff member who has the 'Manager' role."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Bay" },
+          "description": "Scoped bays for a specific tenant."
         }
       }
-    ],
-    "reasoning": "The Firestore structure for 'SparkFlow Ops' is designed with a strong emphasis on Authorization Independence, Structural Segregation, and clear Access Modeling, adhering to the core design principles of security, scalability, and debuggability. All entities are housed in top-level collections or direct subcollections, with explicit denormalization to ensure efficient and secure authorization.\n\n**Authorization Independence:** This is achieved by embedding critical authorization context directly within documents where access might otherwise require traversing parent documents. For instance:\n*   `vehicles_live` documents include `customerId` and `assignedAttendantId`. This allows customers to directly query and access their vehicle's status (using `customerId == request.auth.uid`) and attendants to manage their assigned jobs (using `assignedAttendantId == request.auth.uid`) without needing to perform `get()` operations on `/customers/{customerId}` or `/staff/{attendantId}` from within security rules.\n*   `transactions` documents similarly include `customerId` to enable customers to view their past transactions securely and directly.\n*   `logistics_requests` documents contain both `customerId` and `assignedStaffId`, facilitating independent authorization checks for both customers and assigned staff.\n*   `customer_badges` (a subcollection of `customers`) naturally inherits `customerId` from its path, and the document itself includes `customerId` for redundant verification, ensuring secure access without complex lookups.\n\n**QAPs (Secure List Operations):** The structure facilitates secure `list` operations by ensuring that collections either have a homogeneous security posture (e.g., `services` are publicly readable, `inventory_items` are manager-only) or by denormalizing ownership fields. This allows Firestore Security Rules to leverage `request.auth.uid` against document fields (`resource.data.customerId` or `resource.data.assignedAttendantId`) in `list` operations, effectively filtering results at the rule level without allowing arbitrary access or requiring client-side filtering of sensitive data. For role-based access, dedicated `/roles_*` collections are used, allowing rules to check for document existence (`exists(/databases/$(database)/documents/roles_managers/$(request.auth.uid))`) for manager-level `list` permissions. This design ensures that all `list` operations are implicitly secure and do not act as filters for already-retrieved data.\n\n**Structural Segregation:** Collections like `services`, `bays`, and `inventory_items` contain documents with uniform access requirements. Customer-specific data (e.g., `customers`, `customer_badges`) is organized hierarchically where appropriate, and access is strictly controlled by `request.auth.uid` matching the path or denormalized `ownerId`/`customerId` fields. Role-based access is managed through separate, top-level `roles_agents`, `roles_attendants`, and `roles_managers` collections, simplifying rule logic by segregating access control data.\n\nThis design, branded 'SparkFlow Ops', prioritizes robust security rules that are easy to write, understand, and debug, while maintaining performance for real-time syncing across various user interfaces including the staff tablets and customer web portal."
+    ]
   }
 }

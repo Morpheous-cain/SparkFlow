@@ -1,15 +1,17 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, Car, Smartphone } from "lucide-react";
+import { LayoutDashboard, Users, Car, Smartphone, Globe } from "lucide-react";
 
 const roles = [
   { name: "Agent Portal", href: "/agent", icon: Smartphone },
   { name: "Attendant PWA", href: "/attendant", icon: Car },
   { name: "Manager Dashboard", href: "/manager", icon: LayoutDashboard },
   { name: "Customer Portal", href: "/customer", icon: Users },
+  { name: "SaaS Admin", href: "/saas-admin", icon: Globe },
 ];
 
 export function RoleSwitcher() {

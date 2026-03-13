@@ -1,18 +1,33 @@
+
 export type VehicleStatus = 'Queue' | 'In-Bay' | 'Ready' | 'Completed';
 export type BayStatus = 'Available' | 'Occupied' | 'Under Maintenance';
 export type DeliveryStatus = 'Booking' | 'Pickup' | 'Processing' | 'Drying' | 'Delivery' | 'Completed';
 export type SubscriptionTier = 'None' | 'Silver' | 'Gold' | 'Platinum';
+export type SaaSPlan = 'Basic' | 'Professional' | 'Enterprise';
+
+export interface Tenant {
+  id: string;
+  name: string;
+  plan: SaaSPlan;
+  status: 'Active' | 'Suspended' | 'Trial';
+  subscriptionExpiry: string;
+  ownerUid: string;
+  location: string;
+  revenueMTD: number;
+}
 
 export interface Service {
   id: string;
+  tenantId: string;
   name: string;
   price: number;
-  duration: number; // minutes
+  duration: number;
   category: 'Wash' | 'Detailing' | 'Tinting';
 }
 
 export interface Staff {
   id: string;
+  tenantId: string;
   name: string;
   role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
   performance: number;
@@ -26,10 +41,9 @@ export interface Staff {
 
 export interface VehicleLive {
   plate: string;
+  tenantId: string;
   status: VehicleStatus;
   arrivalTime: string;
-  exitTime?: string;
-  durationMinutes?: number;
   bayId: string | null;
   attendantId: string | null;
   services: string[];
@@ -37,26 +51,9 @@ export interface VehicleLive {
   progress?: number;
 }
 
-export interface Transaction {
-  id: string;
-  plate: string;
-  amount: number;
-  status: 'Pending' | 'Paid';
-  receipt: string | null;
-  duration: number;
-  date: string;
-}
-
-export interface InventoryItem {
-  id: string;
-  name: string;
-  stock: number;
-  wholesale: number;
-  retail: number;
-}
-
 export interface Bay {
   id: string;
+  tenantId: string;
   name: string;
   status: BayStatus;
   currentVehiclePlate?: string;
@@ -64,41 +61,11 @@ export interface Bay {
 
 export interface LogisticsRequest {
   id: string;
+  tenantId: string;
   customerName: string;
   itemType: string;
   status: DeliveryStatus;
   address: string;
   requestTime: string;
-  pickupWindow?: string;
-  qrTag?: string;
-  eta?: string;
   amount: number;
-  assignedStaffId?: string;
-  trackingProgress?: number;
-}
-
-export interface SubscriptionPlan {
-  id: string;
-  name: SubscriptionTier;
-  price: number;
-  discount: number;
-  benefits: string[];
-}
-
-export interface Voucher {
-  id: string;
-  code: string;
-  discount: number;
-  type: 'Percentage' | 'Fixed';
-  expiry: string;
-  status: 'Active' | 'Used' | 'Expired';
-}
-
-export interface Promotion {
-  id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  bannerUrl?: string;
 }
