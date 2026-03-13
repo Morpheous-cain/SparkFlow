@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -38,14 +37,10 @@ import {
   Zap,
   MapPin,
   Locate,
-  CalendarDays,
   ChevronRight,
   MapIcon,
-  Smartphone,
   Package,
-  History,
-  FileText,
-  CreditCard
+  FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -69,13 +64,14 @@ function CustomerPortalContent() {
   const [selectedHomeService, setSelectedHomeService] = useState(SERVICES[0]);
   const [homeLocation, setHomeLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [homeAddress, setHomeAddress] = useState("");
-  const [homeDate, setHomeDate] = useState<Date | undefined>(new Date());
+  const [homeDate, setHomeDate] = useState<Date | undefined>(undefined);
   const [homeTime, setHomeTime] = useState("10:00 AM");
   const [homePlate, setHomePlate] = useState("");
   const [isLocating, setIsLocating] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    setHomeDate(new Date());
     const plateFromUrl = searchParams.get("plate");
     if (plateFromUrl) {
       setSearchPlate(plateFromUrl.toUpperCase());
@@ -197,6 +193,8 @@ function CustomerPortalContent() {
   const handleWhatsAppSupport = () => {
     window.open("https://wa.me/254700000000?text=Hi SparkFlow, I need assistance with my wash.", "_blank");
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="min-h-screen pb-44 bg-slate-50 flex flex-col font-body">
@@ -341,7 +339,7 @@ function CustomerPortalContent() {
                             mode="single"
                             selected={homeDate}
                             onSelect={setHomeDate}
-                            className="rounded-3xl border-2 p-4 mx-auto"
+                            className="rounded-3xl border-2 p-4 mx-auto w-fit"
                             disabled={(date) => date < new Date()}
                           />
                           <div className="grid grid-cols-2 gap-2">
@@ -701,7 +699,7 @@ function CustomerPortalContent() {
                     <TableRow key={tx.id} className="border-slate-50 hover:bg-slate-50 transition-colors">
                       <TableCell className="pl-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-black text-slate-900">{mounted ? format(new Date(tx.date), 'dd MMM') : '--'}</span>
+                          <span className="text-xs font-black text-slate-900">{format(new Date(tx.date), 'dd MMM')}</span>
                           <span className="text-[8px] font-bold text-slate-400 uppercase">REF: {tx.id}</span>
                         </div>
                       </TableCell>

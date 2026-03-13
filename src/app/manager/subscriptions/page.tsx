@@ -79,6 +79,8 @@ export default function SubscriptionsManagementPage() {
     });
   };
 
+  if (!mounted) return null;
+
   return (
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-center">
@@ -246,7 +248,7 @@ export default function SubscriptionsManagementPage() {
                       </div>
                       <div className="pt-4 border-t border-white/10 flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-indigo-200">
                         <Calendar className="size-3" />
-                        Ends {mounted ? new Date(promo.endDate).toLocaleDateString() : "..."}
+                        Ends {new Date(promo.endDate).toLocaleDateString()}
                       </div>
                    </CardContent>
                  </Card>
@@ -281,7 +283,7 @@ export default function SubscriptionsManagementPage() {
                   </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-dashed flex items-center justify-between text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                  <span>Expires {mounted ? new Date(voucher.expiry).toLocaleDateString() : "..."}</span>
+                  <span>Expires {new Date(voucher.expiry).toLocaleDateString()}</span>
                   <Button variant="ghost" size="sm" className="h-6 px-2 rounded-lg text-[8px] font-black">EDIT</Button>
                 </div>
               </div>
