@@ -23,7 +23,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
-    --radius: 1.25rem;
+    --radius: 2rem;
   }
 
   .dark {
@@ -54,9 +54,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body font-medium;
+    @apply bg-background text-foreground font-body font-medium antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-black tracking-tight;
+    @apply font-black tracking-tighter uppercase leading-none;
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+  }
+  .shadow-vibrant {
+    box-shadow: 0 30px 60px -12px rgba(var(--primary), 0.25);
   }
 }
