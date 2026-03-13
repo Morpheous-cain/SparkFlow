@@ -89,4 +89,17 @@ export interface LogisticsRequest {
   address: string;
   requestTime: string;
   amount: number;
+  pickupWindow?: string;
+  qrTag?: string;
+  trackingProgress?: number;
+  assignedStaffId?: string;
+}
+
+export interface HomeServiceRequest extends LogisticsRequest {
+  serviceType: 'Home Wash' | 'Mobile Detailing';
+  coordinates?: { lat: number; lng: number };
+  scheduledDate: string;
+  scheduledTime: string;
+  vehiclePlate: string;
+  travelFee: number;
 }

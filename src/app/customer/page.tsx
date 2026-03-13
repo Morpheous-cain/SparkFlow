@@ -3,12 +3,22 @@
 
 import { useState, useEffect } from "react";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
-import { SERVICE_BUNDLES } from "@/lib/mock-data";
+import { SERVICE_BUNDLES, SERVICES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { 
   Search, 
   Car, 
@@ -22,16 +32,18 @@ import {
   Camera, 
   Share2, 
   AlertTriangle,
-  ExternalLink,
   Truck,
   QrCode,
-  Crown,
-  Ticket,
+  Zap,
+  MapPin,
+  Locate,
+  CalendarDays,
   ChevronRight,
-  Zap
+  MapIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 export default function CustomerPortal() {
   const { toast } = useToast();
@@ -41,6 +53,20 @@ export default function CustomerPortal() {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Home Service Request State
+  const [isHomeServiceOpen, setIsHomeServiceOpen] = useState(false);
+  const [homeStep, setHomeStep] = useState(1);
+  const [selectedHomeService, setSelectedHomeService] = useState(SERVICES[0]);
+  const [homeLocation, setHomeLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [homeAddress, setHomeAddress] = useState("");
+  const [homeDate, setHomeDate] = useState<Date | undefined>(new Date());
+  const [homeTime, setHomeTime] = useState("10:00 AM");
+  const [homePlate, setHomePlate] = useState("");
+  const [isLocating, setIsLocating] = useState(false);
+
+  const travelFee = homeLocation ? 450 : 0; // Simulated dynamic fee based on GPS
+  const totalHomeCost = selectedHomeService.price + travelFee;
 
   const handleSearch = () => {
     if (!searchPlate) return;
@@ -91,6 +117,41 @@ export default function CustomerPortal() {
     }
   };
 
+  const handlePickLocation = () => {
+    setIsLocating(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setHomeLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          setHomeAddress(`${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)} (GPS Verified)`);
+          setIsLocating(false);
+          toast({ title: "Location Picked", description: "GPS coordinates captured successfully." });
+        },
+        () => {
+          setIsLocating(false);
+          toast({ title: "GPS Failed", description: "Could not get location. Please type address manually.", variant: "destructive" });
+        }
+      );
+    }
+  };
+
+  const handleRequestHomeService = () => {
+    if (!homePlate) {
+      toast({ title: "Plate Required", description: "Please enter your vehicle plate number.", variant: "destructive" });
+      return;
+    }
+    
+    toast({
+      title: "Request Scheduled!",
+      description: `Home Wash for ${homePlate} confirmed for ${format(homeDate || new Date(), 'PPP')} at ${homeTime}.`,
+    });
+    setIsHomeServiceOpen(false);
+    setHomeStep(1);
+  };
+
   const handleRate = (val: number) => {
     setRating(val);
     if (val < 3) {
@@ -135,6 +196,162 @@ export default function CustomerPortal() {
       </header>
 
       <div className="p-6 max-w-xl mx-auto w-full space-y-6 flex-1">
+        {/* On-Demand Home Service Action */}
+        <section>
+          <Dialog open={isHomeServiceOpen} onOpenChange={setIsHomeServiceOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full h-20 rounded-[2rem] bg-slate-900 hover:bg-black text-white shadow-2xl shadow-slate-900/20 group overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-12 -mr-12 -mt-12 bg-primary/20 rounded-full blur-2xl group-hover:scale-125 transition-transform" />
+                <div className="flex items-center gap-4 relative z-10 w-full px-6">
+                  <div className="p-3 bg-white/10 rounded-2xl border border-white/10">
+                    <Truck className="size-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-lg font-black italic uppercase leading-none">Home Wash On-Demand</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">We come to your premise • Instant GPS Quote</p>
+                  </div>
+                  <ChevronRight className="ml-auto size-5 text-slate-500" />
+                </div>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border-none rounded-[2.5rem] shadow-2xl">
+              <div className="p-8 bg-slate-900 text-white">
+                <div className="flex items-center gap-4 mb-2">
+                   <div className="p-3 bg-primary rounded-2xl">
+                    <Truck className="size-6" />
+                   </div>
+                   <DialogTitle className="text-2xl font-black italic uppercase">On-Demand Request</DialogTitle>
+                </div>
+                <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                   Step {homeStep} of 4: {homeStep === 1 ? 'Service' : homeStep === 2 ? 'Location' : homeStep === 3 ? 'Schedule' : 'Confirm'}
+                </DialogDescription>
+              </div>
+
+              <div className="p-8 max-h-[60vh] overflow-y-auto bg-white">
+                {homeStep === 1 && (
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Select Mobile Package</h4>
+                    <div className="grid gap-3">
+                      {SERVICES.filter(s => s.category === 'Wash' || s.category === 'Detailing').map(service => (
+                        <button
+                          key={service.id}
+                          onClick={() => setSelectedHomeService(service)}
+                          className={cn(
+                            "flex items-center justify-between p-5 rounded-3xl border-2 transition-all text-left",
+                            selectedHomeService.id === service.id ? "border-primary bg-primary/5" : "border-slate-50 hover:border-slate-200"
+                          )}
+                        >
+                          <div>
+                            <span className="font-black italic uppercase text-xs block">{service.name}</span>
+                            <span className="text-[10px] font-bold text-slate-400">KES {service.price.toLocaleString()}</span>
+                          </div>
+                          {selectedHomeService.id === service.id && <CheckCircle2 className="size-4 text-primary" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {homeStep === 2 && (
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Your Premises</h4>
+                    <div className="space-y-4">
+                      <Button 
+                        onClick={handlePickLocation}
+                        disabled={isLocating}
+                        className="w-full h-16 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 text-slate-600 hover:bg-slate-100 font-black uppercase text-[10px] tracking-widest gap-2"
+                      >
+                        <Locate className={cn("size-4", isLocating ? "animate-spin" : "")} />
+                        {homeLocation ? "Location Verified" : "Capture GPS Location"}
+                      </Button>
+                      <Input 
+                        placeholder="Or Type Street / Apartment"
+                        value={homeAddress}
+                        onChange={(e) => setHomeAddress(e.target.value)}
+                        className="h-14 rounded-2xl border-2 font-bold"
+                      />
+                      {homeLocation && (
+                        <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-3">
+                           <MapIcon className="size-5 text-emerald-600" />
+                           <span className="text-[10px] font-black text-emerald-700 uppercase">Travel Fee: KES 450 (Calculated)</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {homeStep === 3 && (
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Preferred Slot</h4>
+                    <div className="space-y-6">
+                      <Calendar
+                        mode="single"
+                        selected={homeDate}
+                        onSelect={setHomeDate}
+                        className="rounded-3xl border-2 p-4"
+                        disabled={(date) => date < new Date()}
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        {["09:00 AM", "11:00 AM", "02:00 PM", "04:00 PM"].map(time => (
+                          <Button
+                            key={time}
+                            variant={homeTime === time ? 'default' : 'outline'}
+                            onClick={() => setHomeTime(time)}
+                            className="h-12 rounded-xl font-black text-[10px] tracking-widest"
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {homeStep === 4 && (
+                  <div className="space-y-8 text-center py-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Final Step: Vehicle Plate</label>
+                      <Input 
+                        placeholder="KDC 123A" 
+                        value={homePlate}
+                        onChange={(e) => setHomePlate(e.target.value.toUpperCase())}
+                        className="h-20 text-4xl font-mono font-black tracking-widest text-center rounded-3xl border-4 border-slate-100 focus:border-primary uppercase"
+                      />
+                    </div>
+                    <Card className="border-none shadow-inner bg-slate-50 p-6 rounded-[2rem]">
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
+                          <span>{selectedHomeService.name}</span>
+                          <span>KES {selectedHomeService.price}</span>
+                        </div>
+                        <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
+                          <span>Travel Fee (GPS)</span>
+                          <span>KES {travelFee}</span>
+                        </div>
+                        <div className="pt-3 border-t-2 border-dashed border-slate-200 flex justify-between">
+                          <span className="text-sm font-black uppercase">Total Quote</span>
+                          <span className="text-2xl font-black italic text-primary">KES {totalHomeCost.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-8 bg-slate-50 flex gap-4">
+                {homeStep > 1 && (
+                  <Button variant="outline" className="h-14 rounded-2xl flex-1 font-black uppercase text-[10px] tracking-widest" onClick={() => setHomeStep(prev => prev - 1)}>Back</Button>
+                )}
+                {homeStep < 4 ? (
+                  <Button className="h-14 rounded-2xl flex-[2] font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20" onClick={() => setHomeStep(prev => prev + 1)}>Continue</Button>
+                ) : (
+                  <Button className="h-14 rounded-2xl flex-[2] font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20" onClick={handleRequestHomeService}>Confirm Booking</Button>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </section>
+
         {/* Bundles & Promotions Module */}
         <section className="space-y-4">
            <div className="flex justify-between items-center">
@@ -378,3 +595,4 @@ export default function CustomerPortal() {
     </div>
   );
 }
+
