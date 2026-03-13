@@ -28,6 +28,13 @@ export interface Branch {
   activeBays: number;
   revenueMTD: number;
   phone: string;
+  // Resource Monitoring
+  waterLevel: number; // Percentage
+  staffing: {
+    current: number;
+    required: number;
+  };
+  essentialMaterialsLow: number; // Count of low essential stock
 }
 
 export interface MarketingCampaign {
@@ -84,6 +91,7 @@ export interface InventoryItem {
   retail: number;
   velocity: 'Fast' | 'Normal' | 'Slow';
   margin: number;
+  isEssential: boolean; // Crucial for operations
 }
 
 export interface VehicleLive {

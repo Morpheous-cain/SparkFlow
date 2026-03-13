@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
-import { MOCK_TRANSACTIONS, STAFF, SERVICES, BAYS, BRANCHES } from "@/lib/mock-data";
+import { MOCK_TRANSACTIONS, STAFF, SERVICES, BAYS, BRANCHES, INVENTORY } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -22,10 +23,15 @@ import {
   DollarSign,
   ArrowUpRight,
   Clock,
-  LayoutDashboard
+  LayoutDashboard,
+  Droplets,
+  Users,
+  PackageCheck,
+  ShieldAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import { 
   PieChart,
   Pie,
@@ -43,13 +49,6 @@ import {
 import { getManagerOperationalInsights, ManagerOperationalInsightsOutput } from "@/ai/flows/manager-operational-insights-flow";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-
-const PIE_DATA = [
-  { name: 'Wash', value: 400, color: '#3b82f6' },
-  { name: 'Detailing', value: 300, color: '#0ea5e9' },
-  { name: 'Tinting', value: 200, color: '#06b6d4' },
-  { name: 'Ceramic', value: 100, color: '#14b8a6' },
-];
 
 const REVENUE_TREND = [
   { day: 'Mon', revenue: 18500, growth: 12 },
@@ -87,6 +86,8 @@ export default function ManagerDashboard() {
     }
   };
 
+  const criticalRisks = BRANCHES.filter(b => b.waterLevel < 20 || b.staffing.current < b.staffing.required || b.essentialMaterialsLow > 0);
+
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f1f5f9]">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -115,32 +116,61 @@ export default function ManagerDashboard() {
         </div>
       </header>
 
-      {/* Network Alert - Immediate Action Required */}
-      <section className="animate-in fade-in slide-in-from-top-4 duration-700">
-        <Card className="border-none shadow-2xl bg-gradient-to-br from-red-500 to-red-600 text-white rounded-[2.5rem] overflow-hidden relative group">
-          <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-white/10 rounded-full blur-[100px] group-hover:scale-110 transition-transform duration-1000" />
-          <CardContent className="p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="flex items-center gap-4 md:gap-8 text-center md:text-left flex-col md:flex-row">
-              <div className="size-20 bg-white/20 backdrop-blur-xl text-white rounded-[2rem] flex items-center justify-center shadow-2xl border border-white/20 animate-pulse">
-                <AlertTriangle className="size-10" />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-center md:justify-start gap-3">
-                  <Badge className="bg-white text-red-600 border-none font-black text-[10px] uppercase px-4 py-1">URGENT ACTION</Badge>
-                  <span className="text-[10px] font-black text-red-100 uppercase tracking-widest">Service Recovery Protocol</span>
+      {/* Critical Resource Alerts */}
+      {criticalRisks.length > 0 && (
+        <section className="animate-in fade-in slide-in-from-top-4 duration-700">
+          <Card className="border-none shadow-2xl bg-slate-900 text-white rounded-[2.5rem] overflow-hidden relative group">
+            <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-red-500/20 rounded-full blur-[100px]" />
+            <CardContent className="p-6 md:p-10 space-y-8 relative z-10">
+              <header className="flex items-center gap-4">
+                <div className="size-14 bg-red-500 rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-red-500/20 animate-pulse">
+                  <ShieldAlert className="size-8 text-white" />
                 </div>
-                <h2 className="text-2xl md:text-4xl font-black leading-tight tracking-tighter">Low Rating Alert: KDC 123A</h2>
-                <p className="text-red-50/80 font-bold text-sm md:text-lg">Westlands Branch • Brian Wilson • Rating: 2/5 stars</p>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter">Operational Integrity Alerts</h2>
+                  <p className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mt-1">Resource shortages detected across {criticalRisks.length} locations</p>
+                </div>
+              </header>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {criticalRisks.map(branch => (
+                  <div key={branch.id} className="p-6 bg-white/5 rounded-[2rem] border border-white/10 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-black uppercase text-xs text-primary">{branch.name}</h4>
+                      <Badge className="bg-red-500 text-white text-[8px] font-black uppercase">CRITICAL</Badge>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {branch.waterLevel < 20 && (
+                        <div className="flex items-center gap-3 text-xs font-bold text-red-400">
+                          <Droplets className="size-4" />
+                          <span>Water Level: {branch.waterLevel}% (Low Sensor Alert)</span>
+                        </div>
+                      )}
+                      {branch.staffing.current < branch.staffing.required && (
+                        <div className="flex items-center gap-3 text-xs font-bold text-amber-400">
+                          <Users className="size-4" />
+                          <span>Staff Shortage: {branch.staffing.required - branch.staffing.current} more needed</span>
+                        </div>
+                      )}
+                      {branch.essentialMaterialsLow > 0 && (
+                        <div className="flex items-center gap-3 text-xs font-bold text-blue-400">
+                          <PackageCheck className="size-4" />
+                          <span>Materials Needed: {branch.essentialMaterialsLow} Essential SKUs low</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <Button variant="outline" className="w-full h-10 rounded-xl bg-white/5 border-white/10 hover:bg-white/10 font-black text-[9px] uppercase tracking-widest text-white">
+                      Dispatch Logistics
+                    </Button>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-              <Button className="w-full sm:w-auto h-14 md:h-16 rounded-2xl px-10 bg-white text-red-600 hover:bg-red-50 font-black uppercase text-xs tracking-widest gap-2 shadow-2xl transition-all active:scale-95">
-                <PhoneCall className="size-5" /> Call Customer
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {/* Vital Signs - High Level KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
@@ -148,7 +178,7 @@ export default function ManagerDashboard() {
           { title: "Network MRR", value: "KES 1.4M", change: "+14.2%", icon: DollarSign, color: "text-blue-500", bg: "bg-blue-500/10", shadow: "shadow-blue-500/20" },
           { title: "Daily Revenue", value: "23.8K", change: "+108%", icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10", shadow: "shadow-emerald-500/20" },
           { title: "Avg Rating", value: "4.82", change: "+0.2", icon: Star, color: "text-amber-500", bg: "bg-amber-500/10", shadow: "shadow-amber-500/20" },
-          { title: "Bay Uptime", value: "94.2%", change: "Optimal", icon: Warehouse, color: "text-indigo-500", bg: "bg-indigo-500/10", shadow: "shadow-indigo-500/20" },
+          { title: "System Health", value: "82%", change: "Audit Req", icon: Droplets, color: "text-indigo-500", bg: "bg-indigo-500/10", shadow: "shadow-indigo-500/20" },
         ].map((metric, i) => (
           <Card key={i} className={cn("border-none shadow-xl rounded-[2.5rem] overflow-hidden group hover:scale-[1.02] transition-all duration-300 bg-white")}>
              <div className={cn("h-2 w-full", metric.color.replace('text', 'bg'))} />
@@ -166,7 +196,7 @@ export default function ManagerDashboard() {
                   <Badge className={cn("border-none px-3 py-1 rounded-full text-[10px] font-black", metric.color.replace('text', 'bg'), "text-white")}>
                     {metric.change}
                   </Badge>
-                  <span className="text-[10px] font-bold text-slate-300 uppercase">vs Last Period</span>
+                  <span className="text-[10px] font-bold text-slate-300 uppercase">Status Monitor</span>
                 </div>
               </div>
             </CardContent>
@@ -223,7 +253,7 @@ export default function ManagerDashboard() {
           </div>
         </Card>
 
-        {/* Branch Leaderboard */}
+        {/* Branch Audit - Now with resource monitoring */}
         <Card className="border-none shadow-2xl rounded-[3rem] bg-slate-900 text-white p-8 md:p-12 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-24 -mr-24 -mt-24 bg-primary/20 rounded-full blur-[80px]" />
           <header className="mb-10 relative z-10">
@@ -232,8 +262,8 @@ export default function ManagerDashboard() {
                    <Building2 className="size-7" />
                 </div>
                 <div>
-                   <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Branch Audit</h3>
-                   <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">Station Productivity Rankings</p>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Resource Audit</h3>
+                   <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">Station Continuity Metrics</p>
                 </div>
              </div>
           </header>
@@ -242,26 +272,36 @@ export default function ManagerDashboard() {
                <div key={branch.id} className="p-6 bg-white/5 rounded-3xl border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
                   <div className="flex justify-between items-start mb-4">
                      <div>
-                        <span className="text-[10px] font-black text-primary uppercase block mb-1">Rank #{i+1}</span>
-                        <h4 className="font-black uppercase text-sm">{branch.name}</h4>
+                        <span className="text-[10px] font-black text-primary uppercase block mb-1">{branch.name}</span>
+                        <div className="flex items-center gap-3 mt-2">
+                           <div className="flex flex-col">
+                              <span className="text-[8px] font-black text-slate-500 uppercase">Water Level</span>
+                              <div className="flex items-center gap-2 mt-1">
+                                 <Progress value={branch.waterLevel} className={cn("h-1.5 w-12", branch.waterLevel < 20 ? "bg-red-500/20 [&>div]:bg-red-500" : "bg-blue-500/20 [&>div]:bg-blue-500")} />
+                                 <span className={cn("text-[10px] font-black", branch.waterLevel < 20 ? "text-red-500" : "text-blue-400")}>{branch.waterLevel}%</span>
+                              </div>
+                           </div>
+                           <div className="h-8 w-px bg-white/5 mx-2" />
+                           <div className="flex flex-col">
+                              <span className="text-[8px] font-black text-slate-500 uppercase">Staff Load</span>
+                              <div className="flex items-center gap-2 mt-1">
+                                 <Users className="size-3 text-slate-400" />
+                                 <span className={cn("text-[10px] font-black", branch.staffing.current < branch.staffing.required ? "text-amber-500" : "text-white")}>
+                                    {branch.staffing.current}/{branch.staffing.required}
+                                 </span>
+                              </div>
+                           </div>
+                        </div>
                      </div>
-                     <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] font-black">TOP PERFORMER</Badge>
-                  </div>
-                  <div className="flex justify-between items-end">
-                     <div>
-                        <span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Revenue MTD</span>
-                        <span className="text-lg font-black">KES {branch.revenueMTD.toLocaleString()}</span>
-                     </div>
-                     <div className="text-right">
-                        <span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Occupancy</span>
-                        <span className="text-sm font-black text-primary">{Math.floor(Math.random() * 20) + 75}%</span>
-                     </div>
+                     <Badge className={cn("border-none text-[8px] font-black uppercase px-2 py-0.5", branch.waterLevel < 20 ? "bg-red-500 text-white" : "bg-emerald-500 text-white")}>
+                        {branch.waterLevel < 20 ? "ALERT" : "STABLE"}
+                     </Badge>
                   </div>
                </div>
              ))}
           </div>
           <Button className="w-full mt-10 h-16 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl transition-all">
-             View Branch Network <ChevronRight className="ml-2 size-4" />
+             Full Resource Network <ChevronRight className="ml-2 size-4" />
           </Button>
         </Card>
       </div>

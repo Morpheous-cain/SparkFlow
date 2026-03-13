@@ -1,3 +1,4 @@
+
 "use client";
 
 import { INVENTORY } from "@/lib/mock-data";
@@ -14,7 +15,9 @@ import {
   ArrowUpRight,
   TrendingDown,
   Share2,
-  Sparkles
+  Sparkles,
+  ShieldCheck,
+  PackageCheck
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -24,11 +27,12 @@ import { cn } from "@/lib/utils";
 export default function InventoryPage() {
   const { toast } = useToast();
   const lowStockCount = INVENTORY.filter(item => item.stock < 20).length;
+  const lowEssentialCount = INVENTORY.filter(item => item.isEssential && item.stock < 15).length;
   const totalValue = INVENTORY.reduce((acc, item) => acc + (item.stock * item.wholesale), 0);
 
   const kpis = [
-    { label: "Inventory SKUs", value: INVENTORY.length.toString(), icon: Layers, color: "text-blue-600", bg: "bg-blue-50", trend: "Optimal", layer: 'bg-blue-500' },
-    { label: "Low Stock Alerts", value: lowStockCount.toString(), icon: AlertCircle, color: "text-red-600", bg: "bg-red-50", trend: lowStockCount > 0 ? "Action Required" : "All Clear", layer: 'bg-red-500' },
+    { label: "Essential SKUs", value: INVENTORY.filter(i => i.isEssential).length.toString(), icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-50", trend: "Crucial", layer: 'bg-blue-500' },
+    { label: "Material Shortages", value: lowEssentialCount.toString(), icon: AlertCircle, color: "text-red-600", bg: "bg-red-50", trend: lowEssentialCount > 0 ? "Urgent Order" : "Smooth Ops", layer: 'bg-red-500' },
     { label: "Wholesale Value", value: `KES ${(totalValue / 1000).toFixed(1)}K`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+2.4%", layer: 'bg-emerald-500' },
     { label: "Turnover Rate", value: "4.2x", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50", trend: "+0.8%", layer: 'bg-amber-500' },
   ];
@@ -44,11 +48,11 @@ export default function InventoryPage() {
     <div className="p-8 space-y-8 bg-[#f1f5f9] min-h-screen">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Merchandise Center</h1>
-          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Velocity Tracking & Automated Campaigns</p>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Merchandise & Materials</h1>
+          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Operational Essentials & Velocity Audit</p>
         </div>
         <Button className="rounded-2xl h-14 bg-slate-900 text-white font-black uppercase text-[11px] tracking-widest px-8 shadow-2xl shadow-slate-900/20 hover:bg-black transition-all">
-           New Audit Entry
+           Manual Stock Count
         </Button>
       </header>
 
@@ -63,7 +67,7 @@ export default function InventoryPage() {
                 </div>
                 <Badge className={cn(
                   "border-none font-black text-[9px] uppercase tracking-widest rounded-full px-3 py-1",
-                  kpi.color === 'text-red-600' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-slate-50 text-slate-400'
+                  kpi.label === 'Material Shortages' && lowEssentialCount > 0 ? 'bg-red-500 text-white shadow-lg shadow-red-500/20 animate-pulse' : 'bg-slate-50 text-slate-400'
                 )}>
                   {kpi.trend}
                 </Badge>
@@ -84,26 +88,22 @@ export default function InventoryPage() {
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-5">
                    <div className="size-16 bg-slate-900 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl group-hover:rotate-6 transition-transform">
-                    <Package className="size-8" />
+                    {item.isEssential ? <ShieldCheck className="size-8 text-primary" /> : <Package className="size-8" />}
                   </div>
                   <div className="flex flex-col gap-2">
                      <h3 className="text-xl font-black text-slate-900 uppercase leading-none">{item.name}</h3>
                      <div className="flex items-center gap-2">
-                        {item.velocity === 'Fast' ? (
-                          <Badge className="bg-emerald-500 text-white border-none font-black text-[9px] uppercase tracking-tighter px-3 py-0.5 animate-pulse">
-                            <ArrowUpRight className="size-3 mr-1" /> FAST MOVING
-                          </Badge>
-                        ) : item.velocity === 'Slow' ? (
-                          <Badge className="bg-amber-500 text-white border-none font-black text-[9px] uppercase tracking-tighter px-3 py-0.5">
-                            <TrendingDown className="size-3 mr-1" /> STAGNANT
-                          </Badge>
-                        ) : null}
-                        <span className="text-[10px] font-black text-slate-300 uppercase">{item.margin}% MARGIN</span>
+                        {item.isEssential && (
+                          <Badge className="bg-primary/10 text-primary border-none font-black text-[8px] uppercase tracking-tighter px-2">OPERATIONAL ESSENTIAL</Badge>
+                        )}
+                        {item.velocity === 'Fast' && (
+                          <Badge className="bg-emerald-500 text-white border-none font-black text-[8px] uppercase px-2">FAST MOVING</Badge>
+                        )}
                      </div>
                   </div>
                 </div>
                 {item.stock < 20 && (
-                  <Badge className="bg-red-500 text-white border-none font-black text-[9px] uppercase px-3 py-1 shadow-lg shadow-red-500/20">
+                  <Badge className="bg-red-500 text-white border-none font-black text-[9px] uppercase px-3 py-1 shadow-lg shadow-red-500/20 animate-pulse">
                     REORDER
                   </Badge>
                 )}
@@ -112,35 +112,30 @@ export default function InventoryPage() {
               <div className="flex justify-between items-end bg-slate-50 p-6 rounded-[2rem] border border-slate-100 shadow-inner">
                 <div>
                    <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Stock Units</span>
-                   <span className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{item.stock}</span>
+                   <span className={cn("text-5xl font-black tracking-tighter leading-none", item.stock < 10 ? "text-red-600" : "text-slate-900")}>{item.stock}</span>
                 </div>
                 <div className="text-right">
-                   <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Wholesale</span>
-                   <span className="text-xl font-black text-slate-500">KES {item.wholesale.toLocaleString()}</span>
+                   <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Type</span>
+                   <span className="text-xl font-black text-slate-500">{item.isEssential ? 'Material' : 'Merch'}</span>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                  <span>Supply Capacity</span>
-                  <span className="text-primary">{Math.min(100, (item.stock / 150) * 100).toFixed(0)}%</span>
+                  <span>Operational Buffer</span>
+                  <span className={item.stock < 15 ? 'text-red-500' : 'text-primary'}>{Math.min(100, (item.stock / 150) * 100).toFixed(0)}%</span>
                 </div>
                 <Progress value={(item.stock / 150) * 100} className="h-2 rounded-full bg-slate-100" />
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-dashed border-slate-200">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Retail SRP</span>
-                  <span className="font-black text-slate-900 text-2xl tracking-tighter">KES {item.retail}</span>
-                </div>
-                <div className="flex flex-col text-right gap-1">
-                  <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Est. Profit</span>
-                  <span className="font-black text-emerald-600 text-2xl tracking-tighter">+ KES {item.retail - item.wholesale}</span>
-                </div>
-              </div>
-
               <div className="pt-2">
-                {item.velocity === 'Slow' ? (
+                {item.isEssential && item.stock < 15 ? (
+                  <Button 
+                    className="w-full h-16 bg-red-600 text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-[1.5rem] gap-3 shadow-2xl shadow-red-600/30 hover:bg-red-700 transition-all"
+                  >
+                    <PackageCheck className="size-5" /> Urgent Resupply Order
+                  </Button>
+                ) : item.velocity === 'Slow' ? (
                   <Button 
                     onClick={() => handleLaunchCampaign(item.name)}
                     className="w-full h-16 bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-[1.5rem] gap-3 shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all"

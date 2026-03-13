@@ -2,9 +2,48 @@
 import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest, SubscriptionPlan, Voucher, Promotion, ServiceBundle, Branch } from "./types";
 
 export const BRANCHES: Branch[] = [
-  { id: 'BR-001', tenantId: 'T-001', name: 'Westlands Flagship', location: 'Ring Road, Westlands', managerName: 'Grace Mutua', status: 'Open', activeBays: 3, revenueMTD: 450000, phone: '+254 711 000 111' },
-  { id: 'BR-002', tenantId: 'T-001', name: 'Karen Hub', location: 'Karen Road', managerName: 'Peter Otieno', status: 'Open', activeBays: 2, revenueMTD: 280000, phone: '+254 711 000 222' },
-  { id: 'BR-003', tenantId: 'T-001', name: 'Mombasa Road', location: 'Panari Center', managerName: 'Sarah Wambui', status: 'Limited', activeBays: 1, revenueMTD: 120000, phone: '+254 711 000 333' },
+  { 
+    id: 'BR-001', 
+    tenantId: 'T-001', 
+    name: 'Westlands Flagship', 
+    location: 'Ring Road, Westlands', 
+    managerName: 'Grace Mutua', 
+    status: 'Open', 
+    activeBays: 3, 
+    revenueMTD: 450000, 
+    phone: '+254 711 000 111',
+    waterLevel: 85,
+    staffing: { current: 12, required: 15 },
+    essentialMaterialsLow: 0
+  },
+  { 
+    id: 'BR-002', 
+    tenantId: 'T-001', 
+    name: 'Karen Hub', 
+    location: 'Karen Road', 
+    managerName: 'Peter Otieno', 
+    status: 'Open', 
+    activeBays: 2, 
+    revenueMTD: 280000, 
+    phone: '+254 711 000 222',
+    waterLevel: 18, // LOW ALERT
+    staffing: { current: 8, required: 8 },
+    essentialMaterialsLow: 2
+  },
+  { 
+    id: 'BR-003', 
+    tenantId: 'T-001', 
+    name: 'Mombasa Road', 
+    location: 'Panari Center', 
+    managerName: 'Sarah Wambui', 
+    status: 'Limited', 
+    activeBays: 1, 
+    revenueMTD: 120000, 
+    phone: '+254 711 000 333',
+    waterLevel: 62,
+    staffing: { current: 4, required: 6 }, // SHORTAGE
+    essentialMaterialsLow: 1
+  },
 ];
 
 export const SERVICES: Service[] = [
@@ -94,9 +133,10 @@ export const STAFF: Staff[] = [
 ];
 
 export const INVENTORY: InventoryItem[] = [
-  { id: 'I1', name: 'Premium Car Shampoo', stock: 45, wholesale: 1200, retail: 1800, velocity: 'Fast', margin: 33 },
-  { id: 'I2', name: 'Microfiber Towels (Bulk)', stock: 120, wholesale: 150, retail: 350, velocity: 'Normal', margin: 57 },
-  { id: 'I3', name: 'Specialist Tire Wax', stock: 12, wholesale: 800, retail: 1200, velocity: 'Slow', margin: 33 },
+  { id: 'I1', name: 'Premium Car Shampoo', stock: 45, wholesale: 1200, retail: 1800, velocity: 'Fast', margin: 33, isEssential: true },
+  { id: 'I2', name: 'Microfiber Towels (Bulk)', stock: 120, wholesale: 150, retail: 350, velocity: 'Normal', margin: 57, isEssential: true },
+  { id: 'I3', name: 'Specialist Tire Wax', stock: 12, wholesale: 800, retail: 1200, velocity: 'Slow', margin: 33, isEssential: false },
+  { id: 'I4', name: 'Heavy Duty Underwash Agent', stock: 5, wholesale: 2500, retail: 4000, velocity: 'Fast', margin: 37, isEssential: true },
 ];
 
 export const BAYS: Bay[] = [
