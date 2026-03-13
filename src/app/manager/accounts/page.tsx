@@ -1,3 +1,4 @@
+
 "use client";
 
 import { STAFF } from "@/lib/mock-data";
@@ -14,28 +15,26 @@ import {
   Tooltip, 
   ResponsiveContainer,
   Cell,
-  ReferenceLine
 } from "recharts";
 import { 
   TrendingUp, 
-  TrendingDown, 
   Target, 
-  AlertTriangle, 
   Trophy, 
   Coins, 
-  ArrowUpRight,
   ShieldAlert,
   Zap,
   Users,
-  Banknote
+  Banknote,
+  Star,
+  ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const TARGET_DATA = [
-  { category: 'Wash', actual: 42000, target: 45000 },
-  { category: 'Detailing', actual: 28000, target: 25000 },
-  { category: 'Tinting', actual: 12000, target: 15000 },
-  { category: 'Logistics', actual: 8500, target: 12000 },
+const REVENUE_STREAMS = [
+  { category: 'Wash', actual: 42000, target: 45000, rating: 4.2 },
+  { category: 'Detailing', actual: 28000, target: 25000, rating: 4.8 },
+  { category: 'Tinting', actual: 12000, target: 15000, rating: 3.9 },
+  { category: 'Logistics', actual: 8500, target: 12000, rating: 4.5 },
 ];
 
 export default function AccountsManagementPage() {
@@ -92,20 +91,25 @@ export default function AccountsManagementPage() {
         </Card>
       )}
 
-      {/* KPI Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpis.map((kpi, i) => (
-          <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
-            <CardContent className="p-8">
-              <div className="flex justify-between items-start mb-6">
-                <div className={`size-12 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <kpi.icon className="size-6" />
+      {/* Revenue Stream Performance */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {REVENUE_STREAMS.map((stream) => (
+          <Card key={stream.category} className="border-none shadow-sm rounded-3xl bg-white overflow-hidden group">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <Badge variant="outline" className="font-black text-[9px] uppercase border-slate-200 text-slate-400">{stream.category}</Badge>
+                <div className="flex items-center gap-1 text-amber-500">
+                  <Star className="size-3 fill-current" />
+                  <span className="text-[10px] font-black">{stream.rating}</span>
                 </div>
-                <Badge className="bg-slate-100 border-none font-black text-[8px] uppercase tracking-widest rounded-full">REAL-TIME</Badge>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</span>
-                <div className="text-3xl font-black text-slate-900 tracking-tighter">{kpi.value}</div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue vs Target</span>
+                <div className="flex justify-between items-baseline">
+                   <h3 className="text-xl font-black text-slate-900 italic">KES {stream.actual.toLocaleString()}</h3>
+                   <span className="text-[10px] font-bold text-slate-400">Target: {stream.target/1000}k</span>
+                </div>
+                <Progress value={(stream.actual/stream.target)*100} className="h-1.5 bg-slate-100" />
               </div>
             </CardContent>
           </Card>
@@ -117,8 +121,8 @@ export default function AccountsManagementPage() {
         <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white p-10">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <CardTitle className="text-2xl font-black italic uppercase tracking-tight">Revenue vs Target</CardTitle>
-              <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Categorical performance breakdown</CardDescription>
+              <CardTitle className="text-2xl font-black italic uppercase tracking-tight">Revenue Stream Breakdown</CardTitle>
+              <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Monitoring performance by department</CardDescription>
             </div>
             <div className="flex gap-6">
                <div className="flex items-center gap-2">
@@ -133,7 +137,7 @@ export default function AccountsManagementPage() {
           </div>
           <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={TARGET_DATA} barGap={12}>
+              <BarChart data={REVENUE_STREAMS} barGap={12}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis 
                   dataKey="category" 
@@ -154,106 +158,52 @@ export default function AccountsManagementPage() {
           </div>
         </Card>
 
-        {/* Employee Reward Leaderboard */}
+        {/* Strategic Directives / Bundling Board */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-slate-900 text-white p-10 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-20 -mr-24 -mt-24 bg-primary/20 rounded-full blur-[80px]" />
           <div className="relative z-10 space-y-8">
             <header className="flex items-center gap-4">
                <div className="size-14 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/40">
-                  <Trophy className="size-8 text-white" />
+                  <Zap className="size-8 text-white" />
                </div>
                <div>
-                  <h3 className="text-xl font-black italic uppercase tracking-tight leading-none">Incentive Board</h3>
-                  <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mt-1">MTD Target Achievement</p>
+                  <h3 className="text-xl font-black italic uppercase tracking-tight leading-none text-primary">Profit Booster</h3>
+                  <p className="text-slate-400 text-[9px] font-black uppercase tracking-widest mt-1">High-Margin Service Bundles</p>
                </div>
             </header>
 
-            <div className="space-y-6">
-               {STAFF.slice(0, 4).map((member, i) => {
-                 const progress = Math.min(100, member.performance * 20);
-                 const isEligible = progress >= 90;
-                 return (
-                   <div key={member.id} className="space-y-3 p-5 bg-white/5 rounded-3xl border border-white/5 group hover:bg-white/10 transition-all">
-                      <div className="flex justify-between items-center">
-                         <div className="flex items-center gap-3">
-                            <span className="text-xs font-black text-slate-500">{i + 1}</span>
-                            <span className="font-black italic uppercase text-[11px]">{member.name}</span>
-                         </div>
-                         {isEligible && <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] font-black uppercase tracking-widest">BONUS QUALIFIED</Badge>}
-                      </div>
-                      <div className="space-y-1.5">
-                         <div className="flex justify-between text-[8px] font-black uppercase text-slate-400 tracking-widest">
-                            <span>Contribution Score</span>
-                            <span className={isEligible ? "text-emerald-400" : ""}>{progress}%</span>
-                         </div>
-                         <Progress value={progress} className="h-1.5 bg-white/10" />
-                      </div>
-                   </div>
-                 );
-               })}
-            </div>
-
-            <Button className="w-full h-14 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl">
-               View Full Incentive Audit
-            </Button>
-          </div>
-        </Card>
-      </div>
-
-      {/* Decision Support & Recovery Plans */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-10">
-            <header className="flex items-center gap-4 mb-8">
-               <div className="size-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="size-6" />
-               </div>
-               <h3 className="text-xl font-black italic uppercase tracking-tight">Growth Scenarios</h3>
-            </header>
             <div className="space-y-4">
                {[
-                 { plan: "Premium Detail Focus", impact: "+KES 12.5K", time: "5 Days", effort: "High" },
-                 { plan: "Flash Sale Vouchers", impact: "+KES 8.2K", time: "2 Days", effort: "Low" },
-                 { plan: "Fleet Loyalty Sync", impact: "+KES 15.0K", time: "14 Days", effort: "Medium" }
-               ].map((plan, i) => (
-                 <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100 hover:scale-[1.02] transition-transform cursor-pointer">
-                    <div className="space-y-1">
-                       <h4 className="font-black italic uppercase text-xs text-slate-900">{plan.plan}</h4>
-                       <span className="text-[9px] font-black text-slate-400 uppercase">Effort: {plan.effort}</span>
+                 { name: "Executive Plus", price: "2,500", saving: "500", usp: "Highest Wash Margin", incentive: "+20% Staff Comm" },
+                 { name: "Detailer's Choice", price: "6,000", saving: "1,200", usp: "Equipment Optimization", incentive: "Free Wax Kit" }
+               ].map((bundle, i) => (
+                 <div key={i} className="space-y-3 p-5 bg-white/5 rounded-3xl border border-white/5 group hover:bg-white/10 transition-all cursor-pointer">
+                    <div className="flex justify-between items-start">
+                       <h4 className="font-black italic uppercase text-xs text-white">{bundle.name}</h4>
+                       <Badge className="bg-emerald-500/20 text-emerald-400 border-none text-[8px] font-black">PROFITABLE</Badge>
                     </div>
-                    <div className="text-right">
-                       <div className="text-emerald-600 font-black text-sm">{plan.impact}</div>
-                       <div className="text-[9px] font-black text-slate-400 uppercase">{plan.time} TAT</div>
+                    <div className="flex flex-col gap-1">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase leading-none">{bundle.usp}</p>
+                       <div className="flex items-center gap-2 mt-2">
+                          <span className="text-lg font-black italic text-primary">KES {bundle.price}</span>
+                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Save KES {bundle.saving}</span>
+                       </div>
+                    </div>
+                    <div className="pt-3 border-t border-white/5 flex items-center justify-between">
+                       <span className="text-[8px] font-black text-amber-400 uppercase tracking-widest">{bundle.incentive}</span>
+                       <Button variant="link" className="p-0 h-auto text-[8px] font-black text-primary uppercase flex items-center gap-1">
+                          PUSH TO APP <ArrowRight className="size-2" />
+                       </Button>
                     </div>
                  </div>
                ))}
             </div>
-         </Card>
 
-         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-10">
-            <header className="flex items-center gap-4 mb-8">
-               <div className="size-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                  <Users className="size-6" />
-               </div>
-               <h3 className="text-xl font-black italic uppercase tracking-tight">Manager Directives</h3>
-            </header>
-            <div className="p-8 bg-slate-900 rounded-[2rem] text-white relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-12 -mr-16 -mt-16 bg-primary/20 rounded-full blur-2xl group-hover:scale-125 transition-transform" />
-               <div className="relative z-10 space-y-6">
-                  <div className="space-y-2">
-                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Data-Driven Suggestion</span>
-                     <p className="text-lg font-black italic leading-tight">"Redirect 2 Attendants to the Detailing Bay. Tinting queue is low, but Detailing profit margin is 3x higher."</p>
-                  </div>
-                  <div className="flex gap-2">
-                     <Button className="flex-1 bg-primary hover:bg-blue-600 text-white rounded-xl h-12 font-black uppercase text-[9px] tracking-widest">
-                        Apply Shift Change
-                     </Button>
-                     <Button variant="outline" className="flex-1 bg-white/10 border-white/20 text-white rounded-xl h-12 font-black uppercase text-[9px] tracking-widest">
-                        Dismiss
-                     </Button>
-                  </div>
-               </div>
-            </div>
-         </Card>
+            <Button className="w-full h-14 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl">
+               Configure Bundles Engine
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );

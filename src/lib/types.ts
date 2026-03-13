@@ -23,6 +23,17 @@ export interface Service {
   price: number;
   duration: number;
   category: 'Wash' | 'Detailing' | 'Tinting';
+  usp?: string; // Unique Selling Point
+}
+
+export interface ServiceBundle {
+  id: string;
+  name: string;
+  services: string[];
+  price: number;
+  saving: number;
+  incentive: string;
+  usp: string;
 }
 
 export interface Staff {
@@ -37,6 +48,16 @@ export interface Staff {
     tips: number;
     total: number;
   };
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  stock: number;
+  wholesale: number;
+  retail: number;
+  velocity: 'Fast' | 'Normal' | 'Slow';
+  margin: number;
 }
 
 export interface VehicleLive {

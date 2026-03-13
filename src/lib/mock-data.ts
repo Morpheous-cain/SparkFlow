@@ -1,12 +1,34 @@
-import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest, SubscriptionPlan, Voucher, Promotion } from "./types";
+
+import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest, SubscriptionPlan, Voucher, Promotion, ServiceBundle } from "./types";
 
 export const SERVICES: Service[] = [
-  { id: '1', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash' },
-  { id: '2', name: 'Executive Wash', price: 1200, duration: 45, category: 'Wash' },
-  { id: '3', name: 'Full Detailing', price: 4500, duration: 180, category: 'Detailing' },
-  { id: '4', name: 'Ceramic Coating', price: 15000, duration: 360, category: 'Detailing' },
-  { id: '5', name: 'Window Tinting', price: 8000, duration: 120, category: 'Tinting' },
-  { id: '6', name: 'Carpet Cleaning', price: 2000, duration: 60, category: 'Wash' },
+  { id: '1', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash', usp: 'Quick 20-min turnaround' },
+  { id: '2', name: 'Executive Wash', price: 1200, duration: 45, category: 'Wash', usp: 'Includes interior vacuum & dash shine' },
+  { id: '3', name: 'Full Detailing', price: 4500, duration: 180, category: 'Detailing', usp: 'Showroom finish guaranteed' },
+  { id: '4', name: 'Ceramic Coating', price: 15000, duration: 360, category: 'Detailing', usp: '3-year paint protection' },
+  { id: '5', name: 'Window Tinting', price: 8000, duration: 120, category: 'Tinting', usp: '99% UV rejection film' },
+  { id: '6', name: 'Carpet Cleaning', price: 2000, duration: 60, category: 'Wash', usp: 'Deep extraction technology' },
+];
+
+export const SERVICE_BUNDLES: ServiceBundle[] = [
+  { 
+    id: 'B1', 
+    name: 'The Spark Executive', 
+    services: ['Executive Wash', 'Tire Wax', 'Engine Wash'], 
+    price: 1800, 
+    saving: 400,
+    incentive: 'Earn 100 Bonus Pts',
+    usp: 'Total transformation in under 60 mins'
+  },
+  { 
+    id: 'B2', 
+    name: 'Showroom Revival', 
+    services: ['Full Detailing', 'Ceramic Wax', 'Headlight Restoration'], 
+    price: 6500, 
+    saving: 1500,
+    incentive: 'Free Microfiber Kit',
+    usp: 'Best value for vehicle resale prep'
+  }
 ];
 
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
@@ -72,9 +94,11 @@ export const STAFF: Staff[] = [
 ];
 
 export const INVENTORY: InventoryItem[] = [
-  { id: 'I1', name: 'Car Shampoo', stock: 45, wholesale: 1200, retail: 1800 },
-  { id: 'I2', name: 'Microfiber Cloths', stock: 120, wholesale: 150, retail: 350 },
-  { id: 'I3', name: 'Tire Wax', stock: 12, wholesale: 800, retail: 1200 },
+  { id: 'I1', name: 'Premium Car Shampoo', stock: 45, wholesale: 1200, retail: 1800, velocity: 'Fast', margin: 33 },
+  { id: 'I2', name: 'Microfiber Towels (Bulk)', stock: 120, wholesale: 150, retail: 350, velocity: 'Normal', margin: 57 },
+  { id: 'I3', name: 'Specialist Tire Wax', stock: 12, wholesale: 800, retail: 1200, velocity: 'Slow', margin: 33 },
+  { id: 'I4', name: 'Air Freshener (Pine)', stock: 8, wholesale: 100, retail: 300, velocity: 'Fast', margin: 66 },
+  { id: 'I5', name: 'Engine Degreaser', stock: 65, wholesale: 2200, retail: 3500, velocity: 'Slow', margin: 37 },
 ];
 
 export const BAYS: Bay[] = [
@@ -92,7 +116,8 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     attendantId: 'S1',
     services: ['Executive Wash', 'Tire Wax'],
     totalAmount: 2400,
-    progress: 65
+    progress: 65,
+    tenantId: 'T-001'
   },
   {
     plate: 'KDJ 999Z',
@@ -102,7 +127,8 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     attendantId: 'S3',
     services: ['Full Detailing'],
     totalAmount: 4500,
-    progress: 30
+    progress: 30,
+    tenantId: 'T-001'
   },
   {
     plate: 'KDH 456B',
@@ -112,7 +138,8 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     attendantId: null,
     services: ['Basic Wash'],
     totalAmount: 500,
-    progress: 0
+    progress: 0,
+    tenantId: 'T-001'
   }
 ];
 
@@ -134,7 +161,8 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     qrTag: 'SPARK-RU-101',
     trackingProgress: 45,
     amount: 3500,
-    assignedStaffId: 'S6'
+    assignedStaffId: 'S6',
+    tenantId: 'T-001'
   },
   {
     id: 'LOG-102',
@@ -146,7 +174,8 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     pickupWindow: '02:00 PM - 04:00 PM',
     qrTag: 'SPARK-VA-102',
     trackingProgress: 0,
-    amount: 2500
+    amount: 2500,
+    tenantId: 'T-001'
   },
   {
     id: 'LOG-103',
@@ -159,6 +188,7 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     qrTag: 'SPARK-SO-103',
     trackingProgress: 20,
     amount: 5000,
-    assignedStaffId: 'S5'
+    assignedStaffId: 'S5',
+    tenantId: 'T-001'
   }
 ];

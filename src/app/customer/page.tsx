@@ -1,7 +1,9 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { SERVICE_BUNDLES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,13 +23,12 @@ import {
   Share2, 
   AlertTriangle,
   ExternalLink,
-  Wallet,
-  QrCode,
   Truck,
-  MapPin,
+  QrCode,
   Crown,
   Ticket,
-  ChevronRight
+  ChevronRight,
+  Zap
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -44,7 +45,6 @@ export default function CustomerPortal() {
   const handleSearch = () => {
     if (!searchPlate) return;
     
-    // Logic: If it looks like a LOG ID, show logistics, else show vehicle
     if (searchPlate.startsWith("LOG-") || searchPlate.startsWith("SPARK-")) {
       setLogistics({
         id: searchPlate.toUpperCase(),
@@ -118,7 +118,7 @@ export default function CustomerPortal() {
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-slate-50 flex flex-col">
+    <div className="min-h-screen pb-44 bg-slate-50 flex flex-col">
       <header className="bg-white border-b p-6 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md bg-white/80">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/20">
@@ -127,10 +127,6 @@ export default function CustomerPortal() {
           <h1 className="text-xl font-bold text-primary tracking-tight">SparkFlow</h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex flex-col items-end">
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Cashback Wallet</span>
-            <span className="text-sm font-black text-primary italic">KES 450.00</span>
-          </div>
           <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100 shadow-sm">
             <Trophy className="size-4 text-emerald-600" />
             <span className="text-xs font-black text-emerald-700 uppercase tracking-wider">1,240 Pts</span>
@@ -139,44 +135,41 @@ export default function CustomerPortal() {
       </header>
 
       <div className="p-6 max-w-xl mx-auto w-full space-y-6 flex-1">
-        {/* Subscription & Loyalty Quick View */}
-        <section className="grid grid-cols-2 gap-4">
-           <Card className="border-none shadow-sm rounded-3xl bg-slate-900 text-white overflow-hidden relative group">
-              <div className="absolute top-0 right-0 p-8 -mr-10 -mt-10 bg-primary/20 rounded-full blur-xl" />
-              <CardContent className="p-5 relative z-10 space-y-3">
-                 <div className="flex justify-between items-start">
-                    <div className="size-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/10">
-                      <Crown className="size-5 text-amber-400" />
-                    </div>
-                    <Badge className="bg-amber-400 text-slate-900 border-none font-black text-[8px] uppercase">GOLD</Badge>
-                 </div>
-                 <div>
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Membership Tier</span>
-                    <h4 className="text-lg font-black italic uppercase leading-none mt-1">Spark Gold</h4>
-                 </div>
-                 <Button variant="link" className="p-0 h-auto text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1">
-                    View Perks <ChevronRight className="size-3" />
-                 </Button>
-              </CardContent>
-           </Card>
-
-           <Card className="border-none shadow-sm rounded-3xl bg-white overflow-hidden group">
-              <CardContent className="p-5 space-y-3">
-                 <div className="flex justify-between items-start">
-                    <div className="size-10 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10">
-                      <Ticket className="size-5 text-primary" />
-                    </div>
-                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 border-none font-black text-[8px] uppercase">2 ACTIVE</Badge>
-                 </div>
-                 <div>
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Available Coupons</span>
-                    <h4 className="text-lg font-black italic uppercase leading-none mt-1">My Vouchers</h4>
-                 </div>
-                 <Button variant="link" className="p-0 h-auto text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1">
-                    Redeem Now <ChevronRight className="size-3" />
-                 </Button>
-              </CardContent>
-           </Card>
+        {/* Bundles & Promotions Module */}
+        <section className="space-y-4">
+           <div className="flex justify-between items-center">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Limited Offers</h3>
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[8px] font-black">CURATED FOR YOU</Badge>
+           </div>
+           <div className="grid grid-cols-1 gap-4">
+             {SERVICE_BUNDLES.map((bundle) => (
+               <Card key={bundle.id} className="border-none shadow-sm rounded-3xl bg-slate-900 text-white overflow-hidden relative group">
+                  <div className="absolute top-0 right-0 p-8 -mr-10 -mt-10 bg-primary/20 rounded-full blur-xl group-hover:scale-125 transition-transform" />
+                  <CardContent className="p-5 relative z-10 flex justify-between items-center">
+                     <div className="space-y-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Zap className="size-3 text-primary" />
+                          <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">{bundle.incentive}</span>
+                        </div>
+                        <h4 className="text-lg font-black italic uppercase leading-none">{bundle.name}</h4>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase leading-none mt-1">{bundle.usp}</p>
+                        <div className="flex gap-2 mt-3">
+                           {bundle.services.slice(0, 2).map(s => (
+                             <Badge key={s} variant="outline" className="text-[7px] font-black uppercase border-white/10 text-slate-300">{s}</Badge>
+                           ))}
+                        </div>
+                     </div>
+                     <div className="text-right shrink-0 ml-4">
+                        <span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Save KES {bundle.saving}</span>
+                        <div className="text-xl font-black italic text-primary">KES {bundle.price}</div>
+                        <Button className="h-8 rounded-xl bg-white text-slate-900 font-black text-[8px] uppercase tracking-widest mt-2 px-4">
+                           Claim
+                        </Button>
+                     </div>
+                  </CardContent>
+               </Card>
+             ))}
+           </div>
         </section>
 
         <section className="space-y-4 text-center py-4">
@@ -258,19 +251,6 @@ export default function CustomerPortal() {
                       ))}
                    </div>
                 </div>
-
-                <div className="pt-6 border-t border-slate-50 grid grid-cols-2 gap-4">
-                   <div className="p-4 bg-slate-50 rounded-2xl">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Pickup Window</span>
-                      <p className="text-xs font-black text-slate-900">{logistics.window}</p>
-                   </div>
-                   <div className="p-4 bg-primary/5 rounded-2xl flex flex-col justify-center items-center text-center">
-                      <div className="size-8 bg-primary text-white rounded-xl flex items-center justify-center mb-1">
-                        <QrCode className="size-4" />
-                      </div>
-                      <span className="text-[8px] font-black text-primary uppercase">Laundry Tag Ready</span>
-                   </div>
-                </div>
               </CardContent>
              </Card>
           </div>
@@ -313,33 +293,9 @@ export default function CustomerPortal() {
                   </div>
                   <Progress value={vehicle.progress} className="h-4 rounded-full bg-slate-100" />
                 </div>
-
-                <div className="grid grid-cols-2 gap-8 py-6 border-y border-slate-50">
-                  <div className="space-y-1">
-                    <span className="text-[10px] text-slate-400 uppercase font-black tracking-tight">Location</span>
-                    <p className="font-black text-slate-900">{vehicle.location}</p>
-                  </div>
-                  <div className="space-y-1 text-right">
-                    <span className="text-[10px] text-slate-400 uppercase font-black tracking-tight">Assigned To</span>
-                    <p className="font-black text-slate-900">{vehicle.attendant}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Order Items</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {vehicle.services.map((s: string) => (
-                      <div key={s} className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-2xl text-[10px] font-black text-slate-600 uppercase tracking-tight">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
-            {/* 360 Feedback Loop Module */}
             <Card className={cn(
               "border-none shadow-2xl transition-all duration-700 delay-300 rounded-[2.5rem] overflow-hidden",
               vehicle.status === 'Completed' ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0 pointer-events-none"
@@ -375,13 +331,12 @@ export default function CustomerPortal() {
                 
                 {rating > 0 && !isSubmitted && (
                   <div className="w-full space-y-6 animate-in fade-in zoom-in-95">
-                    {/* Review Incentive */}
                     <div className="p-5 bg-primary/5 border-2 border-dashed border-primary/20 rounded-3xl flex items-center gap-4 group cursor-pointer hover:bg-primary/10 transition-all">
                       <div className="size-14 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
                         <Camera className="size-7" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-black text-slate-900 text-sm">Earn $2 Off Next Time!</p>
+                        <p className="font-black text-slate-900 text-sm">Earn KES 200 Reward!</p>
                         <p className="text-xs font-bold text-slate-500">Post a photo of your clean vehicle/item</p>
                       </div>
                     </div>
@@ -392,33 +347,13 @@ export default function CustomerPortal() {
                         <Input placeholder="What made it great?" className="h-16 pl-12 rounded-2xl bg-slate-50 border-none shadow-inner font-bold" />
                       </div>
 
-                      <div className="flex flex-col gap-3">
-                        <Button 
-                          className="w-full h-16 rounded-2xl font-black text-sm tracking-widest uppercase shadow-xl shadow-primary/20"
-                          onClick={handleSubmitReview}
-                        >
-                          Submit to SparkFlow
-                        </Button>
-                        <div className="flex gap-2">
-                          <Button variant="outline" className="flex-1 h-12 rounded-2xl gap-2 font-black text-[10px] uppercase tracking-wider text-slate-500 border-slate-200">
-                            <ExternalLink className="size-3" /> Sync Google
-                          </Button>
-                          <Button variant="outline" className="flex-1 h-12 rounded-2xl gap-2 font-black text-[10px] uppercase tracking-wider text-slate-500 border-slate-200">
-                            <Share2 className="size-3" /> Share Post
-                          </Button>
-                        </div>
-                      </div>
+                      <Button 
+                        className="w-full h-16 rounded-2xl font-black text-sm tracking-widest uppercase shadow-xl shadow-primary/20"
+                        onClick={handleSubmitReview}
+                      >
+                        Submit to SparkFlow
+                      </Button>
                     </div>
-                  </div>
-                )}
-
-                {isSubmitted && (
-                  <div className="text-center space-y-4 py-6 animate-in fade-in slide-in-from-bottom-4">
-                    <div className="size-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/10">
-                      <CheckCircle2 className="size-10" />
-                    </div>
-                    <h3 className="text-2xl font-black text-slate-900">Review Published!</h3>
-                    <p className="text-slate-500 font-bold text-sm max-w-[250px]">Your feedback keeps SparkFlow running at peak performance.</p>
                   </div>
                 )}
               </CardContent>
