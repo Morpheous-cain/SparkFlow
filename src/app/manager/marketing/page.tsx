@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -17,7 +18,9 @@ import {
   Smartphone,
   Hash,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Clock,
+  Star
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
@@ -61,6 +64,23 @@ export default function MarketingPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          {/* Automated Feedback Trigger Banner */}
+          <Card className="border-none shadow-xl rounded-[2rem] bg-emerald-600 text-white p-6 relative overflow-hidden group">
+             <div className="absolute top-0 right-0 p-12 -mr-12 -mt-12 bg-white/10 rounded-full blur-2xl" />
+             <div className="relative z-10 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                   <div className="size-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
+                      <Star className="size-6 fill-current" />
+                   </div>
+                   <div>
+                      <h3 className="text-lg font-black uppercase leading-none">Automated Feedback SMS</h3>
+                      <p className="text-emerald-100 text-[9px] font-bold uppercase mt-1">Currently Active for all branches</p>
+                   </div>
+                </div>
+                <Badge className="bg-emerald-500 text-white border-none font-black text-[8px] uppercase px-3 py-1">ENABLED</Badge>
+             </div>
+          </Card>
+
           <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white">
             <CardHeader className="p-8 bg-slate-900 text-white">
                <div className="flex items-center gap-4">
@@ -77,12 +97,12 @@ export default function MarketingPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Campaign Title</label>
-                  <Input placeholder="E.g. Father's Day Special" className="h-12 rounded-xl font-bold border-2" />
+                  <Input placeholder="E.g. Father's Day Special" className="h-12 rounded-xl font-bold border-2 uppercase" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Primary Channel</label>
                   <Select defaultValue="sms">
-                    <SelectTrigger className="h-12 rounded-xl border-2 font-bold">
+                    <SelectTrigger className="h-12 rounded-xl border-2 font-bold uppercase">
                       <SelectValue placeholder="Select Channel" />
                     </SelectTrigger>
                     <SelectContent>
@@ -112,7 +132,7 @@ export default function MarketingPage() {
                 </div>
                 <Textarea 
                   placeholder="Type your marketing message here..." 
-                  className="min-h-[150px] rounded-2xl border-2 font-bold p-4"
+                  className="min-h-[150px] rounded-2xl border-2 font-bold p-4 uppercase"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
@@ -142,13 +162,13 @@ export default function MarketingPage() {
                           <div>
                              <h4 className="font-black uppercase text-xs">{camp.title}</h4>
                              <div className="flex items-center gap-2 mt-1">
-                                <Badge variant="secondary" className="text-[8px] font-black uppercase px-2 py-0">{camp.channel}</Badge>
+                                <Badge variant="secondary" className="text-[8px] font-black uppercase px-2 py-0 border-none">{camp.channel}</Badge>
                                 <span className="text-[9px] font-black text-slate-400 uppercase">{camp.date} • {camp.recipients} Recipients</span>
                              </div>
                           </div>
                        </div>
                        <div className="text-right">
-                          <Badge className={camp.status === 'Sent' ? 'bg-emerald-500' : 'bg-amber-500'}>{camp.status.toUpperCase()}</Badge>
+                          <Badge className={cn("font-black text-[8px] uppercase", camp.status === 'Sent' ? 'bg-emerald-500' : 'bg-amber-500')}>{camp.status}</Badge>
                        </div>
                     </div>
                   </Card>
@@ -167,7 +187,7 @@ export default function MarketingPage() {
                     </div>
                     <h3 className="text-xl font-black uppercase tracking-tight">AI Copywriter</h3>
                  </header>
-                 <p className="text-xs font-bold text-indigo-100 leading-relaxed">Let SparkFlow AI generate high-conversion SMS & WhatsApp copy based on your current inventory or holidays.</p>
+                 <p className="text-xs font-bold text-indigo-100 leading-relaxed uppercase">Let SparkFlow AI generate high-conversion SMS copy based on current inventory or holidays.</p>
                  <Button className="w-full h-12 bg-white text-indigo-600 hover:bg-slate-50 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-2xl">
                     Generate Smart Copy
                  </Button>
@@ -176,14 +196,14 @@ export default function MarketingPage() {
 
            <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
               <header className="mb-6">
-                 <h3 className="text-lg font-black uppercase tracking-tight leading-none">Global Performance</h3>
-                 <p className="text-[9px] font-black text-slate-400 uppercase mt-2">Aggregated campaign impact</p>
+                 <h3 className="text-lg font-black uppercase tracking-tight leading-none">Feedback Velocity</h3>
+                 <p className="text-[9px] font-black text-slate-400 uppercase mt-2">Retention vs Direct SMS links</p>
               </header>
               <div className="space-y-6">
                  {[
-                   { label: "Avg. Open Rate (SMS)", val: 98, color: "bg-blue-500" },
-                   { label: "WhatsApp Conversion", val: 24, color: "bg-emerald-500" },
-                   { label: "Push Engagement", val: 12, color: "bg-amber-500" }
+                   { label: "SMS Link Clicks", val: 92, color: "bg-blue-500" },
+                   { label: "WhatsApp Conversions", val: 45, color: "bg-emerald-500" },
+                   { label: "App-less Ratings", val: 78, color: "bg-amber-500" }
                  ].map(stat => (
                    <div key={stat.label} className="space-y-2">
                       <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">

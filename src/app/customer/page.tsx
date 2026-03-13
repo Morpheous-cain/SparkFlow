@@ -1,6 +1,8 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { SERVICE_BUNDLES, SERVICES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
@@ -37,14 +39,16 @@ import {
   Locate,
   CalendarDays,
   ChevronRight,
-  MapIcon
+  MapIcon,
+  Smartphone
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-export default function CustomerPortal() {
+function CustomerPortalContent() {
   const { toast } = useToast();
+  const searchParams = useSearchParams();
   const [searchPlate, setSearchPlate] = useState("");
   const [vehicle, setVehicle] = useState<any>(null);
   const [logistics, setLogistics] = useState<any>(null);
@@ -66,17 +70,24 @@ export default function CustomerPortal() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Check for plate in URL (e.g. /customer?plate=KDC123A)
+    const plateFromUrl = searchParams.get("plate");
+    if (plateFromUrl) {
+      setSearchPlate(plateFromUrl.toUpperCase());
+      handleSearch(plateFromUrl.toUpperCase());
+    }
+  }, [searchParams]);
 
   const travelFee = homeLocation ? 450 : 0; 
   const totalHomeCost = selectedHomeService.price + travelFee;
 
-  const handleSearch = () => {
-    if (!searchPlate) return;
+  const handleSearch = (plateParam?: string) => {
+    const targetPlate = plateParam || searchPlate;
+    if (!targetPlate) return;
     
-    if (searchPlate.startsWith("LOG-") || searchPlate.startsWith("SPARK-")) {
+    if (targetPlate.startsWith("LOG-") || targetPlate.startsWith("SPARK-")) {
       setLogistics({
-        id: searchPlate.toUpperCase(),
+        id: targetPlate.toUpperCase(),
         item: "Persian Rug",
         status: "In-Wash",
         progress: 45,
@@ -93,7 +104,7 @@ export default function CustomerPortal() {
       setVehicle(null);
     } else {
       setVehicle({
-        plate: searchPlate.toUpperCase(),
+        plate: targetPlate.toUpperCase(),
         status: "In Progress",
         progress: 65,
         estimatedTime: "12 mins",
@@ -103,6 +114,7 @@ export default function CustomerPortal() {
       });
       setLogistics(null);
 
+      // Auto-complete after delay for simulation
       setTimeout(() => {
         setVehicle((prev: any) => prev ? { 
           ...prev, 
@@ -113,10 +125,10 @@ export default function CustomerPortal() {
         } : null);
         toast({ 
           title: "Service Complete!", 
-          description: "Your Spark is ready! Check the feedback prompt below.",
+          description: "Your Spark is ready! Please leave a rating below.",
           duration: 5000 
         });
-      }, 4000);
+      }, 3000);
     }
   };
 
@@ -161,13 +173,13 @@ export default function CustomerPortal() {
       toast({ 
         variant: "destructive",
         title: "We're Sorry!", 
-        description: "An Urgent Alert has been sent to our Manager. We'll call you shortly to resolve this.",
+        description: "A Manager has been alerted to your feedback. We will contact you immediately.",
         action: <AlertTriangle className="size-4" />
       });
     } else {
       toast({ 
         title: "Rating Received!", 
-        description: `You've earned 50 SparkPoints for your feedback!`,
+        description: `You've earned 50 SparkPoints! We hope to see you again soon.`,
         action: <Trophy className="size-4 text-emerald-600" />
       });
     }
@@ -177,7 +189,7 @@ export default function CustomerPortal() {
     setIsSubmitted(true);
     toast({
       title: "Review Published",
-      description: "Thanks for helping us maintain high standards!",
+      description: "Your feedback helps us maintain SparkFlow excellence.",
     });
   };
 
@@ -192,7 +204,7 @@ export default function CustomerPortal() {
           <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/20">
             <Waves className="w-5 h-5" />
           </div>
-          <h1 className="text-xl font-bold text-primary tracking-tight uppercase tracking-tighter">SparkFlow</h1>
+          <h1 className="text-xl font-bold text-primary tracking-tight uppercase">SparkFlow</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100 shadow-sm">
@@ -214,7 +226,7 @@ export default function CustomerPortal() {
                   </div>
                   <div className="text-left">
                     <h3 className="text-lg font-black uppercase leading-none">Home Wash On-Demand</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">We come to your premise • Instant GPS Quote</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Direct to your doorstep • GPS Quote</p>
                   </div>
                   <ChevronRight className="ml-auto size-5 text-slate-500" />
                 </div>
@@ -361,7 +373,7 @@ export default function CustomerPortal() {
         <section className="space-y-4">
            <div className="flex justify-between items-center">
               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Limited Offers</h3>
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[8px] font-black">CURATED FOR YOU</Badge>
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase">CURATED FOR YOU</Badge>
            </div>
            <div className="grid grid-cols-1 gap-4">
              {SERVICE_BUNDLES.map((bundle) => (
@@ -404,7 +416,7 @@ export default function CustomerPortal() {
               value={searchPlate}
               onChange={(e) => setSearchPlate(e.target.value.toUpperCase())}
             />
-            <Button size="lg" className="h-14 px-8 shadow-xl shadow-primary/20 font-black uppercase text-xs tracking-widest" onClick={handleSearch}>
+            <Button size="lg" className="h-14 px-8 shadow-xl shadow-primary/20 font-black uppercase text-xs tracking-widest" onClick={() => handleSearch()}>
               <Search className="size-5 mr-2" /> Track
             </Button>
           </div>
@@ -424,7 +436,7 @@ export default function CustomerPortal() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end">
-                   <Badge className="bg-primary text-white border-none font-black text-[10px] tracking-widest mb-1">{logistics.status.toUpperCase()}</Badge>
+                   <Badge className="bg-primary text-white border-none font-black text-[10px] tracking-widest mb-1 uppercase">{logistics.status}</Badge>
                    <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
                     <QrCode className="size-3" /> {logistics.qrTag}
                    </div>
@@ -494,8 +506,8 @@ export default function CustomerPortal() {
                   </div>
                   <span className="text-2xl font-mono font-black tracking-widest">{vehicle.plate}</span>
                 </div>
-                <Badge className="bg-white/20 text-white border-none font-black text-[10px] tracking-widest px-4 py-1.5">
-                  {vehicle.status === 'Completed' ? 'READY' : vehicle.status.toUpperCase()}
+                <Badge className="bg-white/20 text-white border-none font-black text-[10px] tracking-widest px-4 py-1.5 uppercase">
+                  {vehicle.status === 'Completed' ? 'READY' : vehicle.status}
                 </Badge>
               </div>
               <CardContent className="p-8 space-y-8 bg-white">
@@ -528,9 +540,9 @@ export default function CustomerPortal() {
                     <Sparkles className="size-8 text-primary" />
                   </div>
                 </div>
-                <CardTitle className="text-3xl font-black tracking-tight">Rate Your Experience</CardTitle>
+                <CardTitle className="text-3xl font-black tracking-tight uppercase">Rate Your Experience</CardTitle>
                 <CardDescription className="text-slate-400 font-bold mt-2 uppercase text-[10px] tracking-[0.1em]">
-                  Service turnaround: {vehicle.totalTime || 32} minutes
+                  Turnaround: {vehicle.totalTime || 32} minutes
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center gap-8 p-10 bg-white">
@@ -558,22 +570,22 @@ export default function CustomerPortal() {
                         <Camera className="size-7" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-black text-slate-900 text-sm">Earn KES 200 Reward!</p>
-                        <p className="text-xs font-bold text-slate-500">Post a photo of your clean vehicle/item</p>
+                        <p className="font-black text-slate-900 text-sm uppercase">Earn KES 200 Reward!</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase">Post a photo of your clean vehicle</p>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <div className="relative group">
                         <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-primary transition-colors" />
-                        <Input placeholder="What made it great?" className="h-16 pl-12 rounded-2xl bg-slate-50 border-none shadow-inner font-bold" />
+                        <Input placeholder="What made it great?" className="h-16 pl-12 rounded-2xl bg-slate-50 border-none shadow-inner font-bold uppercase" />
                       </div>
 
                       <Button 
                         className="w-full h-16 rounded-2xl font-black text-sm tracking-widest uppercase shadow-xl shadow-primary/20"
                         onClick={handleSubmitReview}
                       >
-                        Submit to SparkFlow
+                        Submit Feedback
                       </Button>
                     </div>
                   </div>
@@ -588,8 +600,8 @@ export default function CustomerPortal() {
                 <Car className="w-24 h-24 text-slate-300" />
               </div>
               <div className="space-y-2">
-                <p className="font-black text-2xl text-slate-900 tracking-tight">Awaiting ID or Plate</p>
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Enter details above to see the Spark</p>
+                <p className="font-black text-2xl text-slate-900 tracking-tight uppercase">Awaiting Details</p>
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Enter plate or ID to see the Spark</p>
               </div>
             </div>
           )
@@ -605,5 +617,13 @@ export default function CustomerPortal() {
 
       <RoleSwitcher />
     </div>
+  );
+}
+
+export default function CustomerPortal() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CustomerPortalContent />
+    </Suspense>
   );
 }

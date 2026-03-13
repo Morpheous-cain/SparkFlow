@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,7 +7,7 @@ import { SERVICES, MOCK_VEHICLES, BAYS, STAFF } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Check, Plus, Smartphone, Wallet, CreditCard, Banknote, Car, Clock, User, Warehouse, LayoutGrid, Timer } from "lucide-react";
+import { Check, Plus, Smartphone, Wallet, CreditCard, Banknote, Car, Clock, User, Warehouse, LayoutGrid, Timer, MessageSquare, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,7 +45,6 @@ export default function AgentPortal() {
     }
 
     setIsSubmitting(true);
-    // Simulate API call
     await new Promise(r => setTimeout(r, 1000));
     
     toast({
@@ -69,10 +69,31 @@ export default function AgentPortal() {
     
     toast({
       title: "Payment Successful",
-      description: `Vehicle ${plate} has been cleared for exit. Receipt printed.`,
+      description: `Vehicle ${plate} cleared. Rating link ready to send.`,
+      action: (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 font-black uppercase text-[8px] tracking-widest gap-2 bg-white"
+          onClick={() => sendFeedbackLink(plate)}
+        >
+          <Send className="size-3" /> Send Rating Link
+        </Button>
+      )
     });
     
     setPendingCheckouts(prev => prev.filter(v => v.plate !== plate));
+  };
+
+  const sendFeedbackLink = (plate: string) => {
+    const feedbackUrl = `${window.location.origin}/customer?plate=${plate}`;
+    // In production, this would trigger an SMS/WhatsApp via Twilio or Africa's Talking
+    toast({
+      title: "Feedback Link Sent",
+      description: `WhatsApp & SMS with link sent to ${plate} owner.`,
+      action: <Smartphone className="size-4 text-primary" />
+    });
+    console.log(`[SMS Simulation] To: Customer, Msg: Thanks for visiting SparkFlow! Rate your experience here: ${feedbackUrl}`);
   };
 
   const totalAmount = SERVICES
@@ -128,7 +149,7 @@ export default function AgentPortal() {
           <TabsTrigger value="payments" className="rounded-xl font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-sm">
             <Wallet className="size-3 mr-2" /> Payments
             {pendingCheckouts.filter(v => v.status === 'Ready').length > 0 && (
-              <Badge className="ml-2 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-[8px] text-white">
+              <Badge className="ml-2 h-4 w-4 p-0 flex items-center justify-center bg-red-500 text-[8px] text-white uppercase">
                 {pendingCheckouts.filter(v => v.status === 'Ready').length}
               </Badge>
             )}
@@ -299,7 +320,7 @@ export default function AgentPortal() {
                         </div>
                       </div>
                     </div>
-                    <Badge variant={v.status === 'Ready' ? 'default' : 'secondary'} className={cn("font-black text-[9px] text-white", v.status === 'Ready' ? 'bg-emerald-500' : 'bg-slate-200 text-slate-500')}>
+                    <Badge variant={v.status === 'Ready' ? 'default' : 'secondary'} className={cn("font-black text-[9px] text-white", v.status === 'Ready' ? 'bg-emerald-500' : 'bg-slate-200 text-slate-500 uppercase')}>
                       {v.status === 'Ready' ? 'READY' : 'IN-WASH'}
                     </Badge>
                   </div>
