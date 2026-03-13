@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { STAFF } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,17 +13,14 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  Cell,
+  ResponsiveContainer
 } from "recharts";
 import { 
   TrendingUp, 
   Target, 
-  Trophy, 
   Coins, 
   ShieldAlert,
   Zap,
-  Users,
   Banknote,
   Star,
   ArrowRight
@@ -37,10 +35,15 @@ const REVENUE_STREAMS = [
 ];
 
 export default function AccountsManagementPage() {
+  const [mounted, setMounted] = useState(false);
   const currentProfit = 90500;
   const targetProfit = 100000;
   const achievementRate = (currentProfit / targetProfit) * 100;
   const isTargetMet = achievementRate >= 100;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const kpis = [
     { label: "Net Profit (MTD)", value: `KES ${currentProfit.toLocaleString()}`, icon: Banknote, color: "text-blue-600", bg: "bg-blue-50" },
@@ -132,25 +135,27 @@ export default function AccountsManagementPage() {
             </div>
           </div>
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={REVENUE_STREAMS} barGap={12}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="category" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 800 }}
-                  dy={10}
-                />
-                <YAxis hide />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
-                />
-                <Bar dataKey="actual" fill="#3b82f6" radius={[6, 6, 0, 0]} barSize={40} />
-                <Bar dataKey="target" fill="#e2e8f0" radius={[6, 6, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={REVENUE_STREAMS} barGap={12}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="category" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 800 }}
+                    dy={10}
+                  />
+                  <YAxis hide />
+                  <Tooltip 
+                    cursor={{ fill: '#f8fafc' }}
+                    contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
+                  />
+                  <Bar dataKey="actual" fill="#3b82f6" radius={[6, 6, 0, 0]} barSize={40} />
+                  <Bar dataKey="target" fill="#e2e8f0" radius={[6, 6, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
 

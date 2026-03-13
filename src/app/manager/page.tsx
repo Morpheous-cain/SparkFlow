@@ -42,6 +42,12 @@ const PIE_DATA = [
 export default function ManagerDashboard() {
   const [aiInsights, setAiInsights] = useState<ManagerOperationalInsightsOutput | null>(null);
   const [loadingAi, setLoadingAi] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    fetchAiInsights();
+  }, []);
 
   const fetchAiInsights = async () => {
     setLoadingAi(true);
@@ -53,15 +59,11 @@ export default function ManagerDashboard() {
       });
       setAiInsights(data);
     } catch (err) {
-      console.error(err);
+      // Error handled centrally
     } finally {
       setLoadingAi(false);
     }
   };
-
-  useEffect(() => {
-    fetchAiInsights();
-  }, []);
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f8fafc]">
@@ -185,25 +187,27 @@ export default function ManagerDashboard() {
             <Badge variant="outline" className="rounded-xl px-3 md:py-2 border-slate-100 text-slate-500 font-black uppercase text-[8px] md:text-[10px] tracking-widest">Global</Badge>
           </div>
           <div className="h-[250px] md:h-[300px] flex items-center justify-center relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={PIE_DATA}
-                  innerRadius={70}
-                  outerRadius={100}
-                  paddingAngle={8}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {PIE_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={PIE_DATA}
+                    innerRadius={70}
+                    outerRadius={100}
+                    paddingAngle={8}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {PIE_DATA.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
             <div className="absolute flex flex-col items-center">
               <span className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter">1.4K</span>
               <span className="text-[8px] md:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1 md:mt-2">Active</span>

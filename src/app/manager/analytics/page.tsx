@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,11 +14,7 @@ import {
   ResponsiveContainer, 
   AreaChart, 
   Area, 
-  LineChart, 
-  Line,
-  Cell,
-  PieChart,
-  Pie
+  Cell
 } from "recharts";
 import { 
   Calendar, 
@@ -61,6 +56,11 @@ const STAFF_EFFICIENCY = [
 
 export default function AnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState("Last 7 Months");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
@@ -84,7 +84,6 @@ export default function AnalyticsDashboard() {
         </div>
       </header>
 
-      {/* High-Level KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           { label: "Customer LTV", value: "KES 14.2K", trend: "+18%", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
@@ -112,7 +111,6 @@ export default function AnalyticsDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Revenue vs Costs Growth */}
         <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -131,69 +129,72 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={REVENUE_DATA}>
-                <defs>
-                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="month" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
-                  dy={10}
-                />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
-                  tickFormatter={(val) => `K${val/1000}k`}
-                />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-                  cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }}
-                />
-                <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
-                <Area type="monotone" dataKey="costs" stroke="#cbd5e1" strokeWidth={2} fill="transparent" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={REVENUE_DATA}>
+                  <defs>
+                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis 
+                    dataKey="month" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
+                    tickFormatter={(val) => `K${val/1000}k`}
+                  />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                    cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }}
+                  />
+                  <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
+                  <Area type="monotone" dataKey="costs" stroke="#cbd5e1" strokeWidth={2} fill="transparent" />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
 
-        {/* Staff Efficiency Radar/Bar */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <CardHeader className="p-0 mb-8">
             <CardTitle className="text-xl font-bold">Staff Performance</CardTitle>
             <CardDescription>Efficiency scores per attendant</CardDescription>
           </CardHeader>
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={STAFF_EFFICIENCY} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                <XAxis type="number" hide />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  axisLine={false} 
-                  tickLine={false}
-                  tick={{ fill: '#475569', fontSize: 12, fontWeight: 700 }}
-                  width={80}
-                />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-                />
-                <Bar dataKey="efficiency" radius={[0, 10, 10, 0]} barSize={24}>
-                  {STAFF_EFFICIENCY.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#6366f1'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={STAFF_EFFICIENCY} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                  <XAxis type="number" hide />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    axisLine={false} 
+                    tickLine={false}
+                    tick={{ fill: '#475569', fontSize: 12, fontWeight: 700 }}
+                    width={80}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: '#f8fafc' }}
+                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                  />
+                  <Bar dataKey="efficiency" radius={[0, 10, 10, 0]} barSize={24}>
+                    {STAFF_EFFICIENCY.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#6366f1'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
           <div className="mt-6 pt-6 border-t border-dashed">
             <div className="flex justify-between items-center">
@@ -205,27 +206,27 @@ export default function AnalyticsDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Customer Mix */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <CardHeader className="p-0 mb-8">
             <CardTitle className="text-xl font-bold">Customer Retention</CardTitle>
             <CardDescription>Daily new vs returning traffic</CardDescription>
           </CardHeader>
           <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={CUSTOMER_DATA}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
-                <Bar dataKey="returning" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={40} />
-                <Bar dataKey="new" stackId="a" fill="#0ea5e9" radius={[10, 10, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={CUSTOMER_DATA}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                  <Bar dataKey="returning" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={40} />
+                  <Bar dataKey="new" stackId="a" fill="#0ea5e9" radius={[10, 10, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
 
-        {/* AI Insight Box */}
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-slate-900 text-white p-8 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-12 -mr-16 -mt-16 bg-primary/10 rounded-full blur-3xl" />
           <div className="relative z-10 flex flex-col h-full justify-between">
