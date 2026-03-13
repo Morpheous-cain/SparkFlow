@@ -1,11 +1,14 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
-import { STAFF } from "@/lib/mock-data";
+import { STAFF, EXPENSES, CHART_OF_ACCOUNTS, BRANCHES } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   BarChart, 
   Bar, 
@@ -24,9 +27,20 @@ import {
   Banknote,
   Star,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  CreditCard,
+  FileText,
+  History,
+  LayoutGrid,
+  Plus,
+  ArrowUpRight,
+  ArrowDownRight,
+  Download,
+  Lock,
+  Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const REVENUE_STREAMS = [
   { category: 'Wash', actual: 42000, target: 45000, rating: 4.2, color: 'from-blue-500 to-indigo-600', shadow: 'shadow-blue-500/20' },
@@ -36,6 +50,7 @@ const REVENUE_STREAMS = [
 ];
 
 export default function AccountsManagementPage() {
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const currentProfit = 90500;
   const targetProfit = 100000;
@@ -48,9 +63,9 @@ export default function AccountsManagementPage() {
 
   const kpis = [
     { label: "Net Profit (MTD)", value: `KES ${currentProfit.toLocaleString()}`, icon: Banknote, color: "text-blue-600", bg: "bg-blue-50", layer: 'bg-blue-500' },
-    { label: "Monthly Target", value: `KES ${targetProfit.toLocaleString()}`, icon: Target, color: "text-indigo-600", bg: "bg-indigo-50", layer: 'bg-indigo-500' },
-    { label: "Achievement", value: `${achievementRate.toFixed(1)}%`, icon: TrendingUp, color: isTargetMet ? "text-emerald-600" : "text-amber-600", bg: isTargetMet ? "bg-emerald-50" : "bg-amber-50", layer: isTargetMet ? 'bg-emerald-500' : 'bg-amber-500' },
-    { label: "Bonus Pool", value: "KES 14.5K", icon: Coins, color: "text-primary", bg: "bg-primary/5", layer: 'bg-primary' },
+    { label: "Cash on Hand", value: "KES 24.5K", icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50", layer: 'bg-emerald-500' },
+    { label: "M-Pesa Pool", value: "KES 142K", icon: CreditCard, color: "text-indigo-600", bg: "bg-indigo-50", layer: 'bg-indigo-500' },
+    { label: "Pending Bills", value: "KES 12.2K", icon: ShieldAlert, color: "text-red-600", bg: "bg-red-50", layer: 'bg-red-500' },
   ];
 
   return (
@@ -58,41 +73,17 @@ export default function AccountsManagementPage() {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Financial Engine</h1>
-          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Target Monitoring & Incentive Tracking</p>
+          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Audit, Chart of Accounts & Statements</p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" className="rounded-2xl h-14 gap-3 bg-white border-none shadow-xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-50 transition-all">
-            Adjust Targets
+          <Button variant="outline" className="rounded-2xl h-14 gap-3 bg-white border-none shadow-xl font-black uppercase text-[11px] tracking-widest">
+            <History className="size-4" /> Reconciliation
           </Button>
           <Button className="rounded-2xl h-14 gap-3 shadow-2xl shadow-primary/30 px-8 font-black uppercase text-[11px] tracking-widest bg-primary hover:bg-blue-600 transition-all">
-            Disburse Bonuses
+            <Download className="size-4" /> Download Statement
           </Button>
         </div>
       </header>
-
-      {!isTargetMet && (
-        <Card className="border-none shadow-2xl bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700 relative group">
-          <div className="absolute top-0 right-0 p-24 -mr-24 -mt-24 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform" />
-          <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-            <div className="flex items-center gap-8">
-              <div className="size-20 bg-white/20 backdrop-blur-xl text-white rounded-[2rem] flex items-center justify-center shadow-2xl border border-white/20">
-                <ShieldAlert className="size-10" />
-              </div>
-              <div className="space-y-2 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-3">
-                  <Badge className="bg-white text-amber-600 border-none font-black text-[10px] uppercase">GAP DETECTED</Badge>
-                  <span className="text-[10px] font-black text-amber-100 uppercase tracking-[0.2em]">Immediate Strategic Shift Required</span>
-                </div>
-                <h2 className="text-3xl font-black uppercase tracking-tight leading-none">Shortfall: KES {(targetProfit - currentProfit).toLocaleString()}</h2>
-                <p className="text-amber-50 font-bold text-lg">Sales velocity is 9.5% below target. Push high-margin Detailing bundles to recover.</p>
-              </div>
-            </div>
-            <Button className="h-16 px-10 bg-white text-slate-900 hover:bg-amber-50 font-black uppercase text-xs tracking-[0.2em] gap-3 rounded-[1.5rem] shadow-2xl transition-all active:scale-95 shrink-0">
-              <Zap className="size-5 text-primary" /> Deploy Recovery Plan
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi, i) => (
@@ -114,96 +105,284 @@ export default function AccountsManagementPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 border-none shadow-xl rounded-[3rem] bg-white p-12 relative overflow-hidden group">
-           <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <CardTitle className="text-2xl font-black uppercase tracking-tight">Revenue Stream Breakdown</CardTitle>
-              <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Comparative performance analysis</CardDescription>
-            </div>
-            <div className="flex gap-8">
-               <div className="flex items-center gap-3">
-                 <div className="size-4 rounded-full bg-primary shadow-lg shadow-primary/20" />
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Actual</span>
-               </div>
-               <div className="flex items-center gap-3">
-                 <div className="size-4 rounded-full bg-slate-200" />
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Target</span>
-               </div>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="bg-slate-200/50 p-1 rounded-2xl h-14 mb-8">
+          <TabsTrigger value="overview" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="chart" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            Chart of Accounts
+          </TabsTrigger>
+          <TabsTrigger value="expenses" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            Petty Cash & Expenses
+          </TabsTrigger>
+          <TabsTrigger value="statements" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            Statements
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-8 outline-none">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <Card className="lg:col-span-2 border-none shadow-xl rounded-[3rem] bg-white p-12 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
+              <div className="flex justify-between items-center mb-12">
+                <div>
+                  <CardTitle className="text-2xl font-black uppercase tracking-tight">Revenue Stream Breakdown</CardTitle>
+                  <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Comparative performance analysis</CardDescription>
+                </div>
+                <div className="flex gap-8">
+                  <div className="flex items-center gap-3">
+                    <div className="size-4 rounded-full bg-primary shadow-lg shadow-primary/20" />
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Actual</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="size-4 rounded-full bg-slate-200" />
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Target</span>
+                  </div>
+                </div>
+              </div>
+              <div className="h-[400px] w-full">
+                {mounted && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={REVENUE_STREAMS} barGap={16}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis 
+                        dataKey="category" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
+                        dy={12}
+                      />
+                      <YAxis hide />
+                      <Tooltip 
+                        cursor={{ fill: '#f8fafc' }}
+                        contentStyle={{ borderRadius: '2rem', border: 'none', boxShadow: '0 30px 60px rgba(0,0,0,0.1)', padding: '1.5rem' }}
+                      />
+                      <Bar dataKey="actual" fill="#3b82f6" radius={[8, 8, 0, 0]} barSize={48} />
+                      <Bar dataKey="target" fill="#e2e8f0" radius={[8, 8, 0, 0]} barSize={48} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </Card>
+
+            <Card className="border-none shadow-2xl rounded-[3rem] bg-slate-900 text-white p-12 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-24 -mr-28 -mt-28 bg-primary/20 rounded-full blur-[100px] group-hover:scale-110 transition-transform duration-1000" />
+              <div className="relative z-10 flex flex-col h-full justify-between gap-10">
+                <header className="flex items-center gap-5">
+                  <div className="size-16 bg-primary rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-primary/40 rotate-6">
+                    <Zap className="size-9 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-primary">Daraja Core</h3>
+                    <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">M-Pesa Integration Status</p>
+                  </div>
+                </header>
+
+                <div className="space-y-6">
+                  <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black text-slate-400 uppercase">Gateway Health</span>
+                      <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black">STABLE</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black text-slate-400 uppercase">Settlement Mode</span>
+                      <span className="text-xs font-bold">T+0 Instant</span>
+                    </div>
+                    <Progress value={98} className="h-1 bg-white/10" />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Live Feed</span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                        <span>MPESA_9821X</span>
+                        <span className="text-emerald-400">+1,200</span>
+                      </div>
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                        <span>MPESA_9822Y</span>
+                        <span className="text-emerald-400">+500</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Button className="w-full h-16 bg-white text-slate-900 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase text-xs tracking-widest shadow-2xl transition-all">
+                  Manage API Credentials
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="chart" className="outline-none">
+          <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
+            <CardHeader className="p-8 border-b bg-slate-50/50">
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="text-xl font-black uppercase">General Ledger Registry</CardTitle>
+                  <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Complete Chart of Accounts (COA)</CardDescription>
+                </div>
+                <Button className="rounded-xl h-12 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2">
+                  <Plus className="size-4" /> Create Account
+                </Button>
+              </div>
+            </CardHeader>
+            <Table>
+              <TableHeader className="bg-slate-50/50 h-12">
+                <TableRow className="border-none">
+                  <TableHead className="pl-8 uppercase text-[10px] font-black">Code</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black">Account Name</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black">Type</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black text-right pr-8">Balance (KES)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {CHART_OF_ACCOUNTS.map((acc) => (
+                  <TableRow key={acc.code} className="h-16 border-slate-50 hover:bg-slate-50">
+                    <TableCell className="pl-8 font-black text-slate-400 text-xs">{acc.code}</TableCell>
+                    <TableCell className="font-black text-slate-900 uppercase text-xs">{acc.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={cn(
+                        "font-black text-[9px] uppercase border-none px-3 py-1",
+                        acc.type === 'Asset' ? "bg-blue-50 text-blue-600" :
+                        acc.type === 'Revenue' ? "bg-emerald-50 text-emerald-600" :
+                        acc.type === 'Expense' ? "bg-red-50 text-red-600" : "bg-slate-50 text-slate-600"
+                      )}>
+                        {acc.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="pr-8 text-right font-black text-slate-900 text-sm">
+                      {acc.balance.toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="expenses" className="outline-none space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="md:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
+              <CardHeader className="p-8 border-b bg-slate-50/50 flex flex-row justify-between items-center">
+                <div>
+                  <CardTitle className="text-xl font-black uppercase">Expense Audit Trail</CardTitle>
+                  <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Operational spend & vendor payments</CardDescription>
+                </div>
+                <Button className="rounded-xl h-12 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest gap-2">
+                  <Plus className="size-4" /> Log Expense
+                </Button>
+              </CardHeader>
+              <Table>
+                <TableHeader className="bg-slate-50/50 h-12">
+                  <TableRow className="border-none">
+                    <TableHead className="pl-8 uppercase text-[10px] font-black">Date</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black">Category</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black">Description</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black">Type</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black text-right pr-8">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {EXPENSES.map((exp) => (
+                    <TableRow key={exp.id} className="h-16 border-slate-50 hover:bg-slate-50">
+                      <TableCell className="pl-8 font-bold text-slate-400 text-xs">{exp.date}</TableCell>
+                      <TableCell className="font-black text-slate-900 uppercase text-xs">{exp.category}</TableCell>
+                      <TableCell className="font-bold text-slate-500 text-xs">{exp.description}</TableCell>
+                      <TableCell>
+                        <Badge className={cn(
+                          "font-black text-[8px] uppercase border-none px-2",
+                          exp.type === 'Petty Cash' ? "bg-amber-500 text-white" : "bg-slate-900 text-white"
+                        )}>
+                          {exp.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="pr-8 text-right font-black text-slate-900 text-sm">
+                        KES {exp.amount.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+
+            <div className="space-y-8">
+              <Card className="border-none shadow-2xl rounded-[2.5rem] bg-amber-500 text-white p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-12 -mr-16 -mt-16 bg-white/10 rounded-full blur-3xl" />
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center border border-white/20">
+                      <Wallet className="size-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black uppercase">Petty Cash Pool</h3>
+                      <p className="text-amber-100 text-[10px] font-black uppercase">Manual Float Audit</p>
+                    </div>
+                  </div>
+                  <div className="text-4xl font-black italic">KES 8,400</div>
+                  <Progress value={42} className="h-2 bg-white/20 [&>div]:bg-white" />
+                  <p className="text-[10px] font-bold uppercase opacity-80">Threshold Alert: Float is below KES 10,000</p>
+                  <Button className="w-full h-14 bg-white text-amber-600 hover:bg-amber-50 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl">
+                    Replenish Float
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8">
+                <h3 className="text-lg font-black uppercase tracking-tight mb-6">Spend Distribution</h3>
+                <div className="space-y-6">
+                  {[
+                    { label: "Payroll", val: 65, color: "bg-blue-500" },
+                    { label: "Consumables", val: 20, color: "bg-emerald-500" },
+                    { label: "Utilities", val: 10, color: "bg-amber-500" },
+                    { label: "Marketing", val: 5, color: "bg-indigo-500" },
+                  ].map(stat => (
+                    <div key={stat.label} className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <span>{stat.label}</span>
+                        <span>{stat.val}%</span>
+                      </div>
+                      <Progress value={stat.val} className={`h-1.5 ${stat.color} opacity-20`} />
+                    </div>
+                  ))}
+                </div>
+              </Card>
             </div>
           </div>
-          <div className="h-[400px] w-full">
-            {mounted && (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={REVENUE_STREAMS} barGap={16}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis 
-                    dataKey="category" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
-                    dy={12}
-                  />
-                  <YAxis hide />
-                  <Tooltip 
-                    cursor={{ fill: '#f8fafc' }}
-                    contentStyle={{ borderRadius: '2rem', border: 'none', boxShadow: '0 30px 60px rgba(0,0,0,0.1)', padding: '1.5rem' }}
-                  />
-                  <Bar dataKey="actual" fill="#3b82f6" radius={[8, 8, 0, 0]} barSize={48} />
-                  <Bar dataKey="target" fill="#e2e8f0" radius={[8, 8, 0, 0]} barSize={48} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
+        </TabsContent>
+
+        <TabsContent value="statements" className="outline-none">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { title: "Profit & Loss (P&L)", icon: FileText, desc: "Revenue vs Operational Costs", trend: "+12.4%" },
+              { title: "Cash Flow Statement", icon: TrendingUp, desc: "Cash Inflow vs Outflow", trend: "Stable" },
+              { title: "Balance Sheet", icon: LayoutGrid, desc: "Assets, Liabilities & Equity", trend: "Balanced" },
+            ].map((st, i) => (
+              <Card key={i} className="border-none shadow-xl rounded-[2.5rem] bg-white p-10 space-y-6 group hover:shadow-2xl transition-all duration-500">
+                <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <st.icon className="size-8" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-black uppercase tracking-tight">{st.title}</h3>
+                    <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black">{st.trend}</Badge>
+                  </div>
+                  <p className="text-slate-500 font-bold text-xs">{st.desc}</p>
+                </div>
+                <div className="pt-6 border-t border-dashed flex items-center justify-between">
+                  <Button variant="ghost" className="p-0 h-auto font-black text-xs text-primary uppercase gap-2 hover:bg-transparent">
+                    Generate Report <ChevronRight className="size-4" />
+                  </Button>
+                  <Button size="icon" variant="outline" className="size-10 rounded-xl">
+                    <Download className="size-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
-
-        <Card className="border-none shadow-2xl rounded-[3rem] bg-slate-900 text-white p-12 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-24 -mr-28 -mt-28 bg-primary/20 rounded-full blur-[100px] group-hover:scale-110 transition-transform duration-1000" />
-          <div className="relative z-10 flex flex-col h-full justify-between gap-10">
-            <header className="flex items-center gap-5">
-               <div className="size-16 bg-primary rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-primary/40 rotate-6 group-hover:rotate-12 transition-transform">
-                  <Sparkles className="size-9 text-white" />
-               </div>
-               <div>
-                  <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-primary">Profit Booster</h3>
-                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">Margin Optimization Engine</p>
-               </div>
-            </header>
-
-            <div className="space-y-6">
-               {[
-                 { name: "Executive Plus", price: "2,500", saving: "500", usp: "Highest Wash Margin", incentive: "+20% Staff Comm", color: 'border-blue-500/30 bg-blue-500/5' },
-                 { name: "Detailer's Choice", price: "6,000", saving: "1,200", usp: "Equipment Efficiency", incentive: "Free Microfiber Kit", color: 'border-emerald-500/30 bg-emerald-500/5' }
-               ].map((bundle, i) => (
-                 <div key={i} className={cn("space-y-4 p-6 rounded-[2rem] border transition-all cursor-pointer group/card", bundle.color, "hover:bg-white/10")}>
-                    <div className="flex justify-between items-start">
-                       <h4 className="font-black uppercase text-sm text-white group-hover/card:text-primary transition-colors">{bundle.name}</h4>
-                       <Badge className="bg-emerald-500 text-white border-none text-[9px] font-black px-3 py-0.5">HIGH MARGIN</Badge>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{bundle.usp}</p>
-                       <div className="flex items-center gap-3 mt-1">
-                          <span className="text-2xl font-black text-primary tracking-tighter leading-none">KES {bundle.price}</span>
-                          <span className="text-[10px] font-black text-slate-600 uppercase tracking-tighter line-through">KES {(parseInt(bundle.price.replace(',', '')) + parseInt(bundle.saving.replace(',', ''))).toLocaleString()}</span>
-                       </div>
-                    </div>
-                    <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                       <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">{bundle.incentive}</span>
-                       <Button variant="link" className="p-0 h-auto text-[9px] font-black text-primary uppercase flex items-center gap-2 group/btn">
-                          PUSH TO CLIENTS <ArrowRight className="size-3 group-hover/btn:translate-x-1 transition-transform" />
-                       </Button>
-                    </div>
-                 </div>
-               ))}
-            </div>
-
-            <Button className="w-full h-16 bg-white text-slate-900 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase text-xs tracking-widest shadow-2xl transition-all active:scale-95">
-               Configure Bundles Logic
-            </Button>
-          </div>
-        </Card>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

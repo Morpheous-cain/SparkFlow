@@ -29,24 +29,60 @@ export interface Branch {
   activeBays: number;
   revenueMTD: number;
   phone: string;
-  // Resource Monitoring
-  waterLevel: number; // Percentage
+  waterLevel: number;
   staffing: {
     current: number;
     required: number;
   };
-  essentialMaterialsLow: number; // Count of low essential stock
+  essentialMaterialsLow: number;
 }
 
-export interface MarketingCampaign {
+export interface Staff {
   id: string;
-  title: string;
-  channel: 'SMS' | 'WhatsApp' | 'Push';
-  audience: 'All' | 'Subscribers' | 'Inactive';
-  message: string;
-  status: 'Draft' | 'Sent' | 'Scheduled';
-  sentAt?: string;
-  recipients: number;
+  tenantId: string;
+  branchId: string;
+  name: string;
+  role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
+  performance: number; // 0-5 scale
+  rating: number; // Customer rating 0-5
+  attendanceStatus: AttendanceStatus;
+  lastClockIn?: string;
+  earnings: {
+    base: number;
+    commission: number;
+    tips: number;
+    total: number;
+  };
+  isEmployeeOfMonth?: boolean;
+}
+
+export interface PayrollRecord {
+  id: string;
+  staffId: string;
+  staffName: string;
+  month: string;
+  baseAmount: number;
+  commission: number;
+  deductions: number;
+  netPay: number;
+  status: 'Draft' | 'Approved' | 'Disbursed';
+}
+
+export interface Expense {
+  id: string;
+  category: string;
+  description: string;
+  amount: number;
+  date: string;
+  type: 'Direct' | 'Indirect' | 'Petty Cash';
+  branchId: string;
+}
+
+export interface ChartOfAccount {
+  code: string;
+  name: string;
+  type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+  balance: number;
 }
 
 export interface Service {
@@ -69,23 +105,6 @@ export interface ServiceBundle {
   usp: string;
 }
 
-export interface Staff {
-  id: string;
-  tenantId: string;
-  branchId: string;
-  name: string;
-  role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
-  performance: number;
-  attendanceStatus: AttendanceStatus;
-  lastClockIn?: string;
-  earnings: {
-    base: number;
-    commission: number;
-    tips: number;
-    total: number;
-  };
-}
-
 export interface InventoryItem {
   id: string;
   name: string;
@@ -94,7 +113,7 @@ export interface InventoryItem {
   retail: number;
   velocity: 'Fast' | 'Normal' | 'Slow';
   margin: number;
-  isEssential: boolean; // Crucial for operations
+  isEssential: boolean;
 }
 
 export interface VehicleLive {
@@ -135,15 +154,6 @@ export interface LogisticsRequest {
   assignedStaffId?: string;
 }
 
-export interface HomeServiceRequest extends LogisticsRequest {
-  serviceType: 'Home Wash' | 'Mobile Detailing';
-  coordinates?: { lat: number; lng: number };
-  scheduledDate: string;
-  scheduledTime: string;
-  vehiclePlate: string;
-  travelFee: number;
-}
-
 export interface Transaction {
   id: string;
   plate: string;
@@ -153,6 +163,7 @@ export interface Transaction {
   duration: number;
   date: string;
   branchId: string;
+  paymentMethod: 'M-Pesa' | 'Cash' | 'Card';
 }
 
 export interface SubscriptionPlan {

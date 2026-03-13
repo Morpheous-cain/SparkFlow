@@ -19,7 +19,8 @@ import {
   Ticket,
   Building2,
   Banknote,
-  Send
+  Send,
+  CreditCard
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,6 +44,7 @@ const mainItems = [
   { title: "Logistics", icon: Truck, url: "/manager/logistics" },
   { title: "Marketing", icon: Send, url: "/manager/marketing" },
   { title: "Accounts", icon: Banknote, url: "/manager/accounts" },
+  { title: "Payroll", icon: CreditCard, url: "/manager/payroll" },
   { title: "Subscriptions", icon: Ticket, url: "/manager/subscriptions" },
   { title: "Analytics", icon: BarChart3, url: "/manager/analytics" },
   { title: "Bays", icon: Warehouse, url: "/manager/bays" },
