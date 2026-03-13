@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -20,23 +21,18 @@ import {
   Waves,
   Hash,
   Coins,
-  ArrowUpRight
+  ArrowUpRight,
+  Building2
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { cn } from "@/lib/utils";
 
 const SAAS_TENANTS = [
-  { id: 'T-001', name: 'SparkFlow Westlands', plan: 'Enterprise', status: 'Active', revenue: 145000, smsBalance: 2450, expiry: '2024-12-01' },
-  { id: 'T-002', name: 'Elite Car Wash Karen', plan: 'Professional', status: 'Active', revenue: 82000, smsBalance: 120, expiry: '2024-08-15' },
-  { id: 'T-003', name: 'Bubbles Kisumu', plan: 'Basic', status: 'Suspended', revenue: 12000, smsBalance: 0, expiry: '2024-04-01' },
-  { id: 'T-004', name: 'Mombasa Port Wash', plan: 'Enterprise', status: 'Active', revenue: 210000, smsBalance: 5800, expiry: '2025-01-20' },
-];
-
-const PRICING_TIERS = [
-  { name: 'Basic', price: '4,999', desc: 'Up to 2 Bays, Basic ERP', icon: Waves, color: 'text-blue-500' },
-  { name: 'Professional', price: '14,999', desc: 'Unlimited Bays, Logistics Module', icon: Zap, color: 'text-primary' },
-  { name: 'Enterprise', price: '39,999', desc: 'Multi-branch, AI Insights, White-label', icon: ShieldCheck, color: 'text-indigo-600' },
+  { id: 'T-001', name: 'SparkFlow Westlands', plan: 'Enterprise', status: 'Active', revenue: 145000, smsBalance: 2450, expiry: '2024-12-01', branches: 3 },
+  { id: 'T-002', name: 'Elite Car Wash Karen', plan: 'Professional', status: 'Active', revenue: 82000, smsBalance: 120, expiry: '2024-08-15', branches: 2 },
+  { id: 'T-003', name: 'Bubbles Kisumu', plan: 'Basic', status: 'Suspended', revenue: 12000, smsBalance: 0, expiry: '2024-04-01', branches: 1 },
+  { id: 'T-004', name: 'Mombasa Port Wash', plan: 'Enterprise', status: 'Active', revenue: 210000, smsBalance: 5800, expiry: '2025-01-20', branches: 5 },
 ];
 
 export default function SaaSAdminPage() {
@@ -70,7 +66,7 @@ export default function SaaSAdminPage() {
            { label: "Subscription MRR", value: `KES ${(totalRevenue/1000).toFixed(1)}K`, icon: CreditCard, color: "text-blue-600" },
            { label: "SMS Bundle Revenue", value: `KES ${(totalSMSRevenue/1000).toFixed(1)}K`, icon: Hash, color: "text-amber-600" },
            { label: "Active Tenants", value: "24", icon: Globe, color: "text-primary" },
-           { label: "Global Users", value: "142", icon: Users, color: "text-indigo-600" },
+           { label: "Global Branches", value: SAAS_TENANTS.reduce((acc, t) => acc + t.branches, 0).toString(), icon: Building2, color: "text-indigo-600" },
          ].map((kpi, i) => (
            <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
              <CardContent className="p-8">
@@ -97,6 +93,7 @@ export default function SaaSAdminPage() {
                <TableHeader className="bg-slate-50/50 h-12">
                   <TableRow className="border-none">
                      <TableHead className="pl-8 uppercase text-[10px] font-black">Business Name</TableHead>
+                     <TableHead className="uppercase text-[10px] font-black">Branches</TableHead>
                      <TableHead className="uppercase text-[10px] font-black">Plan</TableHead>
                      <TableHead className="uppercase text-[10px] font-black">SMS Balance</TableHead>
                      <TableHead className="uppercase text-[10px] font-black">Status</TableHead>
@@ -110,6 +107,12 @@ export default function SaaSAdminPage() {
                           <div className="flex flex-col">
                              <span className="font-black text-slate-900 uppercase">{tenant.name}</span>
                              <span className="text-[9px] font-black text-slate-400">ID: {tenant.id}</span>
+                          </div>
+                       </TableCell>
+                       <TableCell>
+                          <div className="flex items-center gap-2">
+                             <Building2 className="size-3 text-slate-400" />
+                             <span className="text-xs font-black">{tenant.branches}</span>
                           </div>
                        </TableCell>
                        <TableCell>

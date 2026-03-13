@@ -1,3 +1,4 @@
+
 "use client";
 
 import { 
@@ -16,7 +17,7 @@ import {
   Warehouse,
   Truck,
   Ticket,
-  Zap,
+  Building2,
   Banknote,
   Send
 } from "lucide-react";
@@ -38,6 +39,7 @@ import { usePathname } from "next/navigation";
 
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
+  { title: "Branches", icon: Building2, url: "/manager/branches" },
   { title: "Logistics", icon: Truck, url: "/manager/logistics" },
   { title: "Marketing", icon: Send, url: "/manager/marketing" },
   { title: "Accounts", icon: Banknote, url: "/manager/accounts" },

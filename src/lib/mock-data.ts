@@ -1,20 +1,26 @@
 
-import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest, SubscriptionPlan, Voucher, Promotion, ServiceBundle } from "./types";
+import { Service, Staff, VehicleLive, Transaction, InventoryItem, Bay, LogisticsRequest, SubscriptionPlan, Voucher, Promotion, ServiceBundle, Branch } from "./types";
+
+export const BRANCHES: Branch[] = [
+  { id: 'BR-001', tenantId: 'T-001', name: 'Westlands Flagship', location: 'Ring Road, Westlands', managerName: 'Grace Mutua', status: 'Open', activeBays: 3, revenueMTD: 450000, phone: '+254 711 000 111' },
+  { id: 'BR-002', tenantId: 'T-001', name: 'Karen Hub', location: 'Karen Road', managerName: 'Peter Otieno', status: 'Open', activeBays: 2, revenueMTD: 280000, phone: '+254 711 000 222' },
+  { id: 'BR-003', tenantId: 'T-001', name: 'Mombasa Road', location: 'Panari Center', managerName: 'Sarah Wambui', status: 'Limited', activeBays: 1, revenueMTD: 120000, phone: '+254 711 000 333' },
+];
 
 export const SERVICES: Service[] = [
-  { id: '1', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash', usp: 'Quick 20-min turnaround' },
-  { id: '2', name: 'Executive Wash', price: 1200, duration: 45, category: 'Wash', usp: 'Includes interior vacuum & dash shine' },
-  { id: '3', name: 'Full Detailing', price: 4500, duration: 180, category: 'Detailing', usp: 'Showroom finish guaranteed' },
-  { id: '4', name: 'Ceramic Coating', price: 15000, duration: 360, category: 'Detailing', usp: '3-year paint protection' },
-  { id: '5', name: 'Window Tinting', price: 8000, duration: 120, category: 'Tinting', usp: '99% UV rejection film' },
-  { id: '6', name: 'Carpet Cleaning', price: 2000, duration: 60, category: 'Wash', usp: 'Deep extraction technology' },
+  { id: '1', tenantId: 'T-001', name: 'Basic Wash', price: 500, duration: 20, category: 'Wash', usp: 'Quick 20-min turnaround' },
+  { id: '2', tenantId: 'T-001', name: 'Executive Wash', price: 1200, duration: 45, category: 'Wash', usp: 'Includes interior vacuum & dash shine' },
+  { id: '3', tenantId: 'T-001', name: 'Full Detailing', price: 4500, duration: 180, category: 'Detailing', usp: 'Showroom finish guaranteed' },
+  { id: '4', tenantId: 'T-001', name: 'Ceramic Coating', price: 15000, duration: 360, category: 'Detailing', usp: '3-year paint protection' },
+  { id: '5', tenantId: 'T-001', name: 'Window Tinting', price: 8000, duration: 120, category: 'Tinting', usp: '99% UV rejection film' },
+  { id: '6', tenantId: 'T-001', name: 'Carpet Cleaning', price: 2000, duration: 60, category: 'Wash', usp: 'Deep extraction technology' },
 ];
 
 export const SERVICE_BUNDLES: ServiceBundle[] = [
   { 
     id: 'B1', 
     name: 'The Spark Executive', 
-    services: ['Executive Wash', 'Tire Wax', 'Engine Wash'], 
+    services: ['Executive Wash', 'Tire Max', 'Engine Wash'], 
     price: 1800, 
     saving: 400,
     incentive: 'Earn 100 Bonus Pts',
@@ -51,6 +57,8 @@ export const PROMOTIONS: Promotion[] = [
 export const STAFF: Staff[] = [
   { 
     id: 'S1', 
+    tenantId: 'T-001',
+    branchId: 'BR-001',
     name: 'John Kamau', 
     role: 'Attendant', 
     performance: 4.8, 
@@ -58,6 +66,8 @@ export const STAFF: Staff[] = [
   },
   { 
     id: 'S2', 
+    tenantId: 'T-001',
+    branchId: 'BR-002',
     name: 'Sarah Wambui', 
     role: 'Attendant', 
     performance: 4.5, 
@@ -65,6 +75,8 @@ export const STAFF: Staff[] = [
   },
   { 
     id: 'S3', 
+    tenantId: 'T-001',
+    branchId: 'BR-001',
     name: 'Peter Otieno', 
     role: 'Attendant', 
     performance: 4.9, 
@@ -72,24 +84,12 @@ export const STAFF: Staff[] = [
   },
   { 
     id: 'S4', 
+    tenantId: 'T-001',
+    branchId: 'BR-001',
     name: 'Grace Mutua', 
     role: 'Agent', 
     performance: 4.7, 
     earnings: { base: 20000, commission: 5000, tips: 0, total: 25000 } 
-  },
-  { 
-    id: 'S5', 
-    name: 'David Mwangi', 
-    role: 'Driver', 
-    performance: 4.6, 
-    earnings: { base: 12000, commission: 3500, tips: 3000, total: 18500 } 
-  },
-  { 
-    id: 'S6', 
-    name: 'Alice Njeri', 
-    role: 'Technician', 
-    performance: 4.9, 
-    earnings: { base: 15000, commission: 7000, tips: 0, total: 22000 } 
   },
 ];
 
@@ -97,14 +97,12 @@ export const INVENTORY: InventoryItem[] = [
   { id: 'I1', name: 'Premium Car Shampoo', stock: 45, wholesale: 1200, retail: 1800, velocity: 'Fast', margin: 33 },
   { id: 'I2', name: 'Microfiber Towels (Bulk)', stock: 120, wholesale: 150, retail: 350, velocity: 'Normal', margin: 57 },
   { id: 'I3', name: 'Specialist Tire Wax', stock: 12, wholesale: 800, retail: 1200, velocity: 'Slow', margin: 33 },
-  { id: 'I4', name: 'Air Freshener (Pine)', stock: 8, wholesale: 100, retail: 300, velocity: 'Fast', margin: 66 },
-  { id: 'I5', name: 'Engine Degreaser', stock: 65, wholesale: 2200, retail: 3500, velocity: 'Slow', margin: 37 },
 ];
 
 export const BAYS: Bay[] = [
-  { id: 'BAY-1', name: 'Bay 1 (Standard)', status: 'Occupied', currentVehiclePlate: 'KDC 123A' },
-  { id: 'BAY-2', name: 'Bay 2 (Detailing)', status: 'Occupied', currentVehiclePlate: 'KDJ 999Z' },
-  { id: 'BAY-3', name: 'Bay 3 (Express)', status: 'Available' },
+  { id: 'BAY-1', tenantId: 'T-001', branchId: 'BR-001', name: 'Bay 1 (Standard)', status: 'Occupied', currentVehiclePlate: 'KDC 123A' },
+  { id: 'BAY-2', tenantId: 'T-001', branchId: 'BR-001', name: 'Bay 2 (Detailing)', status: 'Occupied', currentVehiclePlate: 'KDJ 999Z' },
+  { id: 'BAY-3', tenantId: 'T-001', branchId: 'BR-001', name: 'Bay 3 (Express)', status: 'Available' },
 ];
 
 export const MOCK_VEHICLES: VehicleLive[] = [
@@ -117,7 +115,8 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     services: ['Executive Wash', 'Tire Wax'],
     totalAmount: 2400,
     progress: 65,
-    tenantId: 'T-001'
+    tenantId: 'T-001',
+    branchId: 'BR-001'
   },
   {
     plate: 'KDJ 999Z',
@@ -128,25 +127,15 @@ export const MOCK_VEHICLES: VehicleLive[] = [
     services: ['Full Detailing'],
     totalAmount: 4500,
     progress: 30,
-    tenantId: 'T-001'
+    tenantId: 'T-001',
+    branchId: 'BR-001'
   },
-  {
-    plate: 'KDH 456B',
-    status: 'Queue',
-    arrivalTime: new Date(Date.now() - 10 * 60000).toISOString(),
-    bayId: null,
-    attendantId: null,
-    services: ['Basic Wash'],
-    totalAmount: 500,
-    progress: 0,
-    tenantId: 'T-001'
-  }
 ];
 
 export const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: 'T1', plate: 'KBA 001C', amount: 1200, status: 'Paid', receipt: 'MPESA_9821X', duration: 35, date: '2024-05-20' },
-  { id: 'T2', plate: 'KBB 002D', amount: 500, status: 'Paid', receipt: 'MPESA_9822Y', duration: 20, date: '2024-05-20' },
-  { id: 'T3', plate: 'KBC 003E', amount: 4500, status: 'Pending', receipt: null, duration: 150, date: '2024-05-20' },
+  { id: 'T1', plate: 'KBA 001C', amount: 1200, status: 'Paid', receipt: 'MPESA_9821X', duration: 35, date: '2024-05-20', branchId: 'BR-001' },
+  { id: 'T2', plate: 'KBB 002D', amount: 500, status: 'Paid', receipt: 'MPESA_9822Y', duration: 20, date: '2024-05-20', branchId: 'BR-001' },
+  { id: 'T3', plate: 'KBC 003E', amount: 4500, status: 'Pending', receipt: null, duration: 150, date: '2024-05-20', branchId: 'BR-002' },
 ];
 
 export const MOCK_LOGISTICS: LogisticsRequest[] = [
@@ -161,34 +150,8 @@ export const MOCK_LOGISTICS: LogisticsRequest[] = [
     qrTag: 'SPARK-RU-101',
     trackingProgress: 45,
     amount: 3500,
-    assignedStaffId: 'S6',
-    tenantId: 'T-001'
+    tenantId: 'T-001',
+    branchId: 'BR-001',
+    assignedStaffId: 'S1'
   },
-  {
-    id: 'LOG-102',
-    customerName: 'Mary Atieno',
-    itemType: 'SUV Valet',
-    status: 'Booking',
-    address: 'Westlands, Nairobi',
-    requestTime: '2024-05-21T10:30:00Z',
-    pickupWindow: '02:00 PM - 04:00 PM',
-    qrTag: 'SPARK-VA-102',
-    trackingProgress: 0,
-    amount: 2500,
-    tenantId: 'T-001'
-  },
-  {
-    id: 'LOG-103',
-    customerName: 'Brian Kipkorir',
-    itemType: 'Sofa Set',
-    status: 'Pickup',
-    address: 'Karen, Nairobi',
-    requestTime: '2024-05-21T08:15:00Z',
-    pickupWindow: '08:00 AM - 10:00 AM',
-    qrTag: 'SPARK-SO-103',
-    trackingProgress: 20,
-    amount: 5000,
-    assignedStaffId: 'S5',
-    tenantId: 'T-001'
-  }
 ];

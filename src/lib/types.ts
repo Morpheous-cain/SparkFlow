@@ -15,6 +15,19 @@ export interface Tenant {
   location: string;
   revenueMTD: number;
   smsBalance: number;
+  branchesCount: number;
+}
+
+export interface Branch {
+  id: string;
+  tenantId: string;
+  name: string;
+  location: string;
+  managerName: string;
+  status: 'Open' | 'Closed' | 'Limited';
+  activeBays: number;
+  revenueMTD: number;
+  phone: string;
 }
 
 export interface MarketingCampaign {
@@ -51,6 +64,7 @@ export interface ServiceBundle {
 export interface Staff {
   id: string;
   tenantId: string;
+  branchId: string;
   name: string;
   role: 'Agent' | 'Attendant' | 'Manager' | 'Driver' | 'Technician';
   performance: number;
@@ -75,6 +89,7 @@ export interface InventoryItem {
 export interface VehicleLive {
   plate: string;
   tenantId: string;
+  branchId: string;
   status: VehicleStatus;
   arrivalTime: string;
   bayId: string | null;
@@ -87,6 +102,7 @@ export interface VehicleLive {
 export interface Bay {
   id: string;
   tenantId: string;
+  branchId: string;
   name: string;
   status: BayStatus;
   currentVehiclePlate?: string;
@@ -95,6 +111,7 @@ export interface Bay {
 export interface LogisticsRequest {
   id: string;
   tenantId: string;
+  branchId: string;
   customerName: string;
   itemType: string;
   status: DeliveryStatus;
@@ -114,4 +131,40 @@ export interface HomeServiceRequest extends LogisticsRequest {
   scheduledTime: string;
   vehiclePlate: string;
   travelFee: number;
+}
+
+export interface Transaction {
+  id: string;
+  plate: string;
+  amount: number;
+  status: 'Paid' | 'Pending';
+  receipt: string | null;
+  duration: number;
+  date: string;
+  branchId: string;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  discount: number;
+  benefits: string[];
+}
+
+export interface Voucher {
+  id: string;
+  code: string;
+  discount: number;
+  type: 'Percentage' | 'Fixed';
+  expiry: string;
+  status: 'Active' | 'Expired';
+}
+
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
 }
