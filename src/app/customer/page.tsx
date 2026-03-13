@@ -5,7 +5,7 @@ import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { SERVICE_BUNDLES, SERVICES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
@@ -29,7 +29,6 @@ import {
   Trophy, 
   Sparkles, 
   Camera, 
-  Share2, 
   AlertTriangle,
   Truck,
   QrCode,
@@ -52,6 +51,7 @@ export default function CustomerPortal() {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Home Service Request State
   const [isHomeServiceOpen, setIsHomeServiceOpen] = useState(false);
@@ -63,6 +63,10 @@ export default function CustomerPortal() {
   const [homeTime, setHomeTime] = useState("10:00 AM");
   const [homePlate, setHomePlate] = useState("");
   const [isLocating, setIsLocating] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const travelFee = homeLocation ? 450 : 0; 
   const totalHomeCost = selectedHomeService.price + travelFee;
@@ -145,7 +149,7 @@ export default function CustomerPortal() {
     
     toast({
       title: "Request Scheduled!",
-      description: `Home Wash for ${homePlate} confirmed for ${format(homeDate || new Date(), 'PPP')} at ${homeTime}.`,
+      description: `Home Wash for ${homePlate} confirmed for ${homeDate ? format(homeDate, 'PPP') : 'N/A'} at ${homeTime}.`,
     });
     setIsHomeServiceOpen(false);
     setHomeStep(1);

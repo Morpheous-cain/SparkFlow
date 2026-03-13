@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SUBSCRIPTION_PLANS, VOUCHERS, PROMOTIONS } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { 
   Ticket, 
   Zap, 
-  Star, 
   Crown, 
   Plus, 
   Gift, 
@@ -16,7 +15,6 @@ import {
   Users, 
   TrendingUp,
   Tag,
-  ArrowRight,
   Settings2,
   Trash2,
   Check
@@ -39,6 +37,11 @@ export default function SubscriptionsManagementPage() {
   const { toast } = useToast();
   const [plans, setPlans] = useState(SUBSCRIPTION_PLANS);
   const [editingPlan, setEditingPlan] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const kpis = [
     { label: "Active Subscribers", value: "420", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
@@ -243,7 +246,7 @@ export default function SubscriptionsManagementPage() {
                       </div>
                       <div className="pt-4 border-t border-white/10 flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-indigo-200">
                         <Calendar className="size-3" />
-                        Ends {new Date(promo.endDate).toLocaleDateString()}
+                        Ends {mounted ? new Date(promo.endDate).toLocaleDateString() : "..."}
                       </div>
                    </CardContent>
                  </Card>
@@ -278,7 +281,7 @@ export default function SubscriptionsManagementPage() {
                   </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-dashed flex items-center justify-between text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                  <span>Expires {new Date(voucher.expiry).toLocaleDateString()}</span>
+                  <span>Expires {mounted ? new Date(voucher.expiry).toLocaleDateString() : "..."}</span>
                   <Button variant="ghost" size="sm" className="h-6 px-2 rounded-lg text-[8px] font-black">EDIT</Button>
                 </div>
               </div>

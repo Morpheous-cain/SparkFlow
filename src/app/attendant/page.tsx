@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { MOCK_VEHICLES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,11 @@ export default function AttendantPWA() {
   const { toast } = useToast();
   const [jobs, setJobs] = useState(MOCK_VEHICLES);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleStartJob = (plate: string) => {
     toast({ title: "Wash Started", description: `Vehicle ${plate} is now being serviced.` });
@@ -74,7 +79,7 @@ export default function AttendantPWA() {
                   </Badge>
                   <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
                     <Clock className="size-3" />
-                    <span>ARRIVED: {new Date(job.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span>ARRIVED: {mounted ? new Date(job.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "..."}</span>
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2">
