@@ -26,7 +26,7 @@ export default function ServicesPage() {
   const [editingService, setEditingService] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Branding (Mocked)
+  // Branding (Mocked from central state)
   const customLogoUrl = "https://picsum.photos/seed/sparkflow-logo/200/200";
   const businessName = "SparkFlow Westlands";
 
@@ -50,6 +50,13 @@ export default function ServicesPage() {
     setEditingService(null);
   };
 
+  const handleCreateNew = () => {
+    toast({
+      title: "Provisioning Sequence",
+      description: "Opening 'New Service Protocol' wizard. Select a category to begin.",
+    });
+  };
+
   if (!mounted) return null;
 
   return (
@@ -64,7 +71,10 @@ export default function ServicesPage() {
             <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-1">{businessName} • Operational Catalog</p>
           </div>
         </div>
-        <Button className="gap-2 rounded-[1.5rem] h-14 px-8 shadow-2xl shadow-primary/20 bg-primary hover:bg-blue-600 transition-all text-white border-none font-black uppercase text-[10px] tracking-widest">
+        <Button 
+          className="gap-2 rounded-[1.5rem] h-14 px-8 shadow-2xl shadow-primary/20 bg-primary hover:bg-blue-600 transition-all text-white border-none font-black uppercase text-[10px] tracking-widest"
+          onClick={handleCreateNew}
+        >
           <Plus className="size-4" /> Provision New Service
         </Button>
       </header>
@@ -137,8 +147,9 @@ export default function ServicesPage() {
       {/* Branded Service Editor */}
       <Dialog open={!!editingService} onOpenChange={(open) => !open && setEditingService(null)}>
         <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl bg-white font-body">
-          <div className="p-10 bg-slate-900 text-white">
-            <div className="flex items-center gap-5">
+          <div className="p-10 bg-slate-900 text-white relative">
+            <div className="absolute top-0 right-0 p-16 -mr-16 -mt-16 bg-primary/20 rounded-full blur-3xl" />
+            <div className="relative z-10 flex items-center gap-5">
                <div className="size-14 rounded-2xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/30 rotate-3">
                   <Wrench className="size-8 text-white" />
                </div>

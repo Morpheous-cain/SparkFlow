@@ -29,7 +29,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +42,7 @@ export default function SubscriptionsManagementPage() {
   const [editingVoucher, setEditingVoucher] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Branding (Mocked from Settings)
+  // Branding (Mocked from central state)
   const customLogoUrl = "https://picsum.photos/seed/sparkflow-logo/200/200";
   const businessName = "SparkFlow Westlands";
 
@@ -76,23 +75,34 @@ export default function SubscriptionsManagementPage() {
   };
 
   const handleAddBenefit = () => {
+    if (!editingPlan) return;
     setEditingPlan({
       ...editingPlan,
-      benefits: [...editingPlan.benefits, "New Benefit"]
+      benefits: [...editingPlan.benefits, "New Membership Perk"]
     });
   };
 
   const handleUpdateBenefit = (index: number, value: string) => {
+    if (!editingPlan) return;
     const newBenefits = [...editingPlan.benefits];
     newBenefits[index] = value;
     setEditingPlan({ ...editingPlan, benefits: newBenefits });
   };
 
   const handleRemoveBenefit = (index: number) => {
+    if (!editingPlan) return;
     setEditingPlan({
       ...editingPlan,
       benefits: editingPlan.benefits.filter((_: any, i: number) => i !== index)
     });
+  };
+
+  const handleIssueVoucher = () => {
+    toast({ title: "Voucher Engine", description: "Generating unique single-use discount codes for loyalty campaign..." });
+  };
+
+  const handleCreatePromo = () => {
+    toast({ title: "Promotion Engine", description: "Configuring new seasonal 'Rainy Season' triggers..." });
   };
 
   if (!mounted) return null;
@@ -102,11 +112,7 @@ export default function SubscriptionsManagementPage() {
       <header className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="size-14 rounded-2xl bg-white shadow-xl flex items-center justify-center overflow-hidden border-2 border-primary/10 relative">
-             {customLogoUrl ? (
-               <Image src={customLogoUrl} alt="Logo" fill className="object-cover" />
-             ) : (
-               <Waves className="size-7 text-primary" />
-             )}
+             <Image src={customLogoUrl} alt="Logo" fill className="object-cover" />
           </div>
           <div>
             <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">Membership & Rewards</h1>
@@ -114,10 +120,17 @@ export default function SubscriptionsManagementPage() {
           </div>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="rounded-2xl h-12 gap-2 bg-white border-2 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-slate-200/50">
+          <Button 
+            variant="outline" 
+            className="rounded-2xl h-12 gap-2 bg-white border-2 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-slate-200/50"
+            onClick={handleIssueVoucher}
+          >
             <Ticket className="size-4" /> Issue Voucher
           </Button>
-          <Button className="rounded-2xl h-12 gap-2 shadow-xl shadow-primary/20 px-6 font-black uppercase text-[10px] tracking-widest bg-primary hover:bg-blue-600 transition-all text-white border-none">
+          <Button 
+            className="rounded-2xl h-12 gap-2 shadow-xl shadow-primary/20 px-6 font-black uppercase text-[10px] tracking-widest bg-primary hover:bg-blue-600 transition-all text-white border-none"
+            onClick={handleCreatePromo}
+          >
             <Plus className="size-4" /> Create Promotion
           </Button>
         </div>
@@ -191,14 +204,14 @@ export default function SubscriptionsManagementPage() {
                    <div className="absolute top-0 right-0 p-16 -mr-16 -mt-16 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000" />
                    <CardContent className="p-10 space-y-6 relative z-10">
                       <div className="flex justify-between items-start">
-                        <div className="size-14 bg-white/20 rounded-2xl backdrop-blur-md border border-white/20 flex items-center justify-center">
+                        <div className="size-14 bg-white/20 rounded-2xl backdrop-blur-md border border-white/10 flex items-center justify-center">
                           <Zap className="size-7 text-white fill-current" />
                         </div>
                         <div className="flex gap-2">
                           <Button variant="ghost" size="icon" className="text-white/50 hover:text-white hover:bg-white/10 rounded-full">
                             <Settings2 className="size-4" />
                           </Button>
-                          <Badge className="bg-emerald-500 text-white border-none font-black text-[9px] uppercase tracking-widest px-3 py-1">LIVE</Badge>
+                          <Badge className="bg-emerald-500 text-white border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">LIVE</Badge>
                         </div>
                       </div>
                       <div>
