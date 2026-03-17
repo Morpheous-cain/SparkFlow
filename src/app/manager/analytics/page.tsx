@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -24,7 +25,8 @@ import {
   Users, 
   Clock, 
   Zap,
-  ChevronDown
+  ChevronDown,
+  AlertTriangle
 } from "lucide-react";
 
 const REVENUE_DATA = [
@@ -66,44 +68,44 @@ export default function AnalyticsDashboard() {
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Business Analytics</h1>
-          <p className="text-slate-500 font-medium">Strategic intelligence and performance tracking</p>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic leading-none">Business Intelligence Analytics</h1>
+          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">Strategic intelligence and performance tracking protocol</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-xl h-12 gap-2 bg-white">
+          <Button variant="outline" className="rounded-xl h-12 gap-2 bg-white border-2 font-black uppercase text-[10px] tracking-widest">
             <Calendar className="size-4 text-slate-400" />
-            <span className="font-bold">{timeRange}</span>
+            <span>{timeRange}</span>
             <ChevronDown className="size-4 text-slate-400" />
           </Button>
-          <Button variant="outline" className="rounded-xl h-12 gap-2 bg-white px-4">
+          <Button variant="outline" className="rounded-xl h-12 gap-2 bg-white px-4 border-2">
             <Filter className="size-4 text-slate-400" />
           </Button>
-          <Button className="rounded-xl h-12 gap-2 shadow-lg shadow-primary/20 px-6">
-            <Download className="size-4" /> Export Data
+          <Button className="rounded-xl h-12 gap-2 shadow-lg shadow-primary/20 px-6 font-black uppercase text-[10px] tracking-widest bg-primary hover:bg-blue-600 text-white border-none">
+            <Download className="size-4" /> Export Analytics Data
           </Button>
         </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Customer LTV", value: "KES 14.2K", trend: "+18%", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Avg. Service Time", value: "32.5m", trend: "-4.2%", icon: Clock, color: "text-indigo-600", bg: "bg-indigo-50" },
-          { label: "Conversion Rate", value: "24.8%", trend: "+2.1%", icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
-          { label: "Market Share", value: "12.4%", trend: "+0.8%", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Customer Lifetime Value", value: "KES 14,200", trend: "+18%", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Average Service Time", value: "32.5 Minutes", trend: "-4.2%", icon: Clock, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Customer Conversion Rate", value: "24.8%", trend: "+2.1%", icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
+          { label: "Regional Market Share", value: "12.4%", trend: "+0.8%", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
         ].map((kpi, i) => (
-          <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
+          <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group bg-white">
             <CardContent className="p-8">
               <div className="flex justify-between items-start mb-6">
-                <div className={`size-12 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                <div className={`size-12 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner`}>
                   <kpi.icon className="size-6" />
                 </div>
-                <Badge className={`${kpi.trend.startsWith('+') ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} border-none font-bold rounded-full`}>
+                <Badge className={`${kpi.trend.startsWith('+') ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} border-none font-black text-[8px] uppercase px-2 py-0.5 rounded-full`}>
                   {kpi.trend}
                 </Badge>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{kpi.label}</span>
-                <div className="text-3xl font-black text-slate-900">{kpi.value}</div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</span>
+                <div className="text-3xl font-black text-slate-900 tracking-tighter leading-none italic">{kpi.value}</div>
               </div>
             </CardContent>
           </Card>
@@ -114,17 +116,17 @@ export default function AnalyticsDashboard() {
         <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <CardTitle className="text-xl font-bold">Revenue Performance</CardTitle>
-              <CardDescription>Monthly growth vs operational costs</CardDescription>
+              <CardTitle className="text-xl font-black uppercase italic">Revenue Performance Audit</CardTitle>
+              <CardDescription className="text-[10px] font-black uppercase text-slate-400">Monthly growth vs operational costs</CardDescription>
             </div>
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
                 <div className="size-3 rounded-full bg-primary" />
-                <span className="text-xs font-bold text-slate-500">Revenue</span>
+                <span className="text-[10px] font-black text-slate-500 uppercase">Gross Revenue</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="size-3 rounded-full bg-slate-200" />
-                <span className="text-xs font-bold text-slate-500">Costs</span>
+                <span className="text-[10px] font-black text-slate-500 uppercase">Direct Costs</span>
               </div>
             </div>
           </div>
@@ -143,17 +145,17 @@ export default function AnalyticsDashboard() {
                     dataKey="month" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
+                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
                     dy={10}
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 12, fontWeight: 600 }}
-                    tickFormatter={(val) => `K${val/1000}k`}
+                    tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
+                    tickFormatter={(val) => `KES ${val.toLocaleString()}`}
                   />
                   <Tooltip 
-                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                    contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '1rem' }}
                     cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }}
                   />
                   <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
@@ -166,8 +168,8 @@ export default function AnalyticsDashboard() {
 
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <CardHeader className="p-0 mb-8">
-            <CardTitle className="text-xl font-bold">Staff Performance</CardTitle>
-            <CardDescription>Efficiency scores per attendant</CardDescription>
+            <CardTitle className="text-xl font-black uppercase italic">Staff Efficiency Protocol</CardTitle>
+            <CardDescription className="text-[10px] font-black uppercase text-slate-400">Efficiency scores per attendant node</CardDescription>
           </CardHeader>
           <div className="h-[350px] w-full">
             {mounted && (
@@ -180,12 +182,12 @@ export default function AnalyticsDashboard() {
                     type="category" 
                     axisLine={false} 
                     tickLine={false}
-                    tick={{ fill: '#475569', fontSize: 12, fontWeight: 700 }}
+                    tick={{ fill: '#475569', fontSize: 10, fontWeight: 900 }}
                     width={80}
                   />
                   <Tooltip 
                     cursor={{ fill: '#f8fafc' }}
-                    contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+                    contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '1rem' }}
                   />
                   <Bar dataKey="efficiency" radius={[0, 10, 10, 0]} barSize={24}>
                     {STAFF_EFFICIENCY.map((entry, index) => (
@@ -198,8 +200,8 @@ export default function AnalyticsDashboard() {
           </div>
           <div className="mt-6 pt-6 border-t border-dashed">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-400 uppercase">Top Performer</span>
-              <Badge className="bg-primary text-white border-none">Grace M.</Badge>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Top Performance Node</span>
+              <Badge className="bg-primary text-white border-none font-black text-[8px] uppercase px-3 py-1 shadow-lg shadow-primary/20">Grace Mutua</Badge>
             </div>
           </div>
         </Card>
@@ -208,17 +210,17 @@ export default function AnalyticsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="border-none shadow-sm rounded-[2.5rem] bg-white p-8">
           <CardHeader className="p-0 mb-8">
-            <CardTitle className="text-xl font-bold">Customer Retention</CardTitle>
-            <CardDescription>Daily new vs returning traffic</CardDescription>
+            <CardTitle className="text-xl font-black uppercase italic">Customer Retention Engine</CardTitle>
+            <CardDescription className="text-[10px] font-black uppercase text-slate-400">Daily new vs returning traffic patterns</CardDescription>
           </CardHeader>
           <div className="h-[300px] w-full">
             {mounted && (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={CUSTOMER_DATA}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                  <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }} />
+                  <Tooltip contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '1rem' }} />
                   <Bar dataKey="returning" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={40} />
                   <Bar dataKey="new" stackId="a" fill="#0ea5e9" radius={[10, 10, 0, 0]} barSize={40} />
                 </BarChart>
@@ -231,37 +233,37 @@ export default function AnalyticsDashboard() {
           <div className="absolute top-0 right-0 p-12 -mr-16 -mt-16 bg-primary/10 rounded-full blur-3xl" />
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div className="flex items-center gap-4 mb-8">
-              <div className="size-14 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/40">
-                <Zap className="size-8 text-white" />
+              <div className="size-14 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/40 rotate-3">
+                <Zap className="size-8 text-white fill-current" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold">Predictive Insights</h3>
-                <p className="text-slate-400 text-sm">AI analysis of current business trajectory</p>
+                <h3 className="text-2xl font-black uppercase tracking-tighter italic">Predictive Decision Core</h3>
+                <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">AI strategy analysis based on current trajectory</p>
               </div>
             </div>
             
             <div className="space-y-6">
-              <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
-                <h4 className="text-primary font-bold text-sm mb-2 uppercase tracking-widest">Revenue Forecast</h4>
-                <p className="text-lg leading-relaxed text-slate-200">
-                  Based on current velocity, June is projected to exceed revenue targets by <span className="text-white font-black">14.8%</span> due to high detailing demand.
+              <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm shadow-inner">
+                <h4 className="text-primary font-black text-[10px] mb-2 uppercase tracking-[0.2em]">Growth Forecast</h4>
+                <p className="text-xl leading-snug text-slate-200 font-bold italic">
+                  Based on current velocity, June is projected to exceed revenue targets by <span className="text-white font-black underline decoration-primary underline-offset-4 decoration-2">14.8%</span> due to high detailing demand.
                 </p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Risk Level</span>
-                  <div className="text-xl font-bold text-emerald-400">Low</div>
+                <div className="p-5 bg-white/5 rounded-2xl border border-white/5">
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">Operational Risk</span>
+                  <div className="text-xl font-black text-emerald-400 uppercase italic">Low Priority</div>
                 </div>
-                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Growth Opportunity</span>
-                  <div className="text-xl font-bold text-blue-400">High</div>
+                <div className="p-5 bg-white/5 rounded-2xl border border-white/5">
+                  <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">Growth Opportunity</span>
+                  <div className="text-xl font-black text-blue-400 uppercase italic">High Potential</div>
                 </div>
               </div>
             </div>
 
-            <Button className="mt-8 bg-white text-slate-900 hover:bg-slate-100 font-bold rounded-2xl h-14">
-              Generate Comprehensive Strategy
+            <Button className="mt-8 bg-white text-slate-900 hover:bg-slate-100 font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl h-14 shadow-2xl transition-all active:scale-95">
+              Generate Detailed Corporate Strategy
             </Button>
           </div>
         </Card>

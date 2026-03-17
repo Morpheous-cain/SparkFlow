@@ -49,10 +49,10 @@ export default function StaffPage() {
   const employeeOfMonth = activeStaff.find(s => s.isEmployeeOfMonth);
 
   const kpis = [
-    { label: "Active Team", value: activeStaff.length.toString(), icon: Users, color: "text-blue-600", bg: "bg-blue-50", trend: "Full Capacity", layer: 'bg-blue-500' },
-    { label: "Reward Points Issued", value: activeStaff.reduce((acc, s) => acc + s.points, 0).toLocaleString(), icon: Zap, color: "text-amber-600", bg: "bg-amber-50", trend: "+12.1%", layer: 'bg-amber-500' },
-    { label: "Attendance Rate", value: "85%", icon: CalendarCheck, color: "text-indigo-600", bg: "bg-indigo-50", trend: "Normal", layer: 'bg-indigo-500' },
-    { label: "Bonus Accrued", value: "KES 24.2K", icon: Coins, color: "text-emerald-600", bg: "bg-emerald-50", trend: "On Target", layer: 'bg-emerald-500' },
+    { label: "Active Team Count", value: activeStaff.length.toString(), icon: Users, color: "text-blue-600", bg: "bg-blue-50", trend: "Full Capacity", layer: 'bg-blue-500' },
+    { label: "Reward Points Issued", value: activeStaff.reduce((acc, s) => acc + (s.points || 0), 0).toLocaleString(), icon: Zap, color: "text-amber-600", bg: "bg-amber-50", trend: "+12.1%", layer: 'bg-amber-500' },
+    { label: "Staff Attendance Rate", value: "85%", icon: CalendarCheck, color: "text-indigo-600", bg: "bg-indigo-50", trend: "Normal", layer: 'bg-indigo-500' },
+    { label: "Total Performance Bonus Accrued", value: "KES 24,200", icon: Coins, color: "text-emerald-600", bg: "bg-emerald-50", trend: "On Target", layer: 'bg-emerald-500' },
   ];
 
   const handleAwardPoints = (id: string, name: string) => {
@@ -61,7 +61,7 @@ export default function StaffPage() {
       description: `+100 SparkPoints issued to ${name} for operational excellence.`,
       action: <Zap className="size-4 text-amber-500 fill-amber-500" />
     });
-    setActiveStaff(prev => prev.map(s => s.id === id ? { ...s, points: s.points + 100 } : s));
+    setActiveStaff(prev => prev.map(s => s.id === id ? { ...s, points: (s.points || 0) + 100 } : s));
   };
 
   const handleProcessReward = (name: string) => {
@@ -84,7 +84,7 @@ export default function StaffPage() {
     <div className="p-8 space-y-8 bg-[#f1f5f9] min-h-screen font-body">
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic italic">Human Capital Core</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic leading-none">Human Capital Core</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Performance, Attendance & Gamified Rewards</p>
         </div>
         <div className="flex gap-3">
@@ -126,7 +126,7 @@ export default function StaffPage() {
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
                   <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-[1.5rem] backdrop-blur-md flex flex-col">
                     <span className="text-[8px] font-black text-primary uppercase block mb-1 tracking-widest">Accrued Points</span>
-                    <span className="text-2xl font-black italic">{employeeOfMonth.points.toLocaleString()} <Zap className="inline size-4 text-amber-400 ml-1" /></span>
+                    <span className="text-2xl font-black italic">{(employeeOfMonth.points || 0).toLocaleString()} <Zap className="inline size-4 text-amber-400 ml-1" /></span>
                   </div>
                   <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-[1.5rem] backdrop-blur-md flex flex-col">
                     <span className="text-[8px] font-black text-emerald-400 uppercase block mb-1 tracking-widest">Cash Multiplier</span>
@@ -150,7 +150,7 @@ export default function StaffPage() {
               <p className="text-[9px] font-black text-slate-400 uppercase mt-2 tracking-widest">Top point earners across nodes</p>
            </header>
            <div className="space-y-4 relative z-10">
-              {activeStaff.sort((a, b) => b.points - a.points).slice(0, 4).map((s, i) => (
+              {[...activeStaff].sort((a, b) => (b.points || 0) - (a.points || 0)).slice(0, 4).map((s, i) => (
                 <div key={s.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100/50 group/item hover:bg-white hover:shadow-lg transition-all">
                    <div className="flex items-center gap-3">
                       <div className="size-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[10px] font-black text-slate-400 group-hover/item:text-primary">
@@ -162,7 +162,7 @@ export default function StaffPage() {
                       </div>
                    </div>
                    <div className="text-right">
-                      <div className="text-sm font-black text-slate-900">{s.points.toLocaleString()} <Zap className="inline size-3 text-amber-400 fill-amber-400" /></div>
+                      <div className="text-sm font-black text-slate-900">{(s.points || 0).toLocaleString()} <Zap className="inline size-3 text-amber-400 fill-amber-400" /></div>
                    </div>
                 </div>
               ))}
@@ -255,7 +255,7 @@ export default function StaffPage() {
                      <div className="flex items-end justify-between">
                         <div>
                            <span className="text-[10px] font-black text-slate-500 uppercase opacity-60 tracking-widest block mb-1">Available Rewards</span>
-                           <span className="text-4xl font-black text-slate-900 tracking-tighter italic">{member.points.toLocaleString()}</span>
+                           <span className="text-4xl font-black text-slate-900 tracking-tighter italic">{(member.points || 0).toLocaleString()}</span>
                         </div>
                         <Button 
                           size="sm" 
@@ -271,7 +271,7 @@ export default function StaffPage() {
                   <div className="flex items-center justify-between bg-gradient-to-br from-slate-900 to-black text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group/payout">
                     <div className="absolute top-0 right-0 p-12 -mr-16 -mt-16 bg-primary/30 rounded-full blur-3xl group-hover/payout:scale-125 transition-transform" />
                     <div className="relative z-10">
-                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] block mb-2 leading-none">Net Accrued (MTD)</span>
+                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] block mb-2 leading-none">Net Accrued (Month to Date)</span>
                       <div className="text-4xl font-black tracking-tighter leading-none italic">KES {member.earnings.total.toLocaleString()}</div>
                     </div>
                     <div className="size-16 bg-white/5 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/5 relative z-10">
@@ -295,7 +295,7 @@ export default function StaffPage() {
           <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
             <CardHeader className="p-8 bg-slate-900 text-white flex flex-row justify-between items-center space-y-0">
                <div>
-                  <CardTitle className="text-xl font-black uppercase italic italic">Live Shift Roster</CardTitle>
+                  <CardTitle className="text-xl font-black uppercase italic">Live Shift Roster</CardTitle>
                   <CardDescription className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Real-time attendance & node status</CardDescription>
                </div>
                <Badge className="bg-primary text-white border-none px-4 py-1 font-black text-[10px] uppercase">{mounted ? new Date().toLocaleDateString('en-KE', { weekday: 'long', day: 'numeric', month: 'short' }) : "..."}</Badge>
@@ -351,6 +351,7 @@ export default function StaffPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      <RoleSwitcher />
     </div>
   );
 }

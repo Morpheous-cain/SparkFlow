@@ -28,7 +28,9 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Target,
-  PieChart
+  PieChart,
+  AlertTriangle,
+  TrendingDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,7 +115,7 @@ export default function ManagerDashboard() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="relative w-full sm:w-64 lg:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input placeholder="Audit Infrastructure..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20 uppercase tracking-widest" />
+            <Input placeholder="Audit Core Infrastructure..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20 uppercase tracking-widest" />
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="rounded-2xl bg-white shadow-sm size-12 hover:bg-slate-50 relative border-none">
@@ -125,7 +127,7 @@ export default function ManagerDashboard() {
               className="flex-1 sm:flex-none gap-2 bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest transition-all border-none"
               disabled={loadingAi}
             >
-              <Sparkles className="size-4 text-primary" /> {loadingAi ? "Analyzing..." : "Sync AI Strategy"}
+              <Sparkles className="size-4 text-primary" /> {loadingAi ? "Analyzing Core..." : "Sync AI Strategy"}
             </Button>
           </div>
         </div>
@@ -135,9 +137,9 @@ export default function ManagerDashboard() {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { title: "Net Profit Margin", value: "32.4%", change: "+4.2%", icon: Target, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { title: "Customer Lifetime Value vs Acquisition Cost", value: "4.8x", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { title: "Monthly Burn Rate", value: "KES 142,000", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-          { title: "Current Working Capital", value: "KES 2,400,000", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { title: "Customer Lifetime Value vs Acquisition Cost", value: "4.8x Ratio", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { title: "Monthly Burn Rate (Absolute)", value: "KES 142,000", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+          { title: "Available Working Capital", value: "KES 2,400,000", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
         ].map((metric, i) => (
           <Card key={i} className="border-none shadow-xl rounded-[2.2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white relative">
              <div className={cn("absolute top-0 left-0 w-1 h-full", metric.color.replace('text', 'bg'))} />
@@ -159,6 +161,20 @@ export default function ManagerDashboard() {
         ))}
       </section>
 
+      {/* Critical Department Performance Warning */}
+      <section className="bg-red-50 border-2 border-dashed border-red-200 rounded-[2.5rem] p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+         <div className="size-16 rounded-[1.5rem] bg-red-500 text-white flex items-center justify-center shadow-xl shadow-red-500/20 shrink-0">
+            <AlertTriangle className="size-8" />
+         </div>
+         <div className="flex-1 text-center md:text-left">
+            <h3 className="text-xl font-black text-red-900 uppercase italic">Underperforming Node Alert: Tinting & Coating</h3>
+            <p className="text-red-700/70 font-bold text-sm uppercase tracking-tight mt-1">This department is currently operating at 3.9/5 customer rating with a 15% revenue decline month-on-month. Action required.</p>
+         </div>
+         <Button className="h-14 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest px-8 border-none gap-2 shadow-lg shadow-red-600/20">
+            Audit Tinting Department <TrendingDown className="size-4" />
+         </Button>
+      </section>
+
       {/* IoT Resource Grid */}
       <section className="space-y-4">
         <div className="flex items-center justify-between px-2">
@@ -173,7 +189,7 @@ export default function ManagerDashboard() {
               <CardContent className="p-8 space-y-8">
                 <header className="flex justify-between items-start">
                    <div className="flex items-center gap-4">
-                      <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                      <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
                          <Building2 className="size-6" />
                       </div>
                       <div>
@@ -209,14 +225,14 @@ export default function ManagerDashboard() {
 
                    {/* Secondary Sensor Telemetry */}
                    <div className="flex flex-col justify-between">
-                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1 shadow-sm">
                          <div className="flex items-center gap-2">
                             <Gauge className="size-3 text-emerald-500" />
                             <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Pump Pressure</span>
                          </div>
                          <div className="text-lg font-black text-slate-900">{branch.pumpPressure} PSI</div>
                       </div>
-                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1 shadow-sm">
                          <div className="flex items-center gap-2">
                             <Waves className="size-3 text-indigo-500" />
                             <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Detergent Flow</span>
@@ -229,7 +245,7 @@ export default function ManagerDashboard() {
                 <div className="pt-2">
                    {branch.waterLevel < 20 ? (
                      <Button 
-                       className="w-full h-14 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-red-600/20 border-none gap-2"
+                       className="w-full h-14 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-red-600/20 border-none gap-2 transition-all"
                        onClick={() => handleRefillOrder(branch.name)}
                      >
                         <Droplets className="size-4" /> Dispatch Tanker
@@ -256,12 +272,12 @@ export default function ManagerDashboard() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
               <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Financial Velocity Audit</h3>
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time revenue accumulation vs Projections</p>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time revenue accumulation vs Projections protocol</p>
             </div>
             <div className="flex gap-4">
                <div className="flex items-center gap-2">
-                 <div className="size-2 rounded-full bg-primary" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Actual (Month to Date)</span>
+                 <div className="size-2 rounded-full bg-primary shadow-sm" />
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Actual Revenue (Month to Date)</span>
                </div>
             </div>
           </div>
@@ -283,7 +299,12 @@ export default function ManagerDashboard() {
                     tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
                     dy={10}
                   />
-                  <YAxis hide />
+                  <YAxis 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
+                    tickFormatter={(val) => `KES ${val.toLocaleString()}`}
+                  />
                   <Tooltip 
                     contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '1rem' }}
                   />
