@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 const CAMPAIGNS = [
   { id: '1', title: 'Madaraka Day Offer', channel: 'SMS', recipients: 1240, status: 'Sent', date: '2024-06-01' },
