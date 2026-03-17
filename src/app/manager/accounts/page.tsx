@@ -62,6 +62,55 @@ export default function AccountsManagementPage() {
     setMounted(true);
   }, []);
 
+  const handleReconciliation = () => {
+    toast({
+      title: "Audit Initiated",
+      description: "Comparing physical cash records against Daraja API transaction logs.",
+    });
+  };
+
+  const handleDownloadStatement = () => {
+    toast({
+      title: "Exporting Statement",
+      description: "Generating comprehensive PDF statement for May 2024.",
+    });
+  };
+
+  const handleManageAPI = () => {
+    toast({
+      title: "Daraja Gateway Security",
+      description: "Accessing M-Pesa API Consumer Key and Secret management vault. Session encrypted.",
+    });
+  };
+
+  const handleCreateAccount = () => {
+    toast({
+      title: "Ledger Update",
+      description: "Opening 'New General Ledger Account' configuration wizard.",
+    });
+  };
+
+  const handleLogExpense = () => {
+    toast({
+      title: "Expense Entry",
+      description: "Capture spend details for multi-branch cost tracking.",
+    });
+  };
+
+  const handleReplenishFloat = () => {
+    toast({
+      title: "Float Management",
+      description: "Initiating petty cash replenishment via M-Pesa B2C withdrawal.",
+    });
+  };
+
+  const handleGenerateReport = (title: string) => {
+    toast({
+      title: "Report Engine",
+      description: `Compiling ${title} analysis. Estimated time: 15s.`,
+    });
+  };
+
   const kpis = [
     { label: "Net Profit (MTD)", value: `KES ${currentProfit.toLocaleString()}`, icon: Banknote, color: "text-blue-600", bg: "bg-blue-50", layer: 'bg-blue-500' },
     { label: "Cash on Hand", value: "KES 24.5K", icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50", layer: 'bg-emerald-500' },
@@ -77,10 +126,10 @@ export default function AccountsManagementPage() {
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Audit, Chart of Accounts & Statements</p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" className="rounded-2xl h-14 gap-3 bg-white border-none shadow-xl font-black uppercase text-[11px] tracking-widest">
+          <Button variant="outline" className="rounded-2xl h-14 gap-3 bg-white border-none shadow-xl font-black uppercase text-[11px] tracking-widest" onClick={handleReconciliation}>
             <History className="size-4" /> Reconciliation
           </Button>
-          <Button className="rounded-2xl h-14 gap-3 shadow-2xl shadow-primary/30 px-8 font-black uppercase text-[11px] tracking-widest bg-primary hover:bg-blue-600 transition-all">
+          <Button className="rounded-2xl h-14 gap-3 shadow-2xl shadow-primary/30 px-8 font-black uppercase text-[11px] tracking-widest bg-primary hover:bg-blue-600 transition-all" onClick={handleDownloadStatement}>
             <Download className="size-4" /> Download Statement
           </Button>
         </div>
@@ -208,7 +257,10 @@ export default function AccountsManagementPage() {
                   </div>
                 </div>
 
-                <Button className="w-full h-16 bg-white text-slate-900 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase text-xs tracking-widest shadow-2xl transition-all">
+                <Button 
+                  className="w-full h-16 bg-white text-slate-900 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase text-xs tracking-widest shadow-2xl transition-all"
+                  onClick={handleManageAPI}
+                >
                   Manage API Credentials
                 </Button>
               </div>
@@ -224,7 +276,7 @@ export default function AccountsManagementPage() {
                   <CardTitle className="text-xl font-black uppercase">General Ledger Registry</CardTitle>
                   <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Complete Chart of Accounts (COA)</CardDescription>
                 </div>
-                <Button className="rounded-xl h-12 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2">
+                <Button className="rounded-xl h-12 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2" onClick={handleCreateAccount}>
                   <Plus className="size-4" /> Create Account
                 </Button>
               </div>
@@ -271,7 +323,7 @@ export default function AccountsManagementPage() {
                   <CardTitle className="text-xl font-black uppercase">Expense Audit Trail</CardTitle>
                   <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Operational spend & vendor payments</CardDescription>
                 </div>
-                <Button className="rounded-xl h-12 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest gap-2">
+                <Button className="rounded-xl h-12 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest gap-2" onClick={handleLogExpense}>
                   <Plus className="size-4" /> Log Expense
                 </Button>
               </CardHeader>
@@ -324,7 +376,7 @@ export default function AccountsManagementPage() {
                   <div className="text-4xl font-black italic">KES 8,400</div>
                   <Progress value={42} className="h-2 bg-white/20 [&>div]:bg-white" />
                   <p className="text-[10px] font-bold uppercase opacity-80">Threshold Alert: Float is below KES 10,000</p>
-                  <Button className="w-full h-14 bg-white text-amber-600 hover:bg-amber-50 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl">
+                  <Button className="w-full h-14 bg-white text-amber-600 hover:bg-amber-50 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl" onClick={handleReplenishFloat}>
                     Replenish Float
                   </Button>
                 </div>
@@ -372,10 +424,10 @@ export default function AccountsManagementPage() {
                   <p className="text-slate-500 font-bold text-xs">{st.desc}</p>
                 </div>
                 <div className="pt-6 border-t border-dashed flex items-center justify-between">
-                  <Button variant="ghost" className="p-0 h-auto font-black text-xs text-primary uppercase gap-2 hover:bg-transparent">
+                  <Button variant="ghost" className="p-0 h-auto font-black text-xs text-primary uppercase gap-2 hover:bg-transparent" onClick={() => handleGenerateReport(st.title)}>
                     Generate Report <ChevronRight className="size-4" />
                   </Button>
-                  <Button size="icon" variant="outline" className="size-10 rounded-xl">
+                  <Button size="icon" variant="outline" className="size-10 rounded-xl" onClick={() => handleGenerateReport(st.title)}>
                     <Download className="size-4" />
                   </Button>
                 </div>
