@@ -44,10 +44,10 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 const REVENUE_STREAMS = [
-  { category: 'Wash', actual: 42000, target: 45000, rating: 4.2, color: 'from-blue-500 to-indigo-600', shadow: 'shadow-blue-500/20' },
-  { category: 'Detailing', actual: 28000, target: 25000, rating: 4.8, color: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-500/20' },
-  { category: 'Tinting', actual: 12000, target: 15000, rating: 3.9, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/20' },
-  { category: 'Logistics', actual: 8500, target: 12000, rating: 4.5, color: 'from-indigo-500 to-purple-600', shadow: 'shadow-indigo-500/20' },
+  { category: 'Wash Services', actual: 42000, target: 45000, rating: 4.2, color: 'from-blue-500 to-indigo-600', shadow: 'shadow-blue-500/20' },
+  { category: 'Detailing Hub', actual: 28000, target: 25000, rating: 4.8, color: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-500/20' },
+  { category: 'Tinting & Coating', actual: 12000, target: 15000, rating: 3.9, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/20' },
+  { category: 'Concierge Logistics', actual: 8500, target: 12000, rating: 4.5, color: 'from-indigo-500 to-purple-600', shadow: 'shadow-indigo-500/20' },
 ];
 
 export default function AccountsManagementPage() {
@@ -113,9 +113,9 @@ export default function AccountsManagementPage() {
 
   const kpis = [
     { label: "Net Profit (Month to Date)", value: `KES ${currentProfit.toLocaleString()}`, icon: Banknote, color: "text-blue-600", bg: "bg-blue-50", layer: 'bg-blue-500' },
-    { label: "Cash on Hand", value: "KES 24,500", icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50", layer: 'bg-emerald-500' },
-    { label: "M-Pesa Business Pool", value: "KES 142,000", icon: CreditCard, color: "text-indigo-600", bg: "bg-indigo-50", layer: 'bg-indigo-500' },
-    { label: "Pending Vendor Bills", value: "KES 12,200", icon: ShieldAlert, color: "text-red-600", bg: "bg-red-50", layer: 'bg-red-500' },
+    { label: "Physical Cash on Hand", value: "KES 24,500", icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50", layer: 'bg-emerald-500' },
+    { label: "M-Pesa Business Balance", value: "KES 142,000", icon: CreditCard, color: "text-indigo-600", bg: "bg-indigo-50", layer: 'bg-indigo-500' },
+    { label: "Pending Vendor Obligations", value: "KES 12,200", icon: ShieldAlert, color: "text-red-600", bg: "bg-red-50", layer: 'bg-red-500' },
   ];
 
   return (
@@ -123,14 +123,14 @@ export default function AccountsManagementPage() {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Financial Engine</h1>
-          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Audit, Chart of Accounts & Statements</p>
+          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Audit, Chart of Accounts & Official Statements</p>
         </div>
         <div className="flex gap-4">
           <Button variant="outline" className="rounded-2xl h-14 gap-3 bg-white border-none shadow-xl font-black uppercase text-[11px] tracking-widest" onClick={handleReconciliation}>
-            <History className="size-4" /> Reconciliation
+            <History className="size-4" /> Ledger Reconciliation
           </Button>
-          <Button className="rounded-2xl h-14 gap-3 shadow-2xl shadow-primary/30 px-8 font-black uppercase text-[11px] tracking-widest bg-primary hover:bg-blue-600 transition-all" onClick={handleDownloadStatement}>
-            <Download className="size-4" /> Download Statement
+          <Button className="rounded-2xl h-14 gap-3 shadow-2xl shadow-primary/30 px-8 font-black uppercase text-[11px] tracking-widest bg-primary hover:bg-blue-600 transition-all text-white" onClick={handleDownloadStatement}>
+            <Download className="size-4" /> Download Full Statement
           </Button>
         </div>
       </header>
@@ -144,7 +144,7 @@ export default function AccountsManagementPage() {
                 <div className={cn(`size-14 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`)}>
                   <kpi.icon className="size-7" />
                 </div>
-                <Badge className="bg-slate-50 text-slate-400 border-none font-black text-[9px] uppercase tracking-widest rounded-full">LIVE</Badge>
+                <Badge className="bg-slate-50 text-slate-400 border-none font-black text-[9px] uppercase tracking-widest rounded-full px-3 py-1">REAL-TIME</Badge>
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</span>
@@ -158,16 +158,16 @@ export default function AccountsManagementPage() {
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="bg-slate-200/50 p-1 rounded-2xl h-14 mb-8">
           <TabsTrigger value="overview" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            Financial Overview
+            Profit & Revenue Breakdown
           </TabsTrigger>
           <TabsTrigger value="chart" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            Chart of Accounts
+            Full Chart of Accounts
           </TabsTrigger>
           <TabsTrigger value="expenses" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            Petty Cash & Expenses
+            Petty Cash & Operating Expenses
           </TabsTrigger>
           <TabsTrigger value="statements" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            Official Statements
+            Financial Statements
           </TabsTrigger>
         </TabsList>
 
@@ -177,8 +177,8 @@ export default function AccountsManagementPage() {
               <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
               <div className="flex justify-between items-center mb-12">
                 <div>
-                  <CardTitle className="text-2xl font-black uppercase tracking-tight">Revenue Stream Breakdown</CardTitle>
-                  <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Comparative performance analysis</CardDescription>
+                  <CardTitle className="text-2xl font-black uppercase tracking-tight italic">Revenue Stream Performance</CardTitle>
+                  <CardDescription className="font-bold text-slate-400 uppercase text-[10px] tracking-widest mt-1">Comparative Analysis by Department</CardDescription>
                 </div>
                 <div className="flex gap-8">
                   <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ export default function AccountsManagementPage() {
                         dataKey="category" 
                         axisLine={false} 
                         tickLine={false} 
-                        tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 900 }}
+                        tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
                         dy={12}
                       />
                       <YAxis hide />
@@ -224,7 +224,7 @@ export default function AccountsManagementPage() {
                     <Zap className="size-9 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-primary">Daraja Core</h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-primary italic">Daraja Core</h3>
                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">M-Pesa Integration Status</p>
                   </div>
                 </header>
@@ -232,33 +232,33 @@ export default function AccountsManagementPage() {
                 <div className="space-y-6">
                   <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-slate-400 uppercase">Gateway Health</span>
-                      <Badge className="bg-emerald-50 text-white border-none text-[8px] font-black">STABLE</Badge>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gateway Health</span>
+                      <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase px-2 py-0.5">STABLE</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-slate-400 uppercase">Settlement Mode</span>
-                      <span className="text-xs font-bold">Real-time (T+0)</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Settlement Protocol</span>
+                      <span className="text-[10px] font-black uppercase text-white">Real-time (T+0)</span>
                     </div>
-                    <Progress value={98} className="h-1 bg-white/10" />
+                    <Progress value={98} className="h-1 bg-white/10 [&>div]:bg-primary" />
                   </div>
                   
                   <div className="space-y-2">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Live Transaction Feed</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Latest Transactions</span>
                     <div className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase">
                         <span>MPESA_9821X</span>
-                        <span className="text-emerald-400">+1,200</span>
+                        <span className="text-emerald-400">+1,200.00</span>
                       </div>
-                      <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                      <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase">
                         <span>MPESA_9822Y</span>
-                        <span className="text-emerald-400">+500</span>
+                        <span className="text-emerald-400">+500.00</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <Button 
-                  className="w-full h-16 bg-white text-slate-900 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase text-xs tracking-widest shadow-2xl transition-all"
+                  className="w-full h-16 bg-white text-slate-900 hover:bg-slate-50 rounded-[1.5rem] font-black uppercase text-xs tracking-widest shadow-2xl transition-all border-none"
                   onClick={handleManageAPI}
                 >
                   Manage API Credentials
@@ -273,28 +273,28 @@ export default function AccountsManagementPage() {
             <CardHeader className="p-8 border-b bg-slate-50/50">
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle className="text-xl font-black uppercase">General Ledger Registry</CardTitle>
-                  <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Complete Chart of Accounts (COA)</CardDescription>
+                  <CardTitle className="text-xl font-black uppercase italic">General Ledger Registry</CardTitle>
+                  <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Complete List of Business Accounts</CardDescription>
                 </div>
-                <Button className="rounded-xl h-12 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2" onClick={handleCreateAccount}>
-                  <Plus className="size-4" /> Create Account
+                <Button className="rounded-xl h-12 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest gap-2 border-none" onClick={handleCreateAccount}>
+                  <Plus className="size-4" /> Create New Account
                 </Button>
               </div>
             </CardHeader>
             <Table>
               <TableHeader className="bg-slate-50/50 h-12">
                 <TableRow className="border-none">
-                  <TableHead className="pl-8 uppercase text-[10px] font-black">Account Code</TableHead>
-                  <TableHead className="uppercase text-[10px] font-black">Account Name</TableHead>
-                  <TableHead className="uppercase text-[10px] font-black">Account Type</TableHead>
-                  <TableHead className="uppercase text-[10px] font-black text-right pr-8">Balance (KES)</TableHead>
+                  <TableHead className="pl-8 uppercase text-[10px] font-black tracking-[0.2em]">Account Code</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black tracking-[0.2em]">Account Name</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black tracking-[0.2em]">Classification</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black text-right pr-8 tracking-[0.2em]">Balance (KES)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {CHART_OF_ACCOUNTS.map((acc) => (
                   <TableRow key={acc.code} className="h-16 border-slate-50 hover:bg-slate-50">
-                    <TableCell className="pl-8 font-black text-slate-400 text-xs">{acc.code}</TableCell>
-                    <TableCell className="font-black text-slate-900 uppercase text-xs">{acc.name}</TableCell>
+                    <TableCell className="pl-8 font-black text-slate-400 text-xs tracking-widest">{acc.code}</TableCell>
+                    <TableCell className="font-black text-slate-900 uppercase text-xs italic">{acc.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={cn(
                         "font-black text-[9px] uppercase border-none px-3 py-1",
@@ -305,8 +305,8 @@ export default function AccountsManagementPage() {
                         {acc.type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="pr-8 text-right font-black text-slate-900 text-sm">
-                      {acc.balance.toLocaleString()}
+                    <TableCell className="pr-8 text-right font-black text-slate-900 text-sm italic">
+                      {acc.balance.toLocaleString()}.00
                     </TableCell>
                   </TableRow>
                 ))}
@@ -320,29 +320,29 @@ export default function AccountsManagementPage() {
             <Card className="md:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
               <CardHeader className="p-8 border-b bg-slate-50/50 flex flex-row justify-between items-center">
                 <div>
-                  <CardTitle className="text-xl font-black uppercase">Expense Audit Trail</CardTitle>
-                  <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Operational spend & vendor payments</CardDescription>
+                  <CardTitle className="text-xl font-black uppercase italic">Expense Audit Trail</CardTitle>
+                  <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Operational spend & vendor payments Registry</CardDescription>
                 </div>
-                <Button className="rounded-xl h-12 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest gap-2" onClick={handleLogExpense}>
-                  <Plus className="size-4" /> Log Expense
+                <Button className="rounded-xl h-12 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest gap-2 bg-primary text-white border-none" onClick={handleLogExpense}>
+                  <Plus className="size-4" /> Log Operating Expense
                 </Button>
               </CardHeader>
               <Table>
                 <TableHeader className="bg-slate-50/50 h-12">
                   <TableRow className="border-none">
-                    <TableHead className="pl-8 uppercase text-[10px] font-black">Date</TableHead>
-                    <TableHead className="uppercase text-[10px] font-black">Category</TableHead>
-                    <TableHead className="uppercase text-[10px] font-black">Description</TableHead>
-                    <TableHead className="uppercase text-[10px] font-black">Payment Type</TableHead>
-                    <TableHead className="uppercase text-[10px] font-black text-right pr-8">Amount</TableHead>
+                    <TableHead className="pl-8 uppercase text-[10px] font-black tracking-widest">Date</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black tracking-widest">Category</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black tracking-widest">Description</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black tracking-widest">Method</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black text-right pr-8 tracking-widest">Amount</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {EXPENSES.map((exp) => (
                     <TableRow key={exp.id} className="h-16 border-slate-50 hover:bg-slate-50">
-                      <TableCell className="pl-8 font-bold text-slate-400 text-xs">{exp.date}</TableCell>
-                      <TableCell className="font-black text-slate-900 uppercase text-xs">{exp.category}</TableCell>
-                      <TableCell className="font-bold text-slate-500 text-xs">{exp.description}</TableCell>
+                      <TableCell className="pl-8 font-bold text-slate-400 text-xs uppercase">{exp.date}</TableCell>
+                      <TableCell className="font-black text-slate-900 uppercase text-xs italic">{exp.category}</TableCell>
+                      <TableCell className="font-bold text-slate-500 text-xs uppercase">{exp.description}</TableCell>
                       <TableCell>
                         <Badge className={cn(
                           "font-black text-[8px] uppercase border-none px-2",
@@ -351,8 +351,8 @@ export default function AccountsManagementPage() {
                           {exp.type}
                         </Badge>
                       </TableCell>
-                      <TableCell className="pr-8 text-right font-black text-slate-900 text-sm">
-                        KES {exp.amount.toLocaleString()}
+                      <TableCell className="pr-8 text-right font-black text-slate-900 text-sm italic">
+                        KES {exp.amount.toLocaleString()}.00
                       </TableCell>
                     </TableRow>
                   ))}
@@ -369,27 +369,27 @@ export default function AccountsManagementPage() {
                       <Wallet className="size-6" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-black uppercase">Petty Cash Pool</h3>
-                      <p className="text-amber-100 text-[10px] font-black uppercase">Manual Float Audit</p>
+                      <h3 className="text-xl font-black uppercase italic">Petty Cash Pool</h3>
+                      <p className="text-amber-100 text-[10px] font-black uppercase tracking-widest">Manual Float Audit</p>
                     </div>
                   </div>
-                  <div className="text-4xl font-black italic">KES 8,400</div>
+                  <div className="text-4xl font-black italic tracking-tighter">KES 8,400.00</div>
                   <Progress value={42} className="h-2 bg-white/20 [&>div]:bg-white" />
-                  <p className="text-[10px] font-bold uppercase opacity-80">Threshold Alert: Float is below KES 10,000</p>
-                  <Button className="w-full h-14 bg-white text-amber-600 hover:bg-amber-50 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl" onClick={handleReplenishFloat}>
+                  <p className="text-[10px] font-bold uppercase opacity-80 tracking-widest">Threshold Alert: Float is below KES 10,000.00</p>
+                  <Button className="w-full h-14 bg-white text-amber-600 hover:bg-amber-50 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl border-none" onClick={handleReplenishFloat}>
                     Replenish Float
                   </Button>
                 </div>
               </Card>
 
               <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8">
-                <h3 className="text-lg font-black uppercase tracking-tight mb-6">Spend Distribution</h3>
+                <h3 className="text-lg font-black uppercase tracking-tight mb-6 italic">Spend Distribution</h3>
                 <div className="space-y-6">
                   {[
-                    { label: "Payroll", val: 65, color: "bg-blue-500" },
-                    { label: "Consumables", val: 20, color: "bg-emerald-500" },
-                    { label: "Utilities", val: 10, color: "bg-amber-500" },
-                    { label: "Marketing", val: 5, color: "bg-indigo-500" },
+                    { label: "Staff Payroll", val: 65, color: "bg-blue-500" },
+                    { label: "Consumables & Materials", val: 20, color: "bg-emerald-500" },
+                    { label: "Water & Utilities", val: 10, color: "bg-amber-500" },
+                    { label: "Marketing Campaigns", val: 5, color: "bg-indigo-500" },
                   ].map(stat => (
                     <div key={stat.label} className="space-y-2">
                       <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -408,26 +408,26 @@ export default function AccountsManagementPage() {
         <TabsContent value="statements" className="outline-none">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Profit & Loss (P&L)", icon: FileText, desc: "Revenue vs Operational Costs", trend: "+12.4% Growth" },
-              { title: "Cash Flow Statement", icon: TrendingUp, desc: "Cash Inflow vs Outflow", trend: "Stable Performance" },
-              { title: "Balance Sheet", icon: LayoutGrid, desc: "Assets, Liabilities & Equity", trend: "Fully Balanced" },
+              { title: "Profit & Loss (P&L)", icon: FileText, desc: "Revenue vs Operational Costs Audit", trend: "+12.4% Margin Growth" },
+              { title: "Cash Flow Statement", icon: TrendingUp, desc: "Cash Inflow vs Outflow Analysis", trend: "Stable Liquidity" },
+              { title: "Balance Sheet", icon: LayoutGrid, desc: "Assets, Liabilities & Equity Audit", trend: "Fully Balanced" },
             ].map((st, i) => (
               <Card key={i} className="border-none shadow-xl rounded-[2.5rem] bg-white p-10 space-y-6 group hover:shadow-2xl transition-all duration-500">
-                <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-inner">
                   <st.icon className="size-8" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-black uppercase tracking-tight">{st.title}</h3>
-                    <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black">{st.trend}</Badge>
+                    <h3 className="text-xl font-black uppercase tracking-tight italic">{st.title}</h3>
+                    <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black uppercase px-2 py-0.5">{st.trend}</Badge>
                   </div>
-                  <p className="text-slate-500 font-bold text-xs">{st.desc}</p>
+                  <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest leading-relaxed">{st.desc}</p>
                 </div>
                 <div className="pt-6 border-t border-dashed flex items-center justify-between">
-                  <Button variant="ghost" className="p-0 h-auto font-black text-xs text-primary uppercase gap-2 hover:bg-transparent" onClick={() => handleGenerateReport(st.title)}>
+                  <Button variant="ghost" className="p-0 h-auto font-black text-[10px] text-primary uppercase gap-2 hover:bg-transparent tracking-widest" onClick={() => handleGenerateReport(st.title)}>
                     Generate Official Report <ChevronRight className="size-4" />
                   </Button>
-                  <Button size="icon" variant="outline" className="size-10 rounded-xl" onClick={() => handleGenerateReport(st.title)}>
+                  <Button size="icon" variant="outline" className="size-10 rounded-xl border-2" onClick={() => handleGenerateReport(st.title)}>
                     <Download className="size-4" />
                   </Button>
                 </div>

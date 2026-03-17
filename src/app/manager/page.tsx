@@ -135,7 +135,7 @@ export default function ManagerDashboard() {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { title: "Net Profit Margin", value: "32.4%", change: "+4.2%", icon: Target, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { title: "Customer Value vs Acquisition Cost", value: "4.8x", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { title: "Customer Lifetime Value vs Acquisition Cost", value: "4.8x", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
           { title: "Monthly Burn Rate", value: "KES 142,000", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
           { title: "Current Working Capital", value: "KES 2,400,000", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
         ].map((metric, i) => (
@@ -165,7 +165,7 @@ export default function ManagerDashboard() {
            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2 italic">
              <Activity className="size-3" /> Site Infrastructure & Resource Command
            </h2>
-           <Badge className="bg-emerald-500 text-white border-none font-black text-[8px] uppercase tracking-widest px-3 py-1">SENSORS VERIFIED</Badge>
+           <Badge className="bg-emerald-50 text-white border-none font-black text-[8px] uppercase tracking-widest px-3 py-1">SENSORS VERIFIED</Badge>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {safeBranches.map((branch) => (

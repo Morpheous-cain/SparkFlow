@@ -67,35 +67,35 @@ export default function ReportsPage() {
 
   const reportCategories = [
     { 
-      title: "Financial Health BI", 
+      title: "Financial Health Business Intelligence", 
       icon: PieChart, 
       color: "bg-emerald-600", 
-      desc: "Full Business Intelligence Audit: Margin, CAC, & EBITDA",
+      desc: "Full Strategic Audit: Profit Margin, Acquisition Costs, & Earnings before Interest and Taxes (EBITDA)",
       metrics: [
         { id: 'BI-001', metric: 'Gross Profit Margin', value: '32.4%', status: 'Audited' },
-        { id: 'BI-002', metric: 'LTV : CAC Ratio', value: '4.8x', status: 'Optimal' },
+        { id: 'BI-002', metric: 'Customer Value vs Acquisition Cost Ratio', value: '4.8x', status: 'Optimal' },
         { id: 'BI-003', metric: 'Working Capital Ratio', value: '1.2', status: 'Verified' },
-        { id: 'BI-004', metric: 'Revenue Runway (Days)', value: '180 Days', status: 'Healthy' }
+        { id: 'BI-004', metric: 'Revenue Runway (Days Remaining)', value: '180 Days', status: 'Healthy' }
       ]
     },
     { 
-      title: "Staff Performance", 
+      title: "Staff Performance & Efficiency", 
       icon: BarChart, 
       color: "bg-indigo-600", 
-      desc: "Jobs per hour and efficiency benchmarks",
+      desc: "Jobs per hour and departmental efficiency benchmarks",
       metrics: [
-        { id: 'S-101', metric: 'Avg Attendant Rating', value: '4.82', status: 'Verified' },
-        { id: 'S-102', metric: 'Jobs per Node (Daily)', value: '12', status: 'Benchmarked' }
+        { id: 'S-101', metric: 'Average Attendant Rating', value: '4.82', status: 'Verified' },
+        { id: 'S-102', metric: 'Jobs per Service Node (Daily)', value: '12', status: 'Benchmarked' }
       ]
     },
     { 
-      title: "Customer Retention", 
+      title: "Customer Retention & Churn", 
       icon: LineChart, 
       color: "bg-blue-500", 
-      desc: "Repeat visit rates and churn probability",
+      desc: "Repeat visit rates and membership churn probability",
       metrics: [
-        { id: 'C-201', metric: 'Churn Probability', value: '12.1%', status: 'Low Risk' },
-        { id: 'C-202', metric: 'Member Re-activation', value: '22.4%', status: 'Rising' }
+        { id: 'C-201', metric: 'Customer Churn Probability', value: '12.1%', status: 'Low Risk' },
+        { id: 'C-202', metric: 'Member Re-activation Rate', value: '22.4%', status: 'Rising' }
       ]
     },
   ];
@@ -140,7 +140,7 @@ export default function ReportsPage() {
       setIsPreviewOpen(false);
       toast({
         title: "Audit Pack Exported",
-        description: "Your official BI document has been saved to the secure document vault.",
+        description: "Your official Business Intelligence document has been saved to the secure document vault.",
       });
     }, 2000);
   };
@@ -164,7 +164,7 @@ export default function ReportsPage() {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic leading-none">Advanced Report Architect</h1>
-          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">Generate, Audit, and Export Deep-Dive Business Intelligence</p>
+          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">Generate, Audit, and Export Deep-Dive Business Intelligence Packs</p>
         </div>
         <Button variant="outline" className="gap-2 h-14 rounded-2xl bg-white border-2 font-black uppercase text-[11px] tracking-widest shadow-xl shadow-slate-200/50 hover:bg-slate-50 transition-all" onClick={() => toast({ title: "Audit Parameters", description: "Select custom date parameters for deep-dive historical analysis."})}>
           <Calendar className="size-4" /> Define Audit Range
@@ -374,7 +374,7 @@ export default function ReportsPage() {
           </div>
 
           <DialogFooter className="p-8 bg-white border-t border-dashed flex justify-between items-center sm:justify-between">
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Secure BI Protocol v4.2</p>
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Secure Business Intelligence Protocol v4.2</p>
             <div className="flex gap-3">
               <Button variant="outline" className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-2 bg-white transition-all hover:bg-slate-50" onClick={() => setIsPreviewOpen(false)}>Discard Architect</Button>
               <Button className="h-12 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] px-8 shadow-xl shadow-primary/20 bg-slate-900 text-white hover:bg-black border-none gap-2 transition-all active:scale-95" onClick={handleExport}>
