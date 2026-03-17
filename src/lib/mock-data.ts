@@ -12,7 +12,10 @@ export const BRANCHES: Branch[] = [
     activeBays: 3, 
     revenueMTD: 450000, 
     phone: '+254 711 000 111',
-    waterLevel: 85,
+    waterLevel: 82,
+    waterCapacity: 10000,
+    pumpPressure: 45,
+    detergentLevel: 65,
     staffing: { current: 12, required: 15 },
     essentialMaterialsLow: 0
   },
@@ -27,6 +30,9 @@ export const BRANCHES: Branch[] = [
     revenueMTD: 280000, 
     phone: '+254 711 000 222',
     waterLevel: 18,
+    waterCapacity: 5000,
+    pumpPressure: 32,
+    detergentLevel: 12,
     staffing: { current: 8, required: 10 },
     essentialMaterialsLow: 2
   },

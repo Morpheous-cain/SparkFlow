@@ -29,7 +29,10 @@ export interface Branch {
   activeBays: number;
   revenueMTD: number;
   phone: string;
-  waterLevel: number;
+  waterLevel: number; // Percentage 0-100 from ultrasonic sensor
+  waterCapacity: number; // Liters
+  pumpPressure: number; // PSI
+  detergentLevel: number; // Percentage
   staffing: {
     current: number;
     required: number;

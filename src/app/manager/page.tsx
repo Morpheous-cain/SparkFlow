@@ -21,7 +21,10 @@ import {
   Users,
   PackageCheck,
   ShieldAlert,
-  Frown
+  Frown,
+  Activity,
+  Gauge,
+  Waves
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +40,7 @@ import {
 } from "recharts";
 import { getManagerOperationalInsights, ManagerOperationalInsightsOutput } from "@/ai/flows/manager-operational-insights-flow";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const REVENUE_TREND = [
   { day: 'Mon', revenue: 18500, growth: 12 },
@@ -49,6 +53,7 @@ const REVENUE_TREND = [
 ];
 
 export default function ManagerDashboard() {
+  const { toast } = useToast();
   const [aiInsights, setAiInsights] = useState<ManagerOperationalInsightsOutput | null>(null);
   const [loadingAi, setLoadingAi] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -78,7 +83,6 @@ export default function ManagerDashboard() {
     }
   };
 
-  // Safe calculation with fallback to empty array if BRANCHES is undefined
   const safeBranches = BRANCHES || [];
   const criticalRisks = safeBranches.filter(b => 
     (b.waterLevel !== undefined && b.waterLevel < 20) || 
@@ -86,26 +90,33 @@ export default function ManagerDashboard() {
     (b.essentialMaterialsLow > 0)
   );
 
+  const handleRefillOrder = (branchName: string) => {
+    toast({
+      title: "Water Logistics Initiated",
+      description: `Water tanker dispatch scheduled for ${branchName}. Expected in 45 mins.`,
+    });
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f1f5f9]">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter">Owner Command Center</h1>
-          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Emma Johnson • Operational Lead • SparkFlow HQ</p>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Owner Intelligence Hub</h1>
+          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-2">Emma Johnson • Global Operations Commander</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="relative w-full sm:w-64 lg:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input placeholder="Global search..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20" />
+            <Input placeholder="Search Infrastructure..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20" />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-2xl bg-white shadow-sm size-12 hover:bg-slate-50 relative">
+            <Button variant="ghost" size="icon" className="rounded-2xl bg-white shadow-sm size-12 hover:bg-slate-50 relative border-none">
               <Bell className="size-5 text-slate-600" />
               <span className="absolute top-3 right-3 size-2 bg-red-500 rounded-full border-2 border-white" />
             </Button>
             <Button 
               onClick={fetchAiInsights} 
-              className="flex-1 sm:flex-none gap-2 bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest transition-all"
+              className="flex-1 sm:flex-none gap-2 bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest transition-all border-none"
               disabled={loadingAi}
             >
               <Sparkles className="size-4 text-primary" /> {loadingAi ? "Analyzing..." : "Sync AI"}
@@ -114,57 +125,95 @@ export default function ManagerDashboard() {
         </div>
       </header>
 
-      {/* Critical Resource Alerts - COMPACT */}
-      {criticalRisks.length > 0 && (
-        <section className="animate-in fade-in slide-in-from-top-4 duration-700">
-          <Card className="border-none shadow-2xl bg-slate-900 text-white rounded-[2rem] overflow-hidden relative group">
-            <div className="absolute top-0 right-0 p-24 -mr-24 -mt-24 bg-red-500/10 rounded-full blur-[80px]" />
-            <CardContent className="p-6 md:p-8 space-y-6 relative z-10">
-              <header className="flex items-center gap-3">
-                <div className="size-10 bg-red-500 rounded-xl flex items-center justify-center shadow-xl shadow-red-500/20 animate-pulse">
-                  <ShieldAlert className="size-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-black uppercase tracking-tighter leading-none">Operational Integrity</h2>
-                  <p className="text-slate-400 font-bold uppercase text-[8px] tracking-widest mt-1">Shortages detected across {criticalRisks.length} locations</p>
-                </div>
-              </header>
+      {/* IoT Resource Grid - NEW */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between px-2">
+           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
+             <Activity className="size-3" /> Live IoT Resource Command
+           </h2>
+           <Badge className="bg-emerald-500 text-white border-none font-black text-[8px] uppercase tracking-widest px-3 py-1">SENSORS ONLINE</Badge>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {safeBranches.map((branch) => (
+            <Card key={branch.id} className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden group hover:scale-[1.01] transition-all">
+              <CardContent className="p-8 space-y-8">
+                <header className="flex justify-between items-start">
+                   <div className="flex items-center gap-4">
+                      <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                         <Building2 className="size-6" />
+                      </div>
+                      <div>
+                         <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">{branch.name}</h3>
+                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID: {branch.id} • Station Node</p>
+                      </div>
+                   </div>
+                   {branch.waterLevel < 20 && (
+                     <Badge className="bg-red-500 text-white border-none animate-pulse font-black text-[8px] uppercase">LOW RESOURCE</Badge>
+                   )}
+                </header>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {criticalRisks.map(branch => (
-                  <div key={branch.id} className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-black uppercase text-[10px] text-primary">{branch.name}</h4>
-                      <Badge className="bg-red-500 text-white text-[7px] font-black uppercase px-1.5 py-0">CRITICAL</Badge>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      {branch.waterLevel < 20 && (
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-red-400">
-                          <Droplets className="size-3" />
-                          <span>Water: {branch.waterLevel}%</span>
-                        </div>
-                      )}
-                      {branch.staffing.current < branch.staffing.required && (
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-amber-400">
-                          <Users className="size-3" />
-                          <span>Staff Gap: {branch.staffing.required - branch.staffing.current}</span>
-                        </div>
-                      )}
-                      {branch.essentialMaterialsLow > 0 && (
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400">
-                          <PackageCheck className="size-3" />
-                          <span>Stock: {branch.essentialMaterialsLow} SKUs Low</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      )}
+                <div className="grid grid-cols-2 gap-6">
+                   {/* Water Tank Visualization */}
+                   <div className="relative space-y-3">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Main Reservoir</span>
+                      <div className="h-32 w-full bg-slate-100 rounded-[1.5rem] overflow-hidden relative border-2 border-slate-50 shadow-inner">
+                         <div 
+                           className={cn(
+                             "absolute bottom-0 left-0 w-full transition-all duration-1000 ease-in-out",
+                             branch.waterLevel < 20 ? "bg-gradient-to-t from-red-500 to-red-400" : "bg-gradient-to-t from-primary to-blue-400"
+                           )}
+                           style={{ height: `${branch.waterLevel}%` }}
+                         >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-white/20 animate-pulse" />
+                         </div>
+                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span className={cn("text-2xl font-black tracking-tighter", branch.waterLevel < 20 ? "text-red-600" : "text-slate-900")}>{branch.waterLevel}%</span>
+                            <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{branch.waterCapacity.toLocaleString()}L</span>
+                         </div>
+                      </div>
+                   </div>
+
+                   {/* Secondary Sensor Telemetry */}
+                   <div className="flex flex-col justify-between">
+                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                         <div className="flex items-center gap-2">
+                            <Gauge className="size-3 text-emerald-500" />
+                            <span className="text-[8px] font-black text-slate-400 uppercase">Pump PSI</span>
+                         </div>
+                         <div className="text-lg font-black text-slate-900">{branch.pumpPressure} PSI</div>
+                      </div>
+                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                         <div className="flex items-center gap-2">
+                            <Waves className="size-3 text-indigo-500" />
+                            <span className="text-[8px] font-black text-slate-400 uppercase">Detergent</span>
+                         </div>
+                         <div className="text-lg font-black text-slate-900">{branch.detergentLevel}%</div>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="pt-2">
+                   {branch.waterLevel < 20 ? (
+                     <Button 
+                       className="w-full h-14 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-red-600/20 border-none gap-2"
+                       onClick={() => handleRefillOrder(branch.name)}
+                     >
+                        <Droplets className="size-4" /> Dispatch Tanker
+                     </Button>
+                   ) : (
+                     <Button 
+                       variant="outline" 
+                       className="w-full h-14 border-2 border-slate-100 bg-white hover:bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest rounded-2xl"
+                     >
+                        Infrastructure Diagnostics
+                     </Button>
+                   )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
 
       {/* Vital Signs - High Level KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -181,12 +230,12 @@ export default function ManagerDashboard() {
                 <div className={cn("size-12 rounded-xl flex items-center justify-center", metric.bg, metric.color)}>
                   <metric.icon className="size-6" />
                 </div>
-                <Button variant="ghost" size="icon" className="size-8 rounded-full"><MoreVertical className="size-4 text-slate-300" /></Button>
+                <Button variant="ghost" size="icon" className="size-8 rounded-full border-none"><MoreVertical className="size-4 text-slate-300" /></Button>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.title}</span>
-                <span className="text-3xl font-black text-slate-900 tracking-tighter">{metric.value}</span>
-                <div className="flex items-center gap-2 mt-1">
+                <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none">{metric.value}</span>
+                <div className="flex items-center gap-2 mt-2">
                   <Badge className={cn("border-none px-2 py-0 rounded-full text-[8px] font-black", metric.color.replace('text', 'bg'), "text-white")}>
                     {metric.change}
                   </Badge>
@@ -228,7 +277,7 @@ export default function ManagerDashboard() {
                     dataKey="day" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
+                    tick={{ fill: '#94a3b8', fontSize: 9, fontBold: 900 }}
                     dy={10}
                   />
                   <YAxis hide />
@@ -242,148 +291,68 @@ export default function ManagerDashboard() {
           </div>
         </Card>
 
-        {/* Branch Audit - COMPACT */}
-        <Card className="border-none shadow-2xl rounded-[2.5rem] bg-slate-900 text-white p-6 md:p-8 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-24 -mr-24 -mt-24 bg-primary/20 rounded-full blur-[80px]" />
-          <header className="mb-6 relative z-10">
-             <div className="flex items-center gap-3 mb-2">
-                <div className="size-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-xl">
-                   <Building2 className="size-5" />
+        {/* AI Strategy Layer - SUPER COMPACT */}
+        {aiInsights && (
+          <Card className="border-none shadow-2xl rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden p-6 md:p-8 relative group">
+            <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-primary/20 rounded-full blur-[120px]" />
+            
+            <CardHeader className="p-0 mb-6 flex flex-row items-center gap-4 space-y-0 relative z-10">
+              <div className="size-12 bg-gradient-to-tr from-primary to-blue-400 text-white rounded-xl shadow-2xl flex items-center justify-center rotate-6">
+                <Sparkles className="size-6" />
+              </div>
+              <div>
+                <CardTitle className="text-lg md:text-xl font-black text-white tracking-tighter uppercase leading-none">AI Strategy Core</CardTitle>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge className="bg-primary text-white border-none text-[7px] font-black uppercase px-1.5 py-0">LIVE</Badge>
+                  <p className="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Predictive Engine v4.2</p>
                 </div>
-                <div>
-                   <h3 className="text-lg font-black uppercase tracking-tighter leading-none">Resource Audit</h3>
-                   <p className="text-slate-400 text-[8px] font-black uppercase tracking-widest mt-1">Station Continuity</p>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="p-0 space-y-6 relative z-10">
+              <div className="p-4 md:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-inner">
+                 <p className="text-sm md:text-base leading-snug text-white/95 font-bold tracking-tight">"{aiInsights.overallSummary}"</p>
+              </div>
+              
+              <div className="space-y-6">
+                {/* Network Anomalies */}
+                <div className="space-y-3">
+                  <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary" /> ANOMALIES
+                  </h4>
+                  <ul className="space-y-2">
+                    {aiInsights.identifiedTrends.map((trend, i) => (
+                      <li key={i} className="flex items-start gap-2 text-[10px] bg-white/5 p-3 rounded-xl border border-white/5">
+                        <Zap className="size-3 text-amber-400 shrink-0" />
+                        <span className="font-medium text-slate-200">{trend}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-             </div>
-          </header>
-          <div className="space-y-4 relative z-10">
-             {safeBranches.map((branch) => (
-               <div key={branch.id} className="p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
-                  <div className="flex justify-between items-start">
-                     <div className="flex-1">
-                        <span className="text-[10px] font-black text-primary uppercase block mb-1">{branch.name}</span>
-                        <div className="grid grid-cols-2 gap-2 mt-2">
-                           <div className="flex flex-col">
-                              <span className="text-[7px] font-black text-slate-500 uppercase">Water</span>
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                 <Progress value={branch.waterLevel} className={cn("h-1 w-8", branch.waterLevel < 20 ? "bg-red-500/20 [&>div]:bg-red-500" : "bg-blue-500/20 [&>div]:bg-blue-500")} />
-                                 <span className={cn("text-[8px] font-black", branch.waterLevel < 20 ? "text-red-500" : "text-blue-400")}>{branch.waterLevel}%</span>
-                              </div>
-                           </div>
-                           <div className="flex flex-col">
-                              <span className="text-[7px] font-black text-slate-500 uppercase">Staff</span>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                 <Users className="size-2.5 text-slate-400" />
-                                 <span className={cn("text-[8px] font-black", branch.staffing.current < branch.staffing.required ? "text-amber-500" : "text-white")}>
-                                    {branch.staffing.current}/{branch.staffing.required}
-                                 </span>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <Badge className={cn("border-none text-[7px] font-black uppercase px-1.5 py-0", branch.waterLevel < 20 ? "bg-red-500 text-white" : "bg-emerald-500 text-white")}>
-                        {branch.waterLevel < 20 ? "ALERT" : "OK"}
-                     </Badge>
-                  </div>
-               </div>
-             ))}
-          </div>
-          <Button className="w-full mt-6 h-12 bg-white text-slate-900 hover:bg-slate-100 rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-2xl transition-all">
-             Full Network <ChevronRight className="ml-1 size-3" />
-          </Button>
-        </Card>
+
+                {/* Owner Strategy */}
+                <div className="space-y-3">
+                  <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-400 flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-emerald-400" /> STRATEGY
+                  </h4>
+                  <ul className="space-y-2">
+                    {aiInsights.recommendations.map((rec, i) => (
+                      <li key={i} className="flex items-start gap-2 text-[10px] bg-emerald-400/5 p-3 rounded-xl border border-emerald-400/10">
+                        <div className="size-1.5 rounded-full bg-emerald-400 shrink-0 mt-1" />
+                        <span className="font-medium text-slate-100">{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              
+              <Button className="w-full h-12 bg-white text-slate-900 hover:bg-blue-50 rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-2xl border-none">
+                 Approve Executive Strategy
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
-
-      {/* AI Strategy Layer - SUPER COMPACT */}
-      {aiInsights && (
-        <Card className="border-none shadow-2xl rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden p-6 md:p-8 relative group">
-          <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-primary/20 rounded-full blur-[120px]" />
-          
-          <CardHeader className="p-0 mb-6 flex flex-row items-center gap-4 space-y-0 relative z-10">
-            <div className="size-12 bg-gradient-to-tr from-primary to-blue-400 text-white rounded-xl shadow-2xl flex items-center justify-center rotate-6">
-              <Sparkles className="size-6" />
-            </div>
-            <div>
-              <CardTitle className="text-lg md:text-xl font-black text-white tracking-tighter uppercase leading-none">AI Strategy Core</CardTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge className="bg-primary text-white border-none text-[7px] font-black uppercase px-1.5 py-0">LIVE</Badge>
-                <p className="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Predictive Engine v4.2</p>
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="p-0 space-y-6 relative z-10">
-            <div className="p-4 md:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-inner">
-               <p className="text-sm md:text-base leading-snug text-white/95 font-bold tracking-tight">"{aiInsights.overallSummary}"</p>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-              {/* Network Anomalies */}
-              <div className="space-y-3">
-                <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
-                  <div className="h-0.5 w-4 bg-primary" /> ANOMALIES
-                </h4>
-                <ul className="space-y-2">
-                  {aiInsights.identifiedTrends.map((trend, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[10px] bg-white/5 p-3 rounded-xl border border-white/5">
-                      <Zap className="size-3 text-amber-400 shrink-0" />
-                      <span className="font-medium text-slate-200">{trend}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Owner Strategy */}
-              <div className="space-y-3">
-                <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-400 flex items-center gap-2">
-                  <div className="h-0.5 w-4 bg-emerald-400" /> STRATEGY
-                </h4>
-                <ul className="space-y-2">
-                  {aiInsights.recommendations.map((rec, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[10px] bg-emerald-400/5 p-3 rounded-xl border border-emerald-400/10">
-                      <div className="size-1.5 rounded-full bg-emerald-400 shrink-0 mt-1" />
-                      <span className="font-medium text-slate-100">{rec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Flagged Low-Rating Reviews */}
-              <div className="space-y-3">
-                <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-red-400 flex items-center gap-2">
-                  <div className="h-0.5 w-4 bg-red-400" /> CRITICAL FEEDBACK
-                </h4>
-                <div className="space-y-2">
-                  {aiInsights.flaggedReviews?.map((review, i) => (
-                    <div key={i} className="bg-red-500/5 p-3 rounded-xl border border-red-500/10 space-y-1.5">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-black text-white uppercase">{review.customer}</span>
-                        <div className="flex items-center gap-1">
-                          <Star className="size-2 text-red-400 fill-current" />
-                          <span className="text-[9px] font-black text-red-400">{review.rating}</span>
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-slate-300 leading-tight font-medium">"{review.comment}"</p>
-                      <div className="pt-1.5 border-t border-white/5 flex items-center gap-1.5">
-                        <Frown className="size-2.5 text-red-400" />
-                        <span className="text-[7px] font-black text-red-400 uppercase tracking-widest">{review.sentiment}</span>
-                      </div>
-                    </div>
-                  )) || (
-                    <div className="p-6 text-center bg-white/5 rounded-xl border border-white/5">
-                       <p className="text-[8px] font-black text-slate-500 uppercase">Clear</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <Button className="w-full h-12 bg-white text-slate-900 hover:bg-blue-50 rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-2xl">
-               Approve Strategy
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       <RoleSwitcher />
     </div>
