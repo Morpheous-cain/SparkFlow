@@ -13,15 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { 
   Search, 
   Car, 
   Star, 
@@ -41,11 +32,26 @@ import {
   ChevronRight,
   MapIcon,
   Package,
-  FileText
+  FileText,
+  Printer,
+  History,
+  X
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 function CustomerPortalContent() {
   const { toast } = useToast();
@@ -58,6 +64,11 @@ function CustomerPortalContent() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<"home" | "merch" | "history">("home");
+
+  // Statement Preview State
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [billTo, setBillTo] = useState("John Doe\nKBA 001C\nNairobi, Kenya");
+  const [statementNotes, setStatementNotes] = useState("Official Service Record from SparkFlow Ops.");
 
   // Home Service Request State
   const [isHomeServiceOpen, setIsHomeServiceOpen] = useState(false);
@@ -195,11 +206,18 @@ function CustomerPortalContent() {
     window.open("https://wa.me/254700000000?text=Hi SparkFlow, I need assistance with my wash.", "_blank");
   };
 
-  const handleDownloadStatement = () => {
+  const handlePrintStatement = () => {
     toast({
-      title: "Generating Statement",
-      description: "Your service history is being exported to PDF. Please wait...",
+      title: "Exporting Document",
+      description: "Generating your service history PDF. Your download will start shortly.",
     });
+    setTimeout(() => {
+      setIsPreviewOpen(false);
+      toast({
+        title: "Download Complete",
+        description: "Your official statement has been saved to your device.",
+      });
+    }, 2000);
   };
 
   if (!mounted) return null;
@@ -324,17 +342,11 @@ function CustomerPortalContent() {
                             {homeLocation ? "Location Verified" : "Capture GPS Location"}
                           </Button>
                           <Input 
-                            placeholder="Or Type Street / Apartment"
+                            placeholder="Or Type Address"
                             value={homeAddress}
                             onChange={(e) => setHomeAddress(e.target.value)}
                             className="h-14 rounded-2xl border-2 font-bold focus:ring-primary"
                           />
-                          {homeLocation && (
-                            <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-3">
-                               <MapIcon className="size-5 text-emerald-600" />
-                               <span className="text-[10px] font-black text-emerald-700 uppercase">Travel Fee: KES 450 (Calculated)</span>
-                            </div>
-                          )}
                         </div>
                       </div>
                     )}
@@ -342,43 +354,18 @@ function CustomerPortalContent() {
                     {homeStep === 3 && (
                       <div className="space-y-6">
                         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Preferred Slot</h4>
-                        <div className="space-y-6">
-                          <Calendar
-                            mode="single"
-                            selected={homeDate}
-                            onSelect={setHomeDate}
-                            className="rounded-3xl border-2 p-4 mx-auto w-fit"
-                            disabled={(date) => date < new Date()}
-                          />
-                          <div className="grid grid-cols-2 gap-2">
-                            {["09:00 AM", "11:00 AM", "02:00 PM", "04:00 PM"].map(time => (
-                              <Button
-                                key={time}
-                                variant={homeTime === time ? 'default' : 'outline'}
-                                onClick={() => setHomeTime(time)}
-                                className="h-12 rounded-xl font-black text-[10px] tracking-widest"
-                              >
-                                {time}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
+                        <Calendar
+                          mode="single"
+                          selected={homeDate}
+                          onSelect={setHomeDate}
+                          className="rounded-3xl border-2 p-4 mx-auto w-fit"
+                          disabled={(date) => date < new Date()}
+                        />
                       </div>
                     )}
 
                     {homeStep === 4 && (
                       <div className="space-y-8 text-center py-4">
-                        {selectedHomeService.category === 'Wash' && (
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Final Step: Vehicle Plate</label>
-                            <Input 
-                              placeholder="KDC 123A" 
-                              value={homePlate}
-                              onChange={(e) => setHomePlate(e.target.value.toUpperCase())}
-                              className="h-20 text-4xl font-mono font-black tracking-widest text-center rounded-3xl border-4 border-slate-100 focus:border-primary uppercase"
-                            />
-                          </div>
-                        )}
                         <Card className="border-none shadow-inner bg-slate-50 p-6 rounded-[2rem]">
                           <div className="space-y-3">
                             <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
@@ -386,7 +373,7 @@ function CustomerPortalContent() {
                               <span>KES {selectedHomeService.price}</span>
                             </div>
                             <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
-                              <span>Travel Fee (GPS)</span>
+                              <span>Travel Fee</span>
                               <span>KES {travelFee}</span>
                             </div>
                             <div className="pt-3 border-t-2 border-dashed border-slate-200 flex justify-between">
@@ -430,11 +417,6 @@ function CustomerPortalContent() {
                             </div>
                             <h4 className="text-lg font-black uppercase leading-none">{bundle.name}</h4>
                             <p className="text-[9px] font-bold text-slate-400 uppercase leading-none mt-1">{bundle.usp}</p>
-                            <div className="flex gap-2 mt-3">
-                               {bundle.services.slice(0, 2).map(s => (
-                                 <Badge key={s} variant="outline" className="text-[7px] font-black uppercase border-white/10 text-slate-300">{s}</Badge>
-                               ))}
-                            </div>
                          </div>
                          <div className="text-right shrink-0 ml-4">
                             <span className="text-[8px] font-black text-slate-500 uppercase block mb-1">Save KES {bundle.saving}</span>
@@ -478,12 +460,7 @@ function CustomerPortalContent() {
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concierge Logistics</span>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                       <Badge className="bg-primary text-white border-none font-black text-[10px] tracking-widest mb-1 uppercase">{logistics.status}</Badge>
-                       <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
-                        <QrCode className="size-3" /> {logistics.qrTag}
-                       </div>
-                    </div>
+                    <Badge className="bg-primary text-white border-none font-black text-[10px] tracking-widest uppercase">{logistics.status}</Badge>
                   </div>
                   <CardContent className="p-8 space-y-8">
                     <div className="space-y-6">
@@ -501,32 +478,6 @@ function CustomerPortalContent() {
                         </div>
                       </div>
                       <Progress value={logistics.progress} className="h-4 rounded-full bg-slate-100" />
-                    </div>
-
-                    <div className="space-y-4">
-                       <div className="flex items-center gap-2 mb-2">
-                         <Sparkles className="size-4 text-primary" />
-                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Live Journey</h4>
-                       </div>
-                       <div className="space-y-6 relative pl-8">
-                          <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-slate-100" />
-                          {logistics.stages.map((stage: any, i: number) => (
-                            <div key={i} className="relative flex flex-col gap-1">
-                               <div className={cn(
-                                 "absolute -left-[1.35rem] size-3 rounded-full border-2 border-white shadow-sm ring-2",
-                                 stage.completed ? "bg-primary ring-primary/20" : "bg-white ring-slate-100"
-                               )} />
-                               <span className={cn(
-                                 "text-[10px] font-black uppercase tracking-widest",
-                                 stage.completed ? "text-primary" : "text-slate-300"
-                               )}>{stage.name}</span>
-                               <p className={cn(
-                                 "text-sm font-bold leading-tight",
-                                 stage.completed ? "text-slate-900" : "text-slate-400"
-                               )}>{stage.label}</p>
-                            </div>
-                          ))}
-                       </div>
                     </div>
                   </CardContent>
                  </Card>
@@ -584,9 +535,6 @@ function CustomerPortalContent() {
                       </div>
                     </div>
                     <CardTitle className="text-3xl font-black tracking-tight uppercase">Rate Your Experience</CardTitle>
-                    <CardDescription className="text-slate-400 font-bold mt-2 uppercase text-[10px] tracking-[0.1em]">
-                      Turnaround: {vehicle.totalTime || 32} minutes
-                    </CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col items-center gap-8 p-10 bg-white">
                     <div className="flex gap-4">
@@ -605,34 +553,6 @@ function CustomerPortalContent() {
                         </button>
                       ))}
                     </div>
-                    
-                    {rating > 0 && !isSubmitted && (
-                      <div className="w-full space-y-6 animate-in fade-in zoom-in-95">
-                        <div className="p-5 bg-primary/5 border-2 border-dashed border-primary/20 rounded-3xl flex items-center gap-4 group cursor-pointer hover:bg-primary/10 transition-all">
-                          <div className="size-14 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
-                            <Camera className="size-7" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-black text-slate-900 text-sm uppercase">Earn KES 200 Reward!</p>
-                            <p className="text-xs font-bold text-slate-500 uppercase">Post a photo of your clean vehicle</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-4">
-                          <div className="relative group">
-                            <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-primary transition-colors" />
-                            <input placeholder="What made it great?" className="h-16 pl-12 w-full rounded-2xl bg-slate-50 border-none shadow-inner font-bold uppercase focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                          </div>
-
-                          <Button 
-                            className="w-full h-16 rounded-2xl font-black text-sm tracking-widest uppercase shadow-xl shadow-primary/20 border-none"
-                            onClick={handleSubmitReview}
-                          >
-                            Submit Feedback
-                          </Button>
-                        </div>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -664,9 +584,6 @@ function CustomerPortalContent() {
                 <Card key={item.id} className="border-none shadow-lg rounded-3xl overflow-hidden bg-white group hover:-translate-y-1 transition-all">
                   <div className="h-48 bg-slate-100 relative flex items-center justify-center overflow-hidden">
                     <Package className="size-16 text-slate-300 group-hover:scale-110 transition-transform" />
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-primary text-white border-none font-black text-[8px] uppercase">New Arrival</Badge>
-                    </div>
                   </div>
                   <CardContent className="p-6 space-y-4">
                     <div>
@@ -732,7 +649,7 @@ function CustomerPortalContent() {
                 <Button 
                   variant="ghost" 
                   className="text-[10px] font-black uppercase text-slate-400 hover:text-primary h-auto p-0 border-none"
-                  onClick={handleDownloadStatement}
+                  onClick={() => setIsPreviewOpen(true)}
                 >
                   Download Full Statement (PDF) <FileText className="size-3 ml-2" />
                 </Button>
@@ -767,6 +684,113 @@ function CustomerPortalContent() {
           </div>
         )}
       </div>
+
+      {/* Statement Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden border-none shadow-2xl rounded-[2.5rem] bg-white font-body">
+          <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="size-12 bg-primary rounded-xl flex items-center justify-center">
+                <FileText className="size-6" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Official Record Preview</DialogTitle>
+                <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Confirm your details before generating document</DialogDescription>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setIsPreviewOpen(false)} className="rounded-full text-slate-400 hover:text-white">
+              <X className="size-5" />
+            </Button>
+          </div>
+
+          <div className="p-10 max-h-[70vh] overflow-y-auto bg-slate-50">
+            <Card className="border-none shadow-2xl rounded-2xl bg-white p-12 space-y-10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-primary/5 rounded-full blur-[100px]" />
+              
+              <header className="flex justify-between items-start border-b pb-10 border-dashed relative z-10">
+                <div className="space-y-4">
+                  <div className="size-16 rounded-xl bg-primary flex items-center justify-center text-white shadow-xl">
+                    <Waves className="size-10" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 italic">SparkFlow Ops</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Premium Car Care Network</p>
+                  </div>
+                </div>
+                <div className="text-right space-y-1">
+                  <Badge className="bg-emerald-500 text-white border-none font-black text-[10px] tracking-widest px-4 py-1 mb-2 uppercase">Service Statement</Badge>
+                  <p className="text-[10px] font-black text-slate-400 uppercase">Statement Date: {mounted ? format(new Date(), 'PPP') : '...'}</p>
+                </div>
+              </header>
+
+              <div className="grid grid-cols-2 gap-12 relative z-10">
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Customer Details (Editable)</Label>
+                  <Textarea 
+                    value={billTo}
+                    onChange={(e) => setBillTo(e.target.value)}
+                    className="min-h-[100px] rounded-xl border-2 border-slate-100 focus:border-primary text-sm font-bold bg-slate-50/50 p-4"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Statement Notes (Editable)</Label>
+                  <Textarea 
+                    value={statementNotes}
+                    onChange={(e) => setStatementNotes(e.target.value)}
+                    className="min-h-[100px] rounded-xl border-2 border-slate-100 focus:border-primary text-sm font-bold bg-slate-50/50 p-4"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4 relative z-10">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                  <History className="size-4" /> Transaction Audit
+                </h3>
+                <div className="border rounded-2xl overflow-hidden border-slate-100">
+                  <Table>
+                    <TableHeader className="bg-slate-50/50">
+                      <TableRow className="border-none">
+                        <TableHead className="font-black text-[9px] uppercase tracking-widest pl-6">Service ID</TableHead>
+                        <TableHead className="font-black text-[9px] uppercase tracking-widest">Vehicle</TableHead>
+                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-right pr-6">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {MOCK_TRANSACTIONS.map((tx) => (
+                        <TableRow key={tx.id} className="border-slate-50">
+                          <TableCell className="pl-6 font-black text-xs text-slate-900">{tx.id}</TableCell>
+                          <TableCell className="font-bold text-slate-500 text-[10px] uppercase">{tx.plate}</TableCell>
+                          <TableCell className="text-right pr-6 font-black text-xs italic text-primary">KES {tx.amount.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              <footer className="pt-10 border-t border-dashed border-slate-100 flex justify-between items-end relative z-10">
+                <div>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Rewards Applied</p>
+                  <p className="text-lg font-black text-emerald-600 uppercase italic leading-none">50 SparkPoints Earned</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-4xl font-black text-slate-900 tracking-tighter leading-none italic">Verified</p>
+                </div>
+              </footer>
+            </Card>
+          </div>
+
+          <DialogFooter className="p-8 bg-white border-t border-dashed flex justify-between items-center sm:justify-between">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Official Digital Receipt Protocol</p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-2" onClick={() => setIsPreviewOpen(false)}>Close</Button>
+              <Button className="h-12 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] px-8 shadow-xl shadow-primary/20 bg-slate-900 text-white hover:bg-black border-none gap-2" onClick={handlePrintStatement}>
+                <Printer className="size-4" /> Export Document
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Button 
         onClick={handleWhatsAppSupport}

@@ -22,13 +22,24 @@ import {
   History, 
   FileText, 
   ExternalLink,
-  CheckCircle2
+  CheckCircle2,
+  Printer,
+  X
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 const SAAS_BILLING_HISTORY = [
   { id: 'INV-2024-005', date: 'May 01, 2024', amount: 14999, status: 'Paid', method: 'M-Pesa Daraja' },
@@ -40,6 +51,9 @@ const SAAS_BILLING_HISTORY = [
 export default function SettingsPage() {
   const { toast } = useToast();
   const [logoPreview, setLogoPreview] = useState<string | null>("https://picsum.photos/seed/sparkflow-logo/200/200");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [billTo, setBillTo] = useState("Emma Johnson\nSparkFlow Westlands\nRing Road, Westlands\nNairobi, Kenya");
+  const [statementNotes, setStatementNotes] = useState("Thank you for your continued partnership with SparkFlow ERP.");
 
   const handleSave = () => {
     toast({
@@ -53,7 +67,6 @@ export default function SettingsPage() {
       title: "Logo Pipeline Active",
       description: "Selecting new brand asset. Encrypting and optimizing for CDN distribution...",
     });
-    // Simulate upload delay
     setTimeout(() => {
       setLogoPreview("https://picsum.photos/seed/new-brand/200/200");
       toast({
@@ -71,22 +84,22 @@ export default function SettingsPage() {
     });
   };
 
-  const handleViewInvoice = (id: string) => {
+  const handlePrintStatement = () => {
     toast({
-      title: "Generating PDF",
-      description: `Invoice ${id} is being retrieved from the secure billing vault.`,
+      title: "Exporting Document",
+      description: "Generating high-resolution PDF. Please wait...",
     });
-  };
-
-  const handleDownloadFullStatement = () => {
-    toast({
-      title: "Exporting Billing History",
-      description: "Compiling all subscription invoices into a master PDF statement. Your download will start shortly.",
-    });
+    setTimeout(() => {
+      setIsPreviewOpen(false);
+      toast({
+        title: "Statement Ready",
+        description: "Your document has been sent to the system printer.",
+      });
+    }, 1500);
   };
 
   return (
-    <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
+    <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen font-body">
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter leading-none">Tenant Configuration</h1>
@@ -98,7 +111,6 @@ export default function SettingsPage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Organization Info & Logo */}
         <div className="space-y-8">
           <Card className="border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
             <CardHeader className="p-8 pb-4">
@@ -113,7 +125,6 @@ export default function SettingsPage() {
               </div>
             </CardHeader>
             <CardContent className="p-8 space-y-8">
-              {/* Logo Customization Area */}
               <div className="space-y-4">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Brand Logo</Label>
                 <div className="flex flex-col md:flex-row items-center gap-8 p-6 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
@@ -186,7 +197,6 @@ export default function SettingsPage() {
           </Card>
         </div>
 
-        {/* SaaS Subscription Info & History */}
         <div className="space-y-8">
           <Card className="border-none shadow-sm rounded-[2.5rem] bg-slate-900 text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 p-12 -mr-16 -mt-16 bg-primary/20 rounded-full blur-3xl" />
@@ -236,7 +246,12 @@ export default function SettingsPage() {
                   <CardDescription className="text-[10px] font-black uppercase text-slate-400">Audit past subscription payments</CardDescription>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 text-slate-400">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full hover:bg-slate-100 text-slate-400"
+                onClick={() => setIsPreviewOpen(true)}
+              >
                 <FileText className="size-4" />
               </Button>
             </CardHeader>
@@ -272,7 +287,7 @@ export default function SettingsPage() {
                         variant="ghost" 
                         size="icon" 
                         className="size-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/10 hover:text-primary"
-                        onClick={() => handleViewInvoice(invoice.id)}
+                        onClick={() => setIsPreviewOpen(true)}
                       >
                         <ExternalLink className="size-3.5" />
                       </Button>
@@ -285,7 +300,7 @@ export default function SettingsPage() {
               <Button 
                 variant="link" 
                 className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-primary"
-                onClick={handleDownloadFullStatement}
+                onClick={() => setIsPreviewOpen(true)}
               >
                 Download Full Statement (PDF)
               </Button>
@@ -293,6 +308,123 @@ export default function SettingsPage() {
           </Card>
         </div>
       </div>
+
+      {/* Statement Preview & Editor Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden border-none shadow-2xl rounded-[2.5rem] bg-white">
+          <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="size-12 bg-primary rounded-xl flex items-center justify-center">
+                <FileText className="size-6" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Statement Preview</DialogTitle>
+                <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Review and edit before printing</DialogDescription>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setIsPreviewOpen(false)} className="rounded-full text-slate-400 hover:text-white">
+              <X className="size-5" />
+            </Button>
+          </div>
+
+          <div className="p-10 max-h-[70vh] overflow-y-auto bg-slate-50">
+            {/* The Document Layout */}
+            <Card className="border-none shadow-2xl rounded-2xl bg-white p-12 space-y-10">
+              <header className="flex justify-between items-start border-b pb-10 border-dashed">
+                <div className="space-y-4">
+                  <div className="size-20 rounded-2xl bg-slate-900 flex items-center justify-center overflow-hidden relative border-4 border-slate-50 shadow-xl">
+                    {logoPreview ? (
+                      <Image src={logoPreview} alt="Logo" fill className="object-cover" />
+                    ) : (
+                      <Waves className="size-10 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 italic">SparkFlow Westlands</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enterprise Car Wash ERP Node</p>
+                  </div>
+                </div>
+                <div className="text-right space-y-1">
+                  <Badge className="bg-primary text-white border-none font-black text-[10px] tracking-widest px-4 py-1 mb-2 uppercase">Official Statement</Badge>
+                  <p className="text-[10px] font-black text-slate-400 uppercase">Date: {new Date().toLocaleDateString()}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase">Ref: SF-2024-STMT</p>
+                </div>
+              </header>
+
+              <div className="grid grid-cols-2 gap-12">
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Bill To (Editable)</Label>
+                  <Textarea 
+                    value={billTo}
+                    onChange={(e) => setBillTo(e.target.value)}
+                    className="min-h-[100px] rounded-xl border-2 border-slate-100 focus:border-primary text-sm font-bold bg-slate-50/50 p-4"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Statement Notes (Editable)</Label>
+                  <Textarea 
+                    value={statementNotes}
+                    onChange={(e) => setStatementNotes(e.target.value)}
+                    className="min-h-[100px] rounded-xl border-2 border-slate-100 focus:border-primary text-sm font-bold bg-slate-50/50 p-4"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                  <History className="size-4" /> Subscription Payout History
+                </h3>
+                <div className="border rounded-2xl overflow-hidden border-slate-100">
+                  <Table>
+                    <TableHeader className="bg-slate-50/50">
+                      <TableRow className="border-none">
+                        <TableHead className="font-black text-[9px] uppercase tracking-widest pl-6">Invoice</TableHead>
+                        <TableHead className="font-black text-[9px] uppercase tracking-widest">Date</TableHead>
+                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-right pr-6">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {SAAS_BILLING_HISTORY.map((inv) => (
+                        <TableRow key={inv.id} className="border-slate-50">
+                          <TableCell className="pl-6 font-black text-xs text-slate-900">{inv.id}</TableCell>
+                          <TableCell className="font-bold text-slate-500 text-[10px] uppercase">{inv.date}</TableCell>
+                          <TableCell className="text-right pr-6 font-black text-xs italic text-primary">KES {inv.amount.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              <footer className="pt-10 border-t border-dashed border-slate-100 flex justify-between items-end">
+                <div className="flex items-center gap-4">
+                  <div className="size-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm">
+                    <CheckCircle2 className="size-6" />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Account Status</p>
+                    <p className="text-lg font-black text-emerald-600 uppercase italic leading-none">Fully Reconciled</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-black text-slate-400 uppercase mb-4">Total Settled (MTD)</p>
+                  <p className="text-4xl font-black text-slate-900 tracking-tighter leading-none italic">KES 59,996</p>
+                </div>
+              </footer>
+            </Card>
+          </div>
+
+          <DialogFooter className="p-8 bg-white border-t border-dashed flex justify-between items-center sm:justify-between">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Authorized Digitally via Daraja API Protocol</p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-2" onClick={() => setIsPreviewOpen(false)}>Discard</Button>
+              <Button className="h-12 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] px-8 shadow-xl shadow-primary/20 bg-slate-900 text-white hover:bg-black border-none gap-2" onClick={handlePrintStatement}>
+                <Printer className="size-4" /> Print / Save as PDF
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
