@@ -37,7 +37,8 @@ import {
   ArrowDownRight,
   Download,
   Lock,
-  Wallet
+  Wallet,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -183,7 +184,7 @@ export default function AccountsManagementPage() {
                   <div className="p-6 bg-white/5 rounded-3xl border border-white/10 space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-slate-400 uppercase">Gateway Health</span>
-                      <Badge className="bg-emerald-500 text-white border-none text-[8px] font-black">STABLE</Badge>
+                      <Badge className="bg-emerald-50 text-white border-none text-[8px] font-black">STABLE</Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-slate-400 uppercase">Settlement Mode</span>
