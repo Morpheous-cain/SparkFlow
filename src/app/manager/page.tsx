@@ -24,7 +24,11 @@ import {
   Frown,
   Activity,
   Gauge,
-  Waves
+  Waves,
+  ArrowUpRight,
+  ArrowDownRight,
+  Target,
+  PieChart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,12 +88,7 @@ export default function ManagerDashboard() {
   };
 
   const safeBranches = BRANCHES || [];
-  const criticalRisks = safeBranches.filter(b => 
-    (b.waterLevel !== undefined && b.waterLevel < 20) || 
-    (b.staffing && b.staffing.current < b.staffing.required) || 
-    (b.essentialMaterialsLow > 0)
-  );
-
+  
   const handleRefillOrder = (branchName: string) => {
     toast({
       title: "Water Logistics Initiated",
@@ -97,17 +96,24 @@ export default function ManagerDashboard() {
     });
   };
 
+  const handleApproveStrategy = () => {
+    toast({
+      title: "Executive Strategy Approved",
+      description: "Propagating performance targets and operational shifts to all branch nodes.",
+    });
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f1f5f9]">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Owner Intelligence Hub</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none italic">Owner Intelligence Hub</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-2">Emma Johnson • Global Operations Commander</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="relative w-full sm:w-64 lg:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input placeholder="Search Infrastructure..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20" />
+            <Input placeholder="Audit Infrastructure..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20 uppercase tracking-widest" />
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="rounded-2xl bg-white shadow-sm size-12 hover:bg-slate-50 relative border-none">
@@ -119,19 +125,47 @@ export default function ManagerDashboard() {
               className="flex-1 sm:flex-none gap-2 bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest transition-all border-none"
               disabled={loadingAi}
             >
-              <Sparkles className="size-4 text-primary" /> {loadingAi ? "Analyzing..." : "Sync AI"}
+              <Sparkles className="size-4 text-primary" /> {loadingAi ? "Analyzing..." : "Sync AI Strategy"}
             </Button>
           </div>
         </div>
       </header>
 
-      {/* IoT Resource Grid - NEW */}
+      {/* Executive Financial Health BI Row */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {[
+          { title: "Net Profit Margin", value: "32.4%", change: "+4.2%", icon: Target, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { title: "LTV : CAC Ratio", value: "4.8x", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { title: "Burn Rate (Monthly)", value: "KES 142K", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+          { title: "Working Capital", value: "KES 2.4M", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
+        ].map((metric, i) => (
+          <Card key={i} className="border-none shadow-xl rounded-[2.2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white relative">
+             <div className={cn("absolute top-0 left-0 w-1 h-full", metric.color.replace('text', 'bg'))} />
+            <CardContent className="p-6 md:p-8">
+              <div className="flex justify-between items-center mb-4">
+                <div className={cn("size-12 rounded-2xl flex items-center justify-center", metric.bg, metric.color)}>
+                  <metric.icon className="size-6" />
+                </div>
+                <Badge className={cn("border-none px-2 py-0.5 rounded-full text-[8px] font-black uppercase", metric.color.replace('text', 'bg'), "text-white")}>
+                  {metric.change}
+                </Badge>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.title}</span>
+                <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none italic">{metric.value}</span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      {/* IoT Resource Grid */}
       <section className="space-y-4">
         <div className="flex items-center justify-between px-2">
-           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
-             <Activity className="size-3" /> Live IoT Resource Command
+           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2 italic">
+             <Activity className="size-3" /> Site Infrastructure & Resource Command
            </h2>
-           <Badge className="bg-emerald-500 text-white border-none font-black text-[8px] uppercase tracking-widest px-3 py-1">SENSORS ONLINE</Badge>
+           <Badge className="bg-emerald-500 text-white border-none font-black text-[8px] uppercase tracking-widest px-3 py-1">SENSORS VERIFIED</Badge>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {safeBranches.map((branch) => (
@@ -143,12 +177,12 @@ export default function ManagerDashboard() {
                          <Building2 className="size-6" />
                       </div>
                       <div>
-                         <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">{branch.name}</h3>
-                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID: {branch.id} • Station Node</p>
+                         <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none italic">{branch.name}</h3>
+                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Station Node: {branch.id}</p>
                       </div>
                    </div>
                    {branch.waterLevel < 20 && (
-                     <Badge className="bg-red-500 text-white border-none animate-pulse font-black text-[8px] uppercase">LOW RESOURCE</Badge>
+                     <Badge className="bg-red-500 text-white border-none animate-pulse font-black text-[8px] uppercase px-3 py-1 shadow-lg shadow-red-500/20">LOW RESOURCE</Badge>
                    )}
                 </header>
 
@@ -178,14 +212,14 @@ export default function ManagerDashboard() {
                       <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
                          <div className="flex items-center gap-2">
                             <Gauge className="size-3 text-emerald-500" />
-                            <span className="text-[8px] font-black text-slate-400 uppercase">Pump PSI</span>
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Pump Pressure</span>
                          </div>
                          <div className="text-lg font-black text-slate-900">{branch.pumpPressure} PSI</div>
                       </div>
                       <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
                          <div className="flex items-center gap-2">
                             <Waves className="size-3 text-indigo-500" />
-                            <span className="text-[8px] font-black text-slate-400 uppercase">Detergent</span>
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Detergent Flow</span>
                          </div>
                          <div className="text-lg font-black text-slate-900">{branch.detergentLevel}%</div>
                       </div>
@@ -203,7 +237,7 @@ export default function ManagerDashboard() {
                    ) : (
                      <Button 
                        variant="outline" 
-                       className="w-full h-14 border-2 border-slate-100 bg-white hover:bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest rounded-2xl"
+                       className="w-full h-14 border-2 border-slate-100 bg-white hover:bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest rounded-2xl transition-all"
                      >
                         Infrastructure Diagnostics
                      </Button>
@@ -215,50 +249,19 @@ export default function ManagerDashboard() {
         </div>
       </section>
 
-      {/* Vital Signs - High Level KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {[
-          { title: "Network MRR", value: "KES 1.4M", change: "+14.2%", icon: DollarSign, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { title: "Daily Revenue", value: "23.8K", change: "+108%", icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { title: "Avg Rating", value: "4.82", change: "+0.2", icon: Star, color: "text-amber-500", bg: "bg-amber-500/10" },
-          { title: "System Health", value: "82%", change: "Audit Req", icon: Droplets, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-        ].map((metric, i) => (
-          <Card key={i} className="border-none shadow-xl rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white">
-             <div className={cn("h-1.5 w-full", metric.color.replace('text', 'bg'))} />
-            <CardContent className="p-6 md:p-8">
-              <div className="flex justify-between items-center mb-4 md:mb-6">
-                <div className={cn("size-12 rounded-xl flex items-center justify-center", metric.bg, metric.color)}>
-                  <metric.icon className="size-6" />
-                </div>
-                <Button variant="ghost" size="icon" className="size-8 rounded-full border-none"><MoreVertical className="size-4 text-slate-300" /></Button>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.title}</span>
-                <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none">{metric.value}</span>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge className={cn("border-none px-2 py-0 rounded-full text-[8px] font-black", metric.color.replace('text', 'bg'), "text-white")}>
-                    {metric.change}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        {/* Revenue Velocity Chart */}
+        {/* Financial Velocity Chart */}
         <Card className="lg:col-span-2 border-none shadow-2xl rounded-[2.5rem] bg-white p-6 md:p-10 relative overflow-hidden group">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter">Financial Velocity</h3>
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time revenue accumulation</p>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Financial Velocity Audit</h3>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time revenue accumulation vs Projections</p>
             </div>
             <div className="flex gap-4">
                <div className="flex items-center gap-2">
                  <div className="size-2 rounded-full bg-primary" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase">Actual</span>
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Actual MTD</span>
                </div>
             </div>
           </div>
@@ -277,7 +280,7 @@ export default function ManagerDashboard() {
                     dataKey="day" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 9, fontBold: 900 }}
+                    tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
                     dy={10}
                   />
                   <YAxis hide />
@@ -291,7 +294,7 @@ export default function ManagerDashboard() {
           </div>
         </Card>
 
-        {/* AI Strategy Layer - SUPER COMPACT */}
+        {/* AI Strategy Layer */}
         {aiInsights && (
           <Card className="border-none shadow-2xl rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden p-6 md:p-8 relative group">
             <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-primary/20 rounded-full blur-[120px]" />
@@ -301,44 +304,44 @@ export default function ManagerDashboard() {
                 <Sparkles className="size-6" />
               </div>
               <div>
-                <CardTitle className="text-lg md:text-xl font-black text-white tracking-tighter uppercase leading-none">AI Strategy Core</CardTitle>
+                <CardTitle className="text-lg md:text-xl font-black text-white tracking-tighter uppercase leading-none italic">AI Strategy Core</CardTitle>
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge className="bg-primary text-white border-none text-[7px] font-black uppercase px-1.5 py-0">LIVE</Badge>
-                  <p className="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Predictive Engine v4.2</p>
+                  <Badge className="bg-primary text-white border-none text-[7px] font-black uppercase px-1.5 py-0">REAL-TIME</Badge>
+                  <p className="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Decision Engine v4.2</p>
                 </div>
               </div>
             </CardHeader>
             
             <CardContent className="p-0 space-y-6 relative z-10">
               <div className="p-4 md:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-inner">
-                 <p className="text-sm md:text-base leading-snug text-white/95 font-bold tracking-tight">"{aiInsights.overallSummary}"</p>
+                 <p className="text-sm md:text-base leading-snug text-white/95 font-bold tracking-tight italic">"{aiInsights.overallSummary}"</p>
               </div>
               
               <div className="space-y-6">
-                {/* Network Anomalies */}
+                {/* Executive Anomalies */}
                 <div className="space-y-3">
                   <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
-                    <div className="h-0.5 w-4 bg-primary" /> ANOMALIES
+                    <div className="h-0.5 w-4 bg-primary" /> FINANCIAL ANOMALIES
                   </h4>
                   <ul className="space-y-2">
                     {aiInsights.identifiedTrends.map((trend, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[10px] bg-white/5 p-3 rounded-xl border border-white/5">
-                        <Zap className="size-3 text-amber-400 shrink-0" />
+                      <li key={i} className="flex items-start gap-2 text-[10px] bg-white/5 p-3 rounded-xl border border-white/5 group/item hover:bg-white/10 transition-colors">
+                        <Zap className="size-3 text-amber-400 shrink-0 mt-0.5" />
                         <span className="font-medium text-slate-200">{trend}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Owner Strategy */}
+                {/* Management Strategy */}
                 <div className="space-y-3">
                   <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-400 flex items-center gap-2">
-                    <div className="h-0.5 w-4 bg-emerald-400" /> STRATEGY
+                    <div className="h-0.5 w-4 bg-emerald-400" /> GROWTH STRATEGY
                   </h4>
                   <ul className="space-y-2">
                     {aiInsights.recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[10px] bg-emerald-400/5 p-3 rounded-xl border border-emerald-400/10">
-                        <div className="size-1.5 rounded-full bg-emerald-400 shrink-0 mt-1" />
+                      <li key={i} className="flex items-start gap-2 text-[10px] bg-emerald-400/5 p-3 rounded-xl border border-emerald-400/10 hover:bg-emerald-400/10 transition-colors">
+                        <div className="size-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
                         <span className="font-medium text-slate-100">{rec}</span>
                       </li>
                     ))}
@@ -346,8 +349,11 @@ export default function ManagerDashboard() {
                 </div>
               </div>
               
-              <Button className="w-full h-12 bg-white text-slate-900 hover:bg-blue-50 rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-2xl border-none">
-                 Approve Executive Strategy
+              <Button 
+                className="w-full h-14 bg-white text-slate-900 hover:bg-blue-50 rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-2xl border-none transition-all active:scale-95"
+                onClick={handleApproveStrategy}
+              >
+                 Authorize Strategic Pivot
               </Button>
             </CardContent>
           </Card>
