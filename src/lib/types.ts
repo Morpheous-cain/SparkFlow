@@ -51,6 +51,7 @@ export interface Staff {
   rating: number; // Customer rating 0-5
   attendanceStatus: AttendanceStatus;
   lastClockIn?: string;
+  points: number; // Reward SparkPoints
   earnings: {
     base: number;
     commission: number;

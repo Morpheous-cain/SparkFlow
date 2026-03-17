@@ -49,6 +49,7 @@ export const STAFF: Staff[] = [
     rating: 4.9,
     attendanceStatus: 'Present',
     lastClockIn: '2024-05-21T07:45:00Z',
+    points: 1240,
     earnings: { base: 12000, commission: 4500, tips: 3000, total: 19500 },
     isEmployeeOfMonth: true
   },
@@ -62,6 +63,7 @@ export const STAFF: Staff[] = [
     rating: 4.2,
     attendanceStatus: 'Late',
     lastClockIn: '2024-05-21T08:30:00Z',
+    points: 850,
     earnings: { base: 12000, commission: 1200, tips: 1000, total: 14200 } 
   },
   { 
@@ -74,6 +76,7 @@ export const STAFF: Staff[] = [
     rating: 4.8,
     attendanceStatus: 'Present',
     lastClockIn: '2024-05-21T07:15:00Z',
+    points: 1100,
     earnings: { base: 12000, commission: 3200, tips: 2000, total: 17200 } 
   },
   { 
@@ -86,6 +89,7 @@ export const STAFF: Staff[] = [
     rating: 5.0,
     attendanceStatus: 'Present',
     lastClockIn: '2024-05-21T07:00:00Z',
+    points: 2500,
     earnings: { base: 45000, commission: 8000, tips: 0, total: 53000 } 
   },
   { 
@@ -98,6 +102,7 @@ export const STAFF: Staff[] = [
     rating: 4.9,
     attendanceStatus: 'Present',
     lastClockIn: '2024-05-21T07:30:00Z',
+    points: 980,
     earnings: { base: 15000, commission: 5000, tips: 4000, total: 24000 } 
   },
 ];
