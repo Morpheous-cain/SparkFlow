@@ -9,6 +9,7 @@
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
+        "logoUrl": { "type": "string", "format": "uri", "description": "URL to the organization's custom logo." },
         "plan": { "type": "string", "enum": ["Basic", "Professional", "Enterprise"] },
         "status": { "type": "string", "enum": ["Active", "Suspended", "Trial"] },
         "subscriptionExpiry": { "type": "string", "format": "date-time" },

@@ -37,6 +37,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const mainItems = [
   { title: "Dashboard", icon: LayoutDashboard, url: "/manager" },
@@ -62,13 +63,25 @@ const otherItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  // In production, this would be fetched from the Tenant state
+  const customLogoUrl = "https://picsum.photos/seed/sparkflow-logo/200/200";
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-r border-slate-100">
       <SidebarHeader className="p-8">
         <Link href="/manager" className="flex items-center gap-4">
-          <div className="flex aspect-square size-12 items-center justify-center rounded-[1rem] bg-primary text-primary-foreground shadow-xl shadow-primary/20">
-            <Waves className="size-7" />
+          <div className="flex aspect-square size-12 items-center justify-center rounded-[1.2rem] bg-primary text-primary-foreground shadow-2xl shadow-primary/30 overflow-hidden relative">
+            {customLogoUrl ? (
+              <Image 
+                src={customLogoUrl} 
+                alt="Logo" 
+                fill 
+                className="object-cover" 
+                data-ai-hint="company logo"
+              />
+            ) : (
+              <Waves className="size-7" />
+            )}
           </div>
           <div className="flex flex-col gap-0 group-data-[collapsible=icon]:hidden">
             <span className="text-2xl font-black tracking-tight text-slate-900 leading-none">SPARKFLOW</span>

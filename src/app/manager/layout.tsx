@@ -1,12 +1,17 @@
+
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Waves } from "lucide-react";
+import Image from "next/image";
 
 export default function ManagerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // In production, this would be fetched from the Tenant state
+  const customLogoUrl = "https://picsum.photos/seed/sparkflow-logo/200/200";
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-slate-50">
@@ -15,8 +20,18 @@ export default function ManagerLayout({
           <header className="flex h-16 items-center gap-4 border-b bg-white px-6 md:hidden sticky top-0 z-30">
             <SidebarTrigger />
             <div className="flex items-center gap-2">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-white">
-                <Waves className="size-5" />
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-white overflow-hidden relative">
+                {customLogoUrl ? (
+                  <Image 
+                    src={customLogoUrl} 
+                    alt="Logo" 
+                    fill 
+                    className="object-cover" 
+                    data-ai-hint="company logo"
+                  />
+                ) : (
+                  <Waves className="size-5" />
+                )}
               </div>
               <span className="text-sm font-black tracking-tighter uppercase">SparkFlow</span>
             </div>

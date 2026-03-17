@@ -9,6 +9,7 @@ export type AttendanceStatus = 'Present' | 'Late' | 'Absent' | 'On-Leave';
 export interface Tenant {
   id: string;
   name: string;
+  logoUrl?: string;
   plan: SaaSPlan;
   status: 'Active' | 'Suspended' | 'Trial';
   subscriptionExpiry: string;
