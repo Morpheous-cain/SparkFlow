@@ -35,7 +35,10 @@ import {
   FileText,
   Printer,
   History,
-  X
+  X,
+  Trash2,
+  Plus,
+  Hash
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -69,6 +72,7 @@ function CustomerPortalContent() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [billTo, setBillTo] = useState("John Doe\nKBA 001C\nNairobi, Kenya");
   const [statementNotes, setStatementNotes] = useState("Official Service Record from SparkFlow Ops.");
+  const [previewItems, setPreviewItems] = useState<any[]>([]);
 
   // Home Service Request State
   const [isHomeServiceOpen, setIsHomeServiceOpen] = useState(false);
@@ -90,6 +94,12 @@ function CustomerPortalContent() {
       handleSearch(plateFromUrl.toUpperCase());
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (isPreviewOpen) {
+      setPreviewItems([...MOCK_TRANSACTIONS]);
+    }
+  }, [isPreviewOpen]);
 
   const travelFee = homeLocation ? 450 : 0; 
   const totalHomeCost = selectedHomeService.price + travelFee;
@@ -220,10 +230,35 @@ function CustomerPortalContent() {
     }, 2000);
   };
 
+  const addLineItem = () => {
+    const newItem = {
+      id: `SF-${Math.floor(1000 + Math.random() * 9000)}`,
+      plate: searchPlate || "KBA 001C",
+      amount: 0,
+      status: 'Paid',
+      receipt: 'REF-PENDING',
+      duration: 30,
+      date: new Date().toISOString().split('T')[0]
+    };
+    setPreviewItems([...previewItems, newItem]);
+  };
+
+  const removeLineItem = (idx: number) => {
+    setPreviewItems(previewItems.filter((_, i) => i !== idx));
+  };
+
+  const updateLineItem = (idx: number, field: string, value: any) => {
+    const updated = [...previewItems];
+    updated[idx] = { ...updated[idx], [field]: value };
+    setPreviewItems(updated);
+  };
+
+  const totalStatementAmount = previewItems.reduce((acc, item) => acc + (parseFloat(item.amount) || 0), 0);
+
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen pb-44 bg-slate-50 flex flex-col font-body">
+    <div className="min-h-screen pb-44 bg-slate-50 font-body flex flex-col">
       <header className="bg-white border-b p-6 flex items-center justify-between sticky top-0 z-40 backdrop-blur-md bg-white/80">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/20">
@@ -685,17 +720,17 @@ function CustomerPortalContent() {
         )}
       </div>
 
-      {/* Statement Preview Dialog */}
+      {/* Statement Preview & Architect Dialog */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden border-none shadow-2xl rounded-[2.5rem] bg-white font-body">
+        <DialogContent className="max-w-5xl p-0 overflow-hidden border-none shadow-2xl rounded-[2.5rem] bg-white font-body">
           <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
             <div className="flex items-center gap-4">
               <div className="size-12 bg-primary rounded-xl flex items-center justify-center">
                 <FileText className="size-6" />
               </div>
               <div>
-                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Official Record Preview</DialogTitle>
-                <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Confirm your details before generating document</DialogDescription>
+                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Statement Architect</DialogTitle>
+                <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Audit line items & add transaction codes</DialogDescription>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsPreviewOpen(false)} className="rounded-full text-slate-400 hover:text-white">
@@ -718,7 +753,7 @@ function CustomerPortalContent() {
                   </div>
                 </div>
                 <div className="text-right space-y-1">
-                  <Badge className="bg-emerald-500 text-white border-none font-black text-[10px] tracking-widest px-4 py-1 mb-2 uppercase">Service Statement</Badge>
+                  <Badge className="bg-emerald-50 text-white border-none font-black text-[10px] tracking-widest px-4 py-1 mb-2 uppercase">Service Statement</Badge>
                   <p className="text-[10px] font-black text-slate-400 uppercase">Statement Date: {mounted ? format(new Date(), 'PPP') : '...'}</p>
                 </div>
               </header>
@@ -743,24 +778,66 @@ function CustomerPortalContent() {
               </div>
 
               <div className="space-y-4 relative z-10">
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
-                  <History className="size-4" /> Transaction Audit
-                </h3>
-                <div className="border rounded-2xl overflow-hidden border-slate-100">
+                <div className="flex justify-between items-center px-1">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                    <History className="size-4" /> Transaction Audit
+                  </h3>
+                  <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black text-[9px] uppercase bg-primary/5 text-primary border-none" onClick={addLineItem}>
+                    <Plus className="size-3 mr-2" /> Add Transaction
+                  </Button>
+                </div>
+                
+                <div className="border rounded-2xl overflow-hidden border-slate-100 bg-white">
                   <Table>
                     <TableHeader className="bg-slate-50/50">
                       <TableRow className="border-none">
-                        <TableHead className="font-black text-[9px] uppercase tracking-widest pl-6">Service ID</TableHead>
-                        <TableHead className="font-black text-[9px] uppercase tracking-widest">Vehicle</TableHead>
-                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-right pr-6">Amount</TableHead>
+                        <TableHead className="pl-6 text-[9px] font-black uppercase tracking-widest">Service ID</TableHead>
+                        <TableHead className="text-[9px] font-black uppercase tracking-widest">Trans. Code</TableHead>
+                        <TableHead className="text-[9px] font-black uppercase tracking-widest">Vehicle</TableHead>
+                        <TableHead className="text-right text-[9px] font-black uppercase tracking-widest pr-6">Amount (KES)</TableHead>
+                        <TableHead className="w-10"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {MOCK_TRANSACTIONS.map((tx) => (
-                        <TableRow key={tx.id} className="border-slate-50">
-                          <TableCell className="pl-6 font-black text-xs text-slate-900">{tx.id}</TableCell>
-                          <TableCell className="font-bold text-slate-500 text-[10px] uppercase">{tx.plate}</TableCell>
-                          <TableCell className="text-right pr-6 font-black text-xs italic text-primary">KES {tx.amount.toLocaleString()}</TableCell>
+                      {previewItems.map((tx, idx) => (
+                        <TableRow key={idx} className="border-slate-50">
+                          <TableCell className="pl-6">
+                            <Input 
+                              value={tx.id} 
+                              onChange={(e) => updateLineItem(idx, 'id', e.target.value)}
+                              className="h-8 text-xs font-black border-none bg-slate-50 focus:bg-white uppercase p-2 rounded-lg"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className="relative">
+                              <Hash className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-slate-300" />
+                              <Input 
+                                value={tx.receipt} 
+                                onChange={(e) => updateLineItem(idx, 'receipt', e.target.value.toUpperCase())}
+                                className="h-8 text-[10px] font-black border-none bg-slate-50 focus:bg-white uppercase pl-7 p-2 rounded-lg"
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Input 
+                              value={tx.plate} 
+                              onChange={(e) => updateLineItem(idx, 'plate', e.target.value.toUpperCase())}
+                              className="h-8 text-[10px] font-bold border-none bg-slate-50 focus:bg-white p-2 rounded-lg uppercase"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right pr-6">
+                            <Input 
+                              type="number"
+                              value={tx.amount} 
+                              onChange={(e) => updateLineItem(idx, 'amount', e.target.value)}
+                              className="h-8 text-xs font-black text-right border-none bg-slate-50 focus:bg-white p-2 rounded-lg italic text-primary"
+                            />
+                          </TableCell>
+                          <TableCell className="pr-4">
+                            <Button variant="ghost" size="icon" className="size-8 text-red-300 hover:text-red-500 rounded-lg" onClick={() => removeLineItem(idx)}>
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -774,7 +851,10 @@ function CustomerPortalContent() {
                   <p className="text-lg font-black text-emerald-600 uppercase italic leading-none">50 SparkPoints Earned</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-4xl font-black text-slate-900 tracking-tighter leading-none italic">Verified</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Architected Total (KES)</p>
+                  <p className="text-4xl font-black text-slate-900 tracking-tighter leading-none italic">
+                    KES {totalStatementAmount.toLocaleString()}
+                  </p>
                 </div>
               </footer>
             </Card>
@@ -783,7 +863,7 @@ function CustomerPortalContent() {
           <DialogFooter className="p-8 bg-white border-t border-dashed flex justify-between items-center sm:justify-between">
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Official Digital Receipt Protocol</p>
             <div className="flex gap-3">
-              <Button variant="outline" className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-2" onClick={() => setIsPreviewOpen(false)}>Close</Button>
+              <Button variant="outline" className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest border-2" onClick={() => setIsPreviewOpen(false)}>Discard Edits</Button>
               <Button className="h-12 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] px-8 shadow-xl shadow-primary/20 bg-slate-900 text-white hover:bg-black border-none gap-2" onClick={handlePrintStatement}>
                 <Printer className="size-4" /> Export Document
               </Button>
