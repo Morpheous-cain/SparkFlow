@@ -26,7 +26,6 @@ import { cn } from "@/lib/utils";
 
 export default function InventoryPage() {
   const { toast } = useToast();
-  const lowStockCount = INVENTORY.filter(item => item.stock < 20).length;
   const lowEssentialCount = INVENTORY.filter(item => item.isEssential && item.stock < 15).length;
   const totalValue = INVENTORY.reduce((acc, item) => acc + (item.stock * item.wholesale), 0);
 
@@ -37,10 +36,31 @@ export default function InventoryPage() {
     { label: "Turnover Rate", value: "4.2x", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50", trend: "+0.8%", layer: 'bg-amber-500' },
   ];
 
+  const handleManualCount = () => {
+    toast({
+      title: "Stock Audit",
+      description: "Entering manual reconciliation mode. Scanner interface activated.",
+    });
+  };
+
+  const handleUrgentOrder = (itemName: string) => {
+    toast({
+      title: "Reorder Triggered",
+      description: `Purchase Order for ${itemName} has been generated and sent to suppliers via ERP mail.`,
+    });
+  };
+
   const handleLaunchCampaign = (itemName: string) => {
     toast({
       title: "Campaign Launched",
-      description: `Discount offer for ${itemName} pushed to customer app.`,
+      description: `Discount offer for ${itemName} pushed to customer app and SMS gateway.`,
+    });
+  };
+
+  const handlePushLoyalty = (itemName: string) => {
+    toast({
+      title: "Loyalty Update",
+      description: `${itemName} is now a featured reward in the SparkFlow membership portal.`,
     });
   };
 
@@ -51,7 +71,10 @@ export default function InventoryPage() {
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Merchandise & Materials</h1>
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Operational Essentials & Velocity Audit</p>
         </div>
-        <Button className="rounded-2xl h-14 bg-slate-900 text-white font-black uppercase text-[11px] tracking-widest px-8 shadow-2xl shadow-slate-900/20 hover:bg-black transition-all">
+        <Button 
+          className="rounded-2xl h-14 bg-slate-900 text-white font-black uppercase text-[11px] tracking-widest px-8 shadow-2xl shadow-slate-900/20 hover:bg-black transition-all"
+          onClick={handleManualCount}
+        >
            Manual Stock Count
         </Button>
       </header>
@@ -91,7 +114,7 @@ export default function InventoryPage() {
                     {item.isEssential ? <ShieldCheck className="size-8 text-primary" /> : <Package className="size-8" />}
                   </div>
                   <div className="flex flex-col gap-2">
-                     <h3 className="text-xl font-black text-slate-900 uppercase leading-none">{item.name}</h3>
+                     <h3 className="text-xl font-black text-slate-900 uppercase leading-none tracking-tight">{item.name}</h3>
                      <div className="flex items-center gap-2">
                         {item.isEssential && (
                           <Badge className="bg-primary/10 text-primary border-none font-black text-[8px] uppercase tracking-tighter px-2">OPERATIONAL ESSENTIAL</Badge>
@@ -116,7 +139,7 @@ export default function InventoryPage() {
                 </div>
                 <div className="text-right">
                    <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Type</span>
-                   <span className="text-xl font-black text-slate-500">{item.isEssential ? 'Material' : 'Merch'}</span>
+                   <span className="text-xl font-black text-slate-500 uppercase">{item.isEssential ? 'Material' : 'Merch'}</span>
                 </div>
               </div>
 
@@ -132,6 +155,7 @@ export default function InventoryPage() {
                 {item.isEssential && item.stock < 15 ? (
                   <Button 
                     className="w-full h-16 bg-red-600 text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-[1.5rem] gap-3 shadow-2xl shadow-red-600/30 hover:bg-red-700 transition-all"
+                    onClick={() => handleUrgentOrder(item.name)}
                   >
                     <PackageCheck className="size-5" /> Urgent Resupply Order
                   </Button>
@@ -146,6 +170,7 @@ export default function InventoryPage() {
                   <Button 
                     variant="outline"
                     className="w-full h-16 border-slate-200 bg-white text-slate-500 hover:bg-slate-50 font-black uppercase text-[11px] tracking-[0.2em] rounded-[1.5rem] gap-3 transition-all"
+                    onClick={() => handlePushLoyalty(item.name)}
                   >
                     <Share2 className="size-5" /> Push to Loyalty Rewards
                   </Button>

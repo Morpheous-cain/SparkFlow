@@ -30,8 +30,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 export default function StaffPage() {
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -39,7 +41,6 @@ export default function StaffPage() {
   }, []);
 
   const employeeOfMonth = STAFF.find(s => s.isEmployeeOfMonth);
-  const topRated = [...STAFF].sort((a, b) => b.rating - a.rating)[0];
 
   const kpis = [
     { label: "Active Team", value: STAFF.length.toString(), icon: Users, color: "text-blue-600", bg: "bg-blue-50", trend: "Full Capacity", layer: 'bg-blue-500' },
@@ -47,6 +48,34 @@ export default function StaffPage() {
     { label: "Attendance Rate", value: "85%", icon: CalendarCheck, color: "text-indigo-600", bg: "bg-indigo-50", trend: "Normal", layer: 'bg-indigo-500' },
     { label: "Commission Paid", value: "KES 24.2K", icon: Coins, color: "text-emerald-600", bg: "bg-emerald-50", trend: "On Target", layer: 'bg-emerald-500' },
   ];
+
+  const handleShiftRoster = () => {
+    toast({
+      title: "Roster Management",
+      description: "Opening drag-and-drop shift editor for the coming week.",
+    });
+  };
+
+  const handleAddStaff = () => {
+    toast({
+      title: "Provision Account",
+      description: "Opening new employee onboarding wizard.",
+    });
+  };
+
+  const handleAnnounceTeam = (name: string) => {
+    toast({
+      title: "Team Broadcast",
+      description: `Announcement regarding ${name}'s performance has been pushed to all staff PWAs.`,
+    });
+  };
+
+  const handleProcessReward = (name: string) => {
+    toast({
+      title: "Bonus Disbursement",
+      description: `M-Pesa STK Push initiated for ${name}'s performance reward.`,
+    });
+  };
 
   return (
     <div className="p-8 space-y-8 bg-[#f1f5f9] min-h-screen">
@@ -56,10 +85,10 @@ export default function StaffPage() {
           <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-1">Attendance Audit & Earnings Transparency</p>
         </div>
         <div className="flex gap-3">
-           <Button variant="outline" className="rounded-xl h-12 gap-2 border-2 bg-white font-black uppercase text-[10px] tracking-widest">
+           <Button variant="outline" className="rounded-xl h-12 gap-2 border-2 bg-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-slate-200/50" onClick={handleShiftRoster}>
               <CalendarCheck className="size-4" /> Shift Roster
            </Button>
-           <Button className="rounded-xl h-12 gap-2 shadow-xl shadow-primary/20 px-6 font-black uppercase text-[10px] tracking-widest">
+           <Button className="rounded-xl h-12 gap-2 shadow-xl shadow-primary/20 px-6 font-black uppercase text-[10px] tracking-widest bg-primary hover:bg-blue-600 transition-all text-white" onClick={handleAddStaff}>
               Add Staff Member
            </Button>
         </div>
@@ -87,8 +116,8 @@ export default function StaffPage() {
                   <Badge className="bg-primary text-white border-none font-black text-[10px] uppercase px-3 py-1">MAY 2024 CHAMPION</Badge>
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Elite Performance Reward</span>
                 </div>
-                <h2 className="text-4xl font-black uppercase tracking-tighter">{employeeOfMonth.name}</h2>
-                <p className="text-slate-400 font-bold text-lg">Achieved a record 98% efficiency score with 5.0 customer ratings.</p>
+                <h2 className="text-4xl font-black uppercase tracking-tighter leading-none">{employeeOfMonth.name}</h2>
+                <p className="text-slate-400 font-bold text-lg mt-2">Achieved a record 98% efficiency score with 5.0 customer ratings.</p>
               </div>
               <div className="flex flex-wrap justify-center md:justify-start gap-4">
                 <div className="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl backdrop-blur-md">
@@ -101,7 +130,10 @@ export default function StaffPage() {
                 </div>
               </div>
             </div>
-            <Button className="h-16 px-10 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase text-xs tracking-widest rounded-2xl shadow-2xl shrink-0 gap-3">
+            <Button 
+              className="h-16 px-10 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase text-xs tracking-widest rounded-2xl shadow-2xl shrink-0 gap-3"
+              onClick={() => handleAnnounceTeam(employeeOfMonth.name)}
+            >
               Announce to Team <ChevronRight className="size-4" />
             </Button>
           </CardContent>
@@ -212,7 +244,11 @@ export default function StaffPage() {
                     </div>
                   </div>
                   
-                  <Button variant="outline" className="w-full h-14 rounded-2xl border-2 font-black uppercase text-[10px] tracking-widest hover:bg-slate-50">
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-14 rounded-2xl border-2 font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all"
+                    onClick={() => handleProcessReward(member.name)}
+                  >
                     Process Reward Payment
                   </Button>
                 </CardContent>
