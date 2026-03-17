@@ -131,13 +131,13 @@ export default function ManagerDashboard() {
         </div>
       </header>
 
-      {/* Executive Financial Health BI Row */}
+      {/* Executive Financial Health Row */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           { title: "Net Profit Margin", value: "32.4%", change: "+4.2%", icon: Target, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { title: "LTV : CAC Ratio", value: "4.8x", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { title: "Burn Rate (Monthly)", value: "KES 142K", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-          { title: "Working Capital", value: "KES 2.4M", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { title: "Customer Value vs Acquisition Cost", value: "4.8x", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { title: "Monthly Burn Rate", value: "KES 142,000", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+          { title: "Current Working Capital", value: "KES 2,400,000", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
         ].map((metric, i) => (
           <Card key={i} className="border-none shadow-xl rounded-[2.2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white relative">
              <div className={cn("absolute top-0 left-0 w-1 h-full", metric.color.replace('text', 'bg'))} />
@@ -202,7 +202,7 @@ export default function ManagerDashboard() {
                          </div>
                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                             <span className={cn("text-2xl font-black tracking-tighter", branch.waterLevel < 20 ? "text-red-600" : "text-slate-900")}>{branch.waterLevel}%</span>
-                            <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{branch.waterCapacity.toLocaleString()}L</span>
+                            <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{branch.waterCapacity.toLocaleString()} Liters</span>
                          </div>
                       </div>
                    </div>
@@ -261,7 +261,7 @@ export default function ManagerDashboard() {
             <div className="flex gap-4">
                <div className="flex items-center gap-2">
                  <div className="size-2 rounded-full bg-primary" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Actual MTD</span>
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Actual (Month to Date)</span>
                </div>
             </div>
           </div>

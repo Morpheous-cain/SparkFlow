@@ -112,10 +112,10 @@ export default function AccountsManagementPage() {
   };
 
   const kpis = [
-    { label: "Net Profit (MTD)", value: `KES ${currentProfit.toLocaleString()}`, icon: Banknote, color: "text-blue-600", bg: "bg-blue-50", layer: 'bg-blue-500' },
-    { label: "Cash on Hand", value: "KES 24.5K", icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50", layer: 'bg-emerald-500' },
-    { label: "M-Pesa Pool", value: "KES 142K", icon: CreditCard, color: "text-indigo-600", bg: "bg-indigo-50", layer: 'bg-indigo-500' },
-    { label: "Pending Bills", value: "KES 12.2K", icon: ShieldAlert, color: "text-red-600", bg: "bg-red-50", layer: 'bg-red-500' },
+    { label: "Net Profit (Month to Date)", value: `KES ${currentProfit.toLocaleString()}`, icon: Banknote, color: "text-blue-600", bg: "bg-blue-50", layer: 'bg-blue-500' },
+    { label: "Cash on Hand", value: "KES 24,500", icon: Wallet, color: "text-emerald-600", bg: "bg-emerald-50", layer: 'bg-emerald-500' },
+    { label: "M-Pesa Business Pool", value: "KES 142,000", icon: CreditCard, color: "text-indigo-600", bg: "bg-indigo-50", layer: 'bg-indigo-500' },
+    { label: "Pending Vendor Bills", value: "KES 12,200", icon: ShieldAlert, color: "text-red-600", bg: "bg-red-50", layer: 'bg-red-500' },
   ];
 
   return (
@@ -158,7 +158,7 @@ export default function AccountsManagementPage() {
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="bg-slate-200/50 p-1 rounded-2xl h-14 mb-8">
           <TabsTrigger value="overview" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            Overview
+            Financial Overview
           </TabsTrigger>
           <TabsTrigger value="chart" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
             Chart of Accounts
@@ -167,7 +167,7 @@ export default function AccountsManagementPage() {
             Petty Cash & Expenses
           </TabsTrigger>
           <TabsTrigger value="statements" className="rounded-xl font-black uppercase text-[10px] tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-            Statements
+            Official Statements
           </TabsTrigger>
         </TabsList>
 
@@ -183,11 +183,11 @@ export default function AccountsManagementPage() {
                 <div className="flex gap-8">
                   <div className="flex items-center gap-3">
                     <div className="size-4 rounded-full bg-primary shadow-lg shadow-primary/20" />
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Actual</span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Actual Revenue</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="size-4 rounded-full bg-slate-200" />
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Target</span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Revenue Target</span>
                   </div>
                 </div>
               </div>
@@ -237,13 +237,13 @@ export default function AccountsManagementPage() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-slate-400 uppercase">Settlement Mode</span>
-                      <span className="text-xs font-bold">T+0 Instant</span>
+                      <span className="text-xs font-bold">Real-time (T+0)</span>
                     </div>
                     <Progress value={98} className="h-1 bg-white/10" />
                   </div>
                   
                   <div className="space-y-2">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Live Feed</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Live Transaction Feed</span>
                     <div className="space-y-2">
                       <div className="flex justify-between text-[10px] font-bold text-slate-500">
                         <span>MPESA_9821X</span>
@@ -284,9 +284,9 @@ export default function AccountsManagementPage() {
             <Table>
               <TableHeader className="bg-slate-50/50 h-12">
                 <TableRow className="border-none">
-                  <TableHead className="pl-8 uppercase text-[10px] font-black">Code</TableHead>
+                  <TableHead className="pl-8 uppercase text-[10px] font-black">Account Code</TableHead>
                   <TableHead className="uppercase text-[10px] font-black">Account Name</TableHead>
-                  <TableHead className="uppercase text-[10px] font-black">Type</TableHead>
+                  <TableHead className="uppercase text-[10px] font-black">Account Type</TableHead>
                   <TableHead className="uppercase text-[10px] font-black text-right pr-8">Balance (KES)</TableHead>
                 </TableRow>
               </TableHeader>
@@ -333,7 +333,7 @@ export default function AccountsManagementPage() {
                     <TableHead className="pl-8 uppercase text-[10px] font-black">Date</TableHead>
                     <TableHead className="uppercase text-[10px] font-black">Category</TableHead>
                     <TableHead className="uppercase text-[10px] font-black">Description</TableHead>
-                    <TableHead className="uppercase text-[10px] font-black">Type</TableHead>
+                    <TableHead className="uppercase text-[10px] font-black">Payment Type</TableHead>
                     <TableHead className="uppercase text-[10px] font-black text-right pr-8">Amount</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -408,9 +408,9 @@ export default function AccountsManagementPage() {
         <TabsContent value="statements" className="outline-none">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Profit & Loss (P&L)", icon: FileText, desc: "Revenue vs Operational Costs", trend: "+12.4%" },
-              { title: "Cash Flow Statement", icon: TrendingUp, desc: "Cash Inflow vs Outflow", trend: "Stable" },
-              { title: "Balance Sheet", icon: LayoutGrid, desc: "Assets, Liabilities & Equity", trend: "Balanced" },
+              { title: "Profit & Loss (P&L)", icon: FileText, desc: "Revenue vs Operational Costs", trend: "+12.4% Growth" },
+              { title: "Cash Flow Statement", icon: TrendingUp, desc: "Cash Inflow vs Outflow", trend: "Stable Performance" },
+              { title: "Balance Sheet", icon: LayoutGrid, desc: "Assets, Liabilities & Equity", trend: "Fully Balanced" },
             ].map((st, i) => (
               <Card key={i} className="border-none shadow-xl rounded-[2.5rem] bg-white p-10 space-y-6 group hover:shadow-2xl transition-all duration-500">
                 <div className="size-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -425,7 +425,7 @@ export default function AccountsManagementPage() {
                 </div>
                 <div className="pt-6 border-t border-dashed flex items-center justify-between">
                   <Button variant="ghost" className="p-0 h-auto font-black text-xs text-primary uppercase gap-2 hover:bg-transparent" onClick={() => handleGenerateReport(st.title)}>
-                    Generate Report <ChevronRight className="size-4" />
+                    Generate Official Report <ChevronRight className="size-4" />
                   </Button>
                   <Button size="icon" variant="outline" className="size-10 rounded-xl" onClick={() => handleGenerateReport(st.title)}>
                     <Download className="size-4" />

@@ -51,10 +51,10 @@ export default function SubscriptionsManagementPage() {
   }, []);
 
   const kpis = [
-    { label: "Active Subscribers", value: "420", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Monthly Recurring", value: "KES 840K", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { label: "Vouchers Used", value: "1.2K", icon: Gift, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Active Promos", value: "2", icon: Zap, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { label: "Active Subscription Base", value: "420 Members", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Monthly Recurring Revenue", value: "KES 840,000", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "Total Vouchers Redeemed", value: "1,240 Codes", icon: Gift, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Active Promotional Campaigns", value: "2 Live", icon: Zap, color: "text-indigo-600", bg: "bg-indigo-50" },
   ];
 
   const handleSavePlan = () => {
@@ -144,7 +144,7 @@ export default function SubscriptionsManagementPage() {
                 <div className={`size-12 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                   <kpi.icon className="size-6" />
                 </div>
-                <Badge className="bg-slate-50 text-slate-400 border-none font-black text-[8px] uppercase tracking-widest rounded-full px-3 py-1">CORE</Badge>
+                <Badge className="bg-slate-50 text-slate-400 border-none font-black text-[8px] uppercase tracking-widest rounded-full px-3 py-1">CORE PROTOCOL</Badge>
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</span>
@@ -176,7 +176,7 @@ export default function SubscriptionsManagementPage() {
                   </Button>
                   <Crown className="size-10 mx-auto mb-3 drop-shadow-lg" />
                   <h4 className="text-2xl font-black uppercase tracking-widest italic leading-none">{plan.name}</h4>
-                  <p className="text-[10px] font-black opacity-70 uppercase mt-2 tracking-widest">KES {plan.price.toLocaleString()} / MO</p>
+                  <p className="text-[10px] font-black opacity-70 uppercase mt-2 tracking-widest">KES {plan.price.toLocaleString()} PER MONTH</p>
                 </div>
                 <CardContent className="p-8 space-y-4 flex-1">
                   <div className="space-y-3">
@@ -189,7 +189,7 @@ export default function SubscriptionsManagementPage() {
                   </div>
                 </CardContent>
                 <div className="p-8 pt-0 mt-auto border-t border-dashed border-slate-100 flex items-center justify-between bg-slate-50/50">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Discount Engine</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Tier Discount</span>
                   <Badge className="bg-emerald-50 text-emerald-600 font-black border-none text-xs px-3 py-1">{plan.discount}% OFF</Badge>
                 </div>
               </Card>
@@ -211,7 +211,7 @@ export default function SubscriptionsManagementPage() {
                           <Button variant="ghost" size="icon" className="text-white/50 hover:text-white hover:bg-white/10 rounded-full">
                             <Settings2 className="size-4" />
                           </Button>
-                          <Badge className="bg-emerald-500 text-white border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">LIVE</Badge>
+                          <Badge className="bg-emerald-500 text-white border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">ACTIVE</Badge>
                         </div>
                       </div>
                       <div>
@@ -255,16 +255,16 @@ export default function SubscriptionsManagementPage() {
                   </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-dashed flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                  <span>Expires {new Date(voucher.expiry).toLocaleDateString()}</span>
+                  <span>Expires on {new Date(voucher.expiry).toLocaleDateString()}</span>
                   <Button variant="ghost" size="sm" className="h-8 px-4 rounded-xl text-[9px] font-black hover:bg-slate-100 text-slate-900 uppercase" onClick={() => setEditingVoucher(voucher)}>
-                    Configure
+                    Configure Code
                   </Button>
                 </div>
               </div>
             ))}
           </div>
           <Button className="w-full mt-8 rounded-2xl h-14 bg-slate-900 text-white font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-slate-900/20 border-none hover:bg-black">
-            Generate Bulk Codes
+            Generate Bulk Discount Codes
           </Button>
         </Card>
       </div>

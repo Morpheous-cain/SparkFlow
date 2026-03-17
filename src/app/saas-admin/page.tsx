@@ -63,17 +63,17 @@ export default function SaaSAdminPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
          {[
-           { label: "Subscription MRR", value: `KES ${(totalRevenue/1000).toFixed(1)}K`, icon: CreditCard, color: "text-blue-600" },
-           { label: "SMS Bundle Revenue", value: `KES ${(totalSMSRevenue/1000).toFixed(1)}K`, icon: Hash, color: "text-amber-600" },
-           { label: "Active Tenants", value: "24", icon: Globe, color: "text-primary" },
-           { label: "Global Branches", value: SAAS_TENANTS.reduce((acc, t) => acc + t.branches, 0).toString(), icon: Building2, color: "text-indigo-600" },
+           { label: "Subscription Monthly Revenue", value: `KES ${totalRevenue.toLocaleString()}`, icon: CreditCard, color: "text-blue-600" },
+           { label: "SMS Bundle Total Revenue", value: `KES ${totalSMSRevenue.toLocaleString()}`, icon: Hash, color: "text-amber-600" },
+           { label: "Total Active Tenants", value: "24 Partners", icon: Globe, color: "text-primary" },
+           { label: "Global Node Count (Branches)", value: SAAS_TENANTS.reduce((acc, t) => acc + t.branches, 0).toString(), icon: Building2, color: "text-indigo-600" },
          ].map((kpi, i) => (
            <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
              <CardContent className="p-8">
                <div className="flex justify-between items-start mb-4">
                   <kpi.icon className={cn("size-6", kpi.color)} />
                   <Badge className="bg-emerald-50 text-emerald-600 border-none text-[8px] font-black uppercase tracking-tighter">
-                    <ArrowUpRight className="size-2 mr-1" /> +12%
+                    <ArrowUpRight className="size-2 mr-1" /> +12.4% PERFORMANCE
                   </Badge>
                </div>
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">{kpi.label}</span>
@@ -86,18 +86,18 @@ export default function SaaSAdminPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
          <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden">
             <CardHeader className="p-8 border-b bg-slate-50/50">
-               <CardTitle className="text-xl font-black uppercase">Registered Tenants</CardTitle>
-               <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Global car wash database</CardDescription>
+               <CardTitle className="text-xl font-black uppercase">Registered Platform Tenants</CardTitle>
+               <CardDescription className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Global car wash organizational database</CardDescription>
             </CardHeader>
             <Table>
                <TableHeader className="bg-slate-50/50 h-12">
                   <TableRow className="border-none">
-                     <TableHead className="pl-8 uppercase text-[10px] font-black">Business Name</TableHead>
-                     <TableHead className="uppercase text-[10px] font-black">Branches</TableHead>
-                     <TableHead className="uppercase text-[10px] font-black">Plan</TableHead>
+                     <TableHead className="pl-8 uppercase text-[10px] font-black">Business Identity</TableHead>
+                     <TableHead className="uppercase text-[10px] font-black">Nodes</TableHead>
+                     <TableHead className="uppercase text-[10px] font-black">SaaS Plan</TableHead>
                      <TableHead className="uppercase text-[10px] font-black">SMS Balance</TableHead>
                      <TableHead className="uppercase text-[10px] font-black">Status</TableHead>
-                     <TableHead className="uppercase text-[10px] font-black text-right pr-8">Actions</TableHead>
+                     <TableHead className="uppercase text-[10px] font-black text-right pr-8">Management</TableHead>
                   </TableRow>
                </TableHeader>
                <TableBody>
@@ -106,13 +106,13 @@ export default function SaaSAdminPage() {
                        <TableCell className="pl-8">
                           <div className="flex flex-col">
                              <span className="font-black text-slate-900 uppercase">{tenant.name}</span>
-                             <span className="text-[9px] font-black text-slate-400">ID: {tenant.id}</span>
+                             <span className="text-[9px] font-black text-slate-400">Tenant ID: {tenant.id}</span>
                           </div>
                        </TableCell>
                        <TableCell>
                           <div className="flex items-center gap-2">
                              <Building2 className="size-3 text-slate-400" />
-                             <span className="text-xs font-black">{tenant.branches}</span>
+                             <span className="text-xs font-black">{tenant.branches} Branches</span>
                           </div>
                        </TableCell>
                        <TableCell>
@@ -126,13 +126,13 @@ export default function SaaSAdminPage() {
                              <span className={cn(
                                "text-xs font-black",
                                tenant.smsBalance < 500 ? "text-red-500" : "text-slate-900"
-                             )}>{tenant.smsBalance.toLocaleString()}</span>
+                             )}>{tenant.smsBalance.toLocaleString()} Units</span>
                           </div>
                        </TableCell>
                        <TableCell>
                           <Badge className={cn(
                             "font-black text-[9px] uppercase",
-                            tenant.status === 'Active' ? 'bg-emerald-500' : 'bg-red-500'
+                            tenant.status === 'Active' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
                           )}>
                              {tenant.status}
                           </Badge>
@@ -167,11 +167,11 @@ export default function SaaSAdminPage() {
                     </div>
                     <div className="flex justify-between items-end">
                        <div>
-                          <span className="text-[8px] font-black text-slate-500 uppercase block">Retail Price</span>
+                          <span className="text-[8px] font-black text-slate-500 uppercase block">Retail Listing Price</span>
                           <span className="text-lg font-black text-white">KES {bundle.retail}</span>
                        </div>
                        <div className="text-right">
-                          <span className="text-[8px] font-black text-slate-500 uppercase block">Provider Margin</span>
+                          <span className="text-[8px] font-black text-slate-500 uppercase block">Net Provider Margin</span>
                           <span className="text-xs font-black text-emerald-400">{bundle.margin}</span>
                        </div>
                     </div>
@@ -179,7 +179,7 @@ export default function SaaSAdminPage() {
                ))}
             </div>
             <Button className="w-full mt-8 h-14 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl">
-               Manage Global SMS Markup
+               Manage Global SMS Markup Protocol
             </Button>
          </Card>
       </div>

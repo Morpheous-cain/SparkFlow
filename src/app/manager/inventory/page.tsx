@@ -30,10 +30,10 @@ export default function InventoryPage() {
   const totalValue = INVENTORY.reduce((acc, item) => acc + (item.stock * item.wholesale), 0);
 
   const kpis = [
-    { label: "Essential SKUs", value: INVENTORY.filter(i => i.isEssential).length.toString(), icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-50", trend: "Crucial", layer: 'bg-blue-500' },
-    { label: "Material Shortages", value: lowEssentialCount.toString(), icon: AlertCircle, color: "text-red-600", bg: "bg-red-50", trend: lowEssentialCount > 0 ? "Urgent Order" : "Smooth Ops", layer: 'bg-red-500' },
-    { label: "Wholesale Value", value: `KES ${(totalValue / 1000).toFixed(1)}K`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+2.4%", layer: 'bg-emerald-500' },
-    { label: "Turnover Rate", value: "4.2x", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50", trend: "+0.8%", layer: 'bg-amber-500' },
+    { label: "Essential SKU Count", value: INVENTORY.filter(i => i.isEssential).length.toString(), icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-50", trend: "Critical", layer: 'bg-blue-500' },
+    { label: "Active Material Shortages", value: lowEssentialCount.toString(), icon: AlertCircle, color: "text-red-600", bg: "bg-red-50", trend: lowEssentialCount > 0 ? "Reorder Alert" : "Stable Stock", layer: 'bg-red-500' },
+    { label: "Wholesale Inventory Value", value: `KES ${totalValue.toLocaleString()}`, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+2.4% Value", layer: 'bg-emerald-500' },
+    { label: "Stock Turnover Velocity", value: "4.2x", icon: ShoppingCart, color: "text-amber-600", bg: "bg-amber-50", trend: "Optimal", layer: 'bg-amber-500' },
   ];
 
   const handleManualCount = () => {
@@ -90,7 +90,7 @@ export default function InventoryPage() {
                 </div>
                 <Badge className={cn(
                   "border-none font-black text-[9px] uppercase tracking-widest rounded-full px-3 py-1",
-                  kpi.label === 'Material Shortages' && lowEssentialCount > 0 ? 'bg-red-500 text-white shadow-lg shadow-red-500/20 animate-pulse' : 'bg-slate-50 text-slate-400'
+                  kpi.label.includes('Shortages') && lowEssentialCount > 0 ? 'bg-red-500 text-white shadow-lg shadow-red-500/20 animate-pulse' : 'bg-slate-50 text-slate-400'
                 )}>
                   {kpi.trend}
                 </Badge>
@@ -127,26 +127,26 @@ export default function InventoryPage() {
                 </div>
                 {item.stock < 20 && (
                   <Badge className="bg-red-500 text-white border-none font-black text-[9px] uppercase px-3 py-1 shadow-lg shadow-red-500/20 animate-pulse">
-                    REORDER
+                    REORDER NOW
                   </Badge>
                 )}
               </div>
 
               <div className="flex justify-between items-end bg-slate-50 p-6 rounded-[2rem] border border-slate-100 shadow-inner">
                 <div>
-                   <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Stock Units</span>
+                   <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Available Stock Units</span>
                    <span className={cn("text-5xl font-black tracking-tighter leading-none", item.stock < 10 ? "text-red-600" : "text-slate-900")}>{item.stock}</span>
                 </div>
                 <div className="text-right">
-                   <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Type</span>
-                   <span className="text-xl font-black text-slate-500 uppercase">{item.isEssential ? 'Material' : 'Merch'}</span>
+                   <span className="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Asset Category</span>
+                   <span className="text-xl font-black text-slate-500 uppercase">{item.isEssential ? 'Material' : 'Merchandise'}</span>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                  <span>Operational Buffer</span>
-                  <span className={item.stock < 15 ? 'text-red-500' : 'text-primary'}>{Math.min(100, (item.stock / 150) * 100).toFixed(0)}%</span>
+                  <span>Operational Safety Buffer</span>
+                  <span className={item.stock < 15 ? 'text-red-500' : 'text-primary'}>{Math.min(100, (item.stock / 150) * 100).toFixed(0)}% Capacity</span>
                 </div>
                 <Progress value={(item.stock / 150) * 100} className="h-2 rounded-full bg-slate-100" />
               </div>
@@ -164,7 +164,7 @@ export default function InventoryPage() {
                     onClick={() => handleLaunchCampaign(item.name)}
                     className="w-full h-16 bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] rounded-[1.5rem] gap-3 shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all"
                   >
-                    <Zap className="size-5" /> Liquidate Stock Promo
+                    <Zap className="size-5" /> Liquidate Slow Stock Promo
                   </Button>
                 ) : (
                   <Button 
@@ -172,7 +172,7 @@ export default function InventoryPage() {
                     className="w-full h-16 border-slate-200 bg-white text-slate-500 hover:bg-slate-50 font-black uppercase text-[11px] tracking-[0.2em] rounded-[1.5rem] gap-3 transition-all"
                     onClick={() => handlePushLoyalty(item.name)}
                   >
-                    <Share2 className="size-5" /> Push to Loyalty Rewards
+                    <Share2 className="size-5" /> Feature in Loyalty Rewards
                   </Button>
                 )}
               </div>

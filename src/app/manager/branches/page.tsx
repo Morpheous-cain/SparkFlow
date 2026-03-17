@@ -30,10 +30,10 @@ export default function BranchManagementPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: "Total Branches", value: BRANCHES.length.toString(), icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Consolidated MRR", value: `KES ${(totalRevenue / 1000).toFixed(1)}K`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { label: "Total Bays", value: BRANCHES.reduce((acc, b) => acc + b.activeBays, 0).toString(), icon: Warehouse, color: "text-indigo-600", bg: "bg-indigo-50" },
-          { label: "Network Health", value: "98.2%", icon: Settings2, color: "text-amber-600", bg: "bg-amber-50" },
+          { label: "Total Active Branches", value: BRANCHES.length.toString(), icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Total Monthly Revenue", value: `KES ${totalRevenue.toLocaleString()}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: "Consolidated Service Bays", value: BRANCHES.reduce((acc, b) => acc + b.activeBays, 0).toString(), icon: Warehouse, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Network Connectivity Health", value: "98.2%", icon: Settings2, color: "text-amber-600", bg: "bg-amber-50" },
         ].map((kpi, i) => (
           <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
             <CardContent className="p-8">
@@ -41,7 +41,7 @@ export default function BranchManagementPage() {
                 <div className={`size-12 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                   <kpi.icon className="size-6" />
                 </div>
-                <Badge className="bg-slate-100 border-none font-black text-[8px] uppercase tracking-widest rounded-full">HQ</Badge>
+                <Badge className="bg-slate-100 border-none font-black text-[8px] uppercase tracking-widest rounded-full">HQ COMMAND</Badge>
               </div>
               <div className="space-y-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</span>
@@ -62,13 +62,13 @@ export default function BranchManagementPage() {
                 </div>
                 <Badge className={cn(
                   "font-black text-[9px] uppercase px-3 py-1",
-                  branch.status === 'Open' ? 'bg-emerald-500' : 'bg-red-500'
+                  branch.status === 'Open' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
                 )}>
                   {branch.status}
                 </Badge>
               </div>
               <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">{branch.name}</h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{branch.id}</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Branch ID: {branch.id}</p>
             </CardHeader>
             <CardContent className="p-8 pt-4 space-y-6">
               <div className="p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100 space-y-3">
@@ -78,7 +78,7 @@ export default function BranchManagementPage() {
                 </div>
                 <div className="flex items-center gap-3 text-[10px] font-black text-slate-500 uppercase">
                   <User className="size-4 text-primary" />
-                  Mgr: {branch.managerName}
+                  Lead: {branch.managerName}
                 </div>
                 <div className="flex items-center gap-3 text-[10px] font-black text-slate-500 uppercase">
                   <Phone className="size-4 text-primary" />
@@ -88,18 +88,18 @@ export default function BranchManagementPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-slate-400 uppercase">Revenue MTD</span>
+                  <span className="text-[9px] font-black text-slate-400 uppercase">Revenue (Month to Date)</span>
                   <span className="text-lg font-black text-emerald-600">KES {branch.revenueMTD.toLocaleString()}</span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-[9px] font-black text-slate-400 uppercase">Active Bays</span>
+                  <span className="text-[9px] font-black text-slate-400 uppercase">Active Service Bays</span>
                   <span className="text-lg font-black text-slate-900">{branch.activeBays} / 5</span>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-dashed flex gap-2">
                 <Button className="flex-1 h-12 rounded-xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest">
-                  Branch Dashboard
+                  View Branch Hub
                 </Button>
                 <Button variant="outline" className="size-12 rounded-xl border-2 p-0 flex items-center justify-center">
                   <Settings2 className="size-5" />
