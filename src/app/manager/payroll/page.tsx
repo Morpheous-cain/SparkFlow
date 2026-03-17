@@ -7,14 +7,41 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CreditCard, Wallet, Users, Banknote, ShieldCheck, Zap, Download, Send, AlertCircle } from "lucide-react";
+import { 
+  CreditCard, 
+  Wallet, 
+  Users, 
+  Banknote, 
+  ShieldCheck, 
+  Zap, 
+  Download, 
+  Send, 
+  AlertCircle,
+  PlusCircle,
+  MinusCircle,
+  Calculator,
+  Check
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function PayrollPage() {
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [records, setRecords] = useState(PAYROLL);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [advanceAmount, setAdvanceAmount] = useState<string>("0");
 
   useEffect(() => {
     setMounted(true);
@@ -36,6 +63,34 @@ export default function PayrollPage() {
       description: `Disbursing salaries for ${records.length} employees via Daraja API.`,
     });
   };
+
+  const handleUpdateDeductions = () => {
+    if (!editingRecord) return;
+    
+    const newAdvance = parseFloat(advanceAmount) || 0;
+    const updatedRecords = records.map(r => {
+      if (r.id === editingRecord.id) {
+        const totalDeductions = r.deductions + newAdvance;
+        const newNetPay = (r.baseAmount + r.commission) - totalDeductions;
+        return {
+          ...r,
+          deductions: totalDeductions,
+          netPay: newNetPay
+        };
+      }
+      return r;
+    });
+
+    setRecords(updatedRecords);
+    toast({
+      title: "Deductions Updated",
+      description: `KES ${newAdvance.toLocaleString()} advance recorded for ${editingRecord.staffName}.`,
+    });
+    setEditingRecord(null);
+    setAdvanceAmount("0");
+  };
+
+  if (!mounted) return null;
 
   return (
     <div className="p-8 space-y-8 bg-[#f1f5f9] min-h-screen">
@@ -102,7 +157,7 @@ export default function PayrollPage() {
               <TableHead className="pl-8 uppercase text-[10px] font-black">Employee</TableHead>
               <TableHead className="uppercase text-[10px] font-black">Base Salary</TableHead>
               <TableHead className="uppercase text-[10px] font-black">Comm. & Bonus</TableHead>
-              <TableHead className="uppercase text-[10px] font-black">Deductions</TableHead>
+              <TableHead className="uppercase text-[10px] font-black text-red-500">Deductions</TableHead>
               <TableHead className="uppercase text-[10px] font-black">Net Pay</TableHead>
               <TableHead className="uppercase text-[10px] font-black">Status</TableHead>
               <TableHead className="pr-8 text-right uppercase text-[10px] font-black">Actions</TableHead>
@@ -119,7 +174,64 @@ export default function PayrollPage() {
                 </TableCell>
                 <TableCell className="font-bold text-slate-600">KES {r.baseAmount.toLocaleString()}</TableCell>
                 <TableCell className="font-bold text-emerald-600">+ {r.commission.toLocaleString()}</TableCell>
-                <TableCell className="font-bold text-red-400">- {r.deductions.toLocaleString()}</TableCell>
+                <TableCell className="font-bold text-red-400">
+                  <div className="flex items-center gap-2">
+                    - {r.deductions.toLocaleString()}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="size-6 text-slate-300 hover:text-red-500"
+                          onClick={() => setEditingRecord(r)}
+                        >
+                          <PlusCircle className="size-3" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 bg-slate-900 text-white">
+                          <DialogTitle className="text-2xl font-black uppercase">Record Advance / Deduction</DialogTitle>
+                          <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] mt-1">
+                            Applying adjustment for {editingRecord?.staffName}
+                          </DialogDescription>
+                        </div>
+                        <div className="p-8 space-y-6">
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase text-slate-400">Adjustment Type</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button variant="outline" className="h-10 rounded-xl font-black text-[9px] uppercase border-2 border-primary text-primary bg-primary/5">Salary Advance</Button>
+                              <Button variant="outline" className="h-10 rounded-xl font-black text-[9px] uppercase border-2">Damage/Loss</Button>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase text-slate-400">Amount to Deduct (KES)</Label>
+                            <Input 
+                              type="number" 
+                              value={advanceAmount}
+                              onChange={(e) => setAdvanceAmount(e.target.value)}
+                              placeholder="0.00" 
+                              className="h-14 rounded-2xl border-2 text-2xl font-black focus:ring-primary" 
+                            />
+                          </div>
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+                            <Calculator className="size-5 text-slate-400" />
+                            <div className="flex-1">
+                              <span className="text-[8px] font-black text-slate-400 uppercase block">Projected Net Pay</span>
+                              <span className="text-lg font-black text-slate-900">
+                                KES {( (editingRecord?.baseAmount || 0) + (editingRecord?.commission || 0) - (editingRecord?.deductions || 0) - (parseFloat(advanceAmount) || 0) ).toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter className="p-8 bg-slate-50 gap-3">
+                          <Button className="h-14 rounded-2xl flex-1 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20" onClick={handleUpdateDeductions}>
+                            <Check className="size-4 mr-2" /> Commit Adjustment
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </TableCell>
                 <TableCell className="font-black text-slate-900">KES {r.netPay.toLocaleString()}</TableCell>
                 <TableCell>
                   <Badge className={cn(
