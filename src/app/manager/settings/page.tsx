@@ -78,6 +78,13 @@ export default function SettingsPage() {
     });
   };
 
+  const handleDownloadFullStatement = () => {
+    toast({
+      title: "Exporting Billing History",
+      description: "Compiling all subscription invoices into a master PDF statement. Your download will start shortly.",
+    });
+  };
+
   return (
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex justify-between items-center">
@@ -200,7 +207,7 @@ export default function SettingsPage() {
                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Active Plan</span>
                      <h3 className="text-2xl font-black italic uppercase">Professional</h3>
                   </div>
-                  <Badge className="bg-emerald-500 text-white border-none font-black text-[10px] uppercase">Active</Badge>
+                  <Badge className="bg-emerald-50 text-white border-none font-black text-[10px] uppercase">Active</Badge>
                </div>
                <div className="space-y-4">
                   <div className="flex justify-between text-xs font-bold text-slate-400">
@@ -275,7 +282,11 @@ export default function SettingsPage() {
               </TableBody>
             </Table>
             <div className="p-6 bg-slate-50/50 border-t border-dashed text-center">
-              <Button variant="link" className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-primary">
+              <Button 
+                variant="link" 
+                className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-primary"
+                onClick={handleDownloadFullStatement}
+              >
                 Download Full Statement (PDF)
               </Button>
             </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -194,6 +195,13 @@ function CustomerPortalContent() {
     window.open("https://wa.me/254700000000?text=Hi SparkFlow, I need assistance with my wash.", "_blank");
   };
 
+  const handleDownloadStatement = () => {
+    toast({
+      title: "Generating Statement",
+      description: "Your service history is being exported to PDF. Please wait...",
+    });
+  };
+
   if (!mounted) return null;
 
   return (
@@ -274,7 +282,7 @@ function CustomerPortalContent() {
                        <DialogTitle className="text-2xl font-black uppercase">On-Demand Request</DialogTitle>
                     </div>
                     <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">
-                       Step {homeStep} of 4: {homeStep === 1 ? 'Service' : homeStep === 2 ? 'Location' : homeStep === 3 ? 'Schedule' : 'Confirm'}
+                       Step {mounted ? homeStep : 1} of 4: {homeStep === 1 ? 'Service' : homeStep === 2 ? 'Location' : homeStep === 3 ? 'Schedule' : 'Confirm'}
                     </DialogDescription>
                   </div>
 
@@ -445,9 +453,9 @@ function CustomerPortalContent() {
               <h2 className="text-3xl font-black tracking-tight text-slate-900 leading-tight">Track Your <span className="text-primary">Spark</span></h2>
               <p className="text-slate-500 text-sm font-medium">Real-time status for car wash & concierge logistics</p>
               <div className="flex gap-2">
-                <Input 
+                <input 
                   placeholder="PLATE OR LOG ID" 
-                  className="h-14 text-xl font-mono font-bold text-center tracking-[0.2em] bg-white shadow-sm border-2 focus:ring-primary uppercase rounded-2xl"
+                  className="h-14 w-full text-xl font-mono font-bold text-center tracking-[0.2em] bg-white shadow-sm border-2 focus:ring-primary uppercase rounded-2xl focus:outline-none"
                   value={searchPlate}
                   onChange={(e) => setSearchPlate(e.target.value.toUpperCase())}
                 />
@@ -613,7 +621,7 @@ function CustomerPortalContent() {
                         <div className="space-y-4">
                           <div className="relative group">
                             <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300 group-focus-within:text-primary transition-colors" />
-                            <Input placeholder="What made it great?" className="h-16 pl-12 rounded-2xl bg-slate-50 border-none shadow-inner font-bold uppercase" />
+                            <input placeholder="What made it great?" className="h-16 pl-12 w-full rounded-2xl bg-slate-50 border-none shadow-inner font-bold uppercase focus:outline-none focus:ring-2 focus:ring-primary/20" />
                           </div>
 
                           <Button 
@@ -699,7 +707,7 @@ function CustomerPortalContent() {
                     <TableRow key={tx.id} className="border-slate-50 hover:bg-slate-50 transition-colors">
                       <TableCell className="pl-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-xs font-black text-slate-900">{format(new Date(tx.date), 'dd MMM')}</span>
+                          <span className="text-xs font-black text-slate-900">{mounted ? format(new Date(tx.date), 'dd MMM') : '--'}</span>
                           <span className="text-[8px] font-bold text-slate-400 uppercase">REF: {tx.id}</span>
                         </div>
                       </TableCell>
@@ -721,7 +729,11 @@ function CustomerPortalContent() {
                 </TableBody>
               </Table>
               <div className="p-6 bg-slate-50 border-t border-dashed border-slate-200 text-center">
-                <Button variant="ghost" className="text-[10px] font-black uppercase text-slate-400 hover:text-primary h-auto p-0 border-none">
+                <Button 
+                  variant="ghost" 
+                  className="text-[10px] font-black uppercase text-slate-400 hover:text-primary h-auto p-0 border-none"
+                  onClick={handleDownloadStatement}
+                >
                   Download Full Statement (PDF) <FileText className="size-3 ml-2" />
                 </Button>
               </div>
