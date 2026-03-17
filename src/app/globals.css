@@ -54,7 +54,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body font-medium antialiased;
+    @apply bg-background text-foreground font-body font-medium antialiased selection:bg-primary/20 selection:text-primary;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-black tracking-tighter uppercase leading-none;
@@ -68,4 +68,26 @@
   .shadow-vibrant {
     box-shadow: 0 30px 60px -12px rgba(var(--primary), 0.25);
   }
+  .glass {
+    @apply bg-white/70 backdrop-blur-2xl border border-white/20 shadow-2xl;
+  }
+  .glass-dark {
+    @apply bg-slate-900/80 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  }
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  .text-glow {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  }
+}
+
+/* Futuristic Animated Mesh Background */
+.mesh-bg {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(221, 83%, 53%, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(199, 89%, 48%, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(221, 83%, 53%, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(199, 89%, 48%, 0.05) 0px, transparent 50%);
 }
