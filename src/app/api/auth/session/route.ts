@@ -1,79 +1,59 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAdminAuth } from '@/lib/firebase-admin';
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
 
-// How long the session cookie lasts — 5 days
-const SESSION_DURATION = 60 * 60 * 24 * 5 * 1000;
+const SignInSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+})
 
+// POST /api/auth/session — sign in, set JWT cookie
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { idToken } = body;
+  const body = await request.json()
+  const parsed = SignInSchema.safeParse(body)
 
-    if (!idToken) {
-      return NextResponse.json(
-        { error: 'Missing ID token' },
-        { status: 400 }
-      );
-    }
-
-    const adminAuth = getAdminAuth();
-
-    // Verify the ID token is valid before creating a session
-    await adminAuth.verifyIdToken(idToken);
-
-    // Exchange the ID token for a long-lived session cookie
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
-      expiresIn: SESSION_DURATION,
-    });
-
-    const response = NextResponse.json(
-      { status: 'success' },
-      { status: 200 }
-    );
-
-    // Set the session cookie — HttpOnly so JS cannot read it
-    response.cookies.set('session', sessionCookie, {
-      maxAge: SESSION_DURATION / 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    });
-
-    return response;
-
-  } catch (error: unknown) {
-    console.error('[session] Error creating session cookie:', error);
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
+      { error: parsed.error.flatten() },
+      { status: 400 }
+    )
   }
+
+  const supabase = await createClient()
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  })
+
+  if (error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: 401 }
+    )
+  }
+
+  // Fetch the user's role from user_roles table
+  const { data: roleData } = await supabase
+    .from('user_roles')
+    .select('role, tenant_id, branch_id')
+    .eq('user_id', data.user.id)
+    .single()
+
+  return NextResponse.json({
+    user: {
+      id: data.user.id,
+      email: data.user.email,
+      role: roleData?.role ?? null,
+      tenant_id: roleData?.tenant_id ?? null,
+      branch_id: roleData?.branch_id ?? null,
+    },
+  })
 }
 
+// DELETE /api/auth/session — sign out, clear cookie
 export async function DELETE() {
-  try {
-    const response = NextResponse.json(
-      { status: 'success' },
-      { status: 200 }
-    );
+  const supabase = await createClient()
+  await supabase.auth.signOut()
 
-    // Clear the session cookie on logout
-    response.cookies.set('session', '', {
-      maxAge: 0,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    });
-
-    return response;
-
-  } catch (error: unknown) {
-    console.error('[session] Error clearing session:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({ success: true })
 }
