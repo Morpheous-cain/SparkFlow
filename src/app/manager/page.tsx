@@ -1,387 +1,379 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
-import { MOCK_TRANSACTIONS, STAFF, SERVICES, BAYS, BRANCHES, INVENTORY } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   Search,
   Bell,
   Sparkles,
-  MoreVertical,
-  ChevronRight,
-  Star,
-  Zap,
-  Building2,
   DollarSign,
-  Droplets,
   Users,
-  PackageCheck,
-  ShieldAlert,
-  Frown,
   Activity,
   Gauge,
-  Waves,
   ArrowUpRight,
-  ArrowDownRight,
   Target,
   PieChart,
   AlertTriangle,
-  TrendingDown
+  Warehouse,
+  Car,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { 
+import {
   Tooltip,
   ResponsiveContainer,
   XAxis,
   YAxis,
   CartesianGrid,
   AreaChart,
-  Area
+  Area,
 } from "recharts";
-import { getManagerOperationalInsights, ManagerOperationalInsightsOutput } from "@/ai/flows/manager-operational-insights-flow";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-const REVENUE_TREND = [
-  { day: 'Mon', revenue: 18500, growth: 12 },
-  { day: 'Tue', revenue: 22000, growth: 15 },
-  { day: 'Wed', revenue: 19800, growth: 8 },
-  { day: 'Thu', revenue: 25400, growth: 22 },
-  { day: 'Fri', revenue: 31000, growth: 28 },
-  { day: 'Sat', revenue: 42000, growth: 45 },
-  { day: 'Sun', revenue: 38000, growth: 38 },
-];
+// ── Types ──────────────────────────────────────────────────────────────────
+type DashboardData = {
+  date: string;
+  revenue: {
+    total: number;
+    by_method: Record<string, number>;
+    tx_count: number;
+  };
+  bays: {
+    total: number;
+    occupied: number;
+    utilisation: number;
+  };
+  vehicles: {
+    active: number;
+    by_status: Record<string, number>;
+  };
+  top_services: { name: string; count: number }[];
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function fmt(n: number) {
+  return `KSh ${n.toLocaleString("en-KE")}`;
+}
 
 export default function ManagerDashboard() {
   const { toast } = useToast();
-  const [aiInsights, setAiInsights] = useState<ManagerOperationalInsightsOutput | null>(null);
-  const [loadingAi, setLoadingAi] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Last 7 days revenue — built from today's data (single point) padded with zeros
+  // In Phase 4 this will be a proper time-series from the reports route
+  const [revTrend, setRevTrend] = useState<{ day: string; revenue: number }[]>([]);
 
   useEffect(() => {
     setMounted(true);
-    fetchAiInsights();
+    fetchDashboard();
   }, []);
 
-  const fetchAiInsights = async () => {
-    setLoadingAi(true);
+  async function fetchDashboard() {
+    setLoading(true);
+    setError(null);
     try {
-      const data = await getManagerOperationalInsights({
-        staffPerformanceData: JSON.stringify(STAFF),
-        serviceDurationData: JSON.stringify(SERVICES.map(s => ({ serviceName: s.name, avgDurationMinutes: s.duration, totalServices: Math.floor(Math.random() * 50) + 10 }))),
-        transactionPatternData: JSON.stringify(MOCK_TRANSACTIONS),
-        lowRatingReviews: JSON.stringify([
-          { customer: "Alex K.", rating: 2, comment: "Wait time was too long, over 60 mins.", date: "2024-05-20" },
-          { customer: "Mercy W.", rating: 1, comment: "Interior was still dusty after executive wash.", date: "2024-05-19" }
-        ])
-      });
-      setAiInsights(data);
-    } catch (err) {
-      // Error handled centrally
+      const res = await fetch("/api/dashboard", { credentials: "include" });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error ?? `HTTP ${res.status}`);
+      }
+      const json: DashboardData = await res.json();
+      setData(json);
+
+      // Build a simple 7-day sparkline — today is the real number, previous days are 0
+      // Replace this with a real time-series call in Phase 4
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const todayIdx = new Date().getDay(); // 0=Sun … 6=Sat
+      const reIndexed = [...days.slice(todayIdx), ...days.slice(0, todayIdx)];
+      setRevTrend(
+        reIndexed.map((day, i) => ({
+          day,
+          revenue: i === reIndexed.length - 1 ? json.revenue.total : 0,
+        }))
+      );
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to load dashboard");
+      toast({ title: "Dashboard error", description: String(e), variant: "destructive" });
     } finally {
-      setLoadingAi(false);
+      setLoading(false);
     }
-  };
+  }
 
-  const safeBranches = BRANCHES || [];
-  
-  const handleRefillOrder = (branchName: string) => {
-    toast({
-      title: "Water Logistics Initiated",
-      description: `Water tanker dispatch scheduled for ${branchName}. Expected in 45 mins.`,
-    });
-  };
+  // ── Derived KPIs ──────────────────────────────────────────────────────────
+  const mpesa  = data?.revenue.by_method?.["M-Pesa"] ?? 0;
+  const cash   = data?.revenue.by_method?.["Cash"]   ?? 0;
+  const card   = data?.revenue.by_method?.["Card"]   ?? 0;
 
-  const handleApproveStrategy = () => {
-    toast({
-      title: "Executive Strategy Approved",
-      description: "Propagating performance targets and operational shifts to all branch nodes.",
-    });
-  };
+  const kpis = data
+    ? [
+        {
+          title: "Today's Revenue",
+          value: fmt(data.revenue.total),
+          sub: `${data.revenue.tx_count} paid transactions`,
+          icon: DollarSign,
+          color: "text-emerald-500",
+          bg: "bg-emerald-500/10",
+        },
+        {
+          title: "Bay Utilisation",
+          value: `${data.bays.utilisation}%`,
+          sub: `${data.bays.occupied} of ${data.bays.total} bays occupied`,
+          icon: Warehouse,
+          color: "text-blue-500",
+          bg: "bg-blue-500/10",
+        },
+        {
+          title: "Active Vehicles",
+          value: data.vehicles.active.toString(),
+          sub: Object.entries(data.vehicles.by_status)
+            .map(([s, n]) => `${n} ${s}`)
+            .join(" · "),
+          icon: Car,
+          color: "text-indigo-500",
+          bg: "bg-indigo-500/10",
+        },
+        {
+          title: "M-Pesa / Cash / Card",
+          value: fmt(mpesa),
+          sub: `Cash ${fmt(cash)}  ·  Card ${fmt(card)}`,
+          icon: Target,
+          color: "text-amber-500",
+          bg: "bg-amber-500/10",
+        },
+      ]
+    : [];
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f1f5f9]">
+      {/* Header */}
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none italic">Owner Intelligence Hub</h1>
-          <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] mt-2">Emma Johnson • Global Operations Commander</p>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none italic">
+            Manager Dashboard
+          </h1>
+          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">
+            SparkFlow Carwash · Westlands Branch ·{" "}
+            {new Date().toLocaleDateString("en-KE", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })}
+          </p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
-          <div className="relative w-full sm:w-64 lg:w-80">
+        <div className="flex items-center gap-3">
+          <div className="relative w-64">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input placeholder="Audit Core Infrastructure..." className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold focus-visible:ring-primary/20 uppercase tracking-widest" />
+            <Input
+              placeholder="Search..."
+              className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold"
+            />
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-2xl bg-white shadow-sm size-12 hover:bg-slate-50 relative border-none">
-              <Bell className="size-5 text-slate-600" />
-              <span className="absolute top-3 right-3 size-2 bg-red-500 rounded-full border-2 border-white" />
-            </Button>
-            <Button 
-              onClick={fetchAiInsights} 
-              className="flex-1 sm:flex-none gap-2 bg-slate-900 hover:bg-black text-white shadow-xl shadow-slate-900/10 h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest transition-all border-none"
-              disabled={loadingAi}
-            >
-              <Sparkles className="size-4 text-primary" /> {loadingAi ? "Analyzing Core..." : "Sync AI Strategy"}
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-2xl bg-white shadow-sm size-12 border-none"
+          >
+            <Bell className="size-5 text-slate-600" />
+          </Button>
+          <Button
+            onClick={fetchDashboard}
+            disabled={loading}
+            className="gap-2 bg-slate-900 hover:bg-black text-white shadow-xl h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest border-none"
+          >
+            <Activity className="size-4" />
+            {loading ? "Loading..." : "Refresh"}
+          </Button>
         </div>
       </header>
 
-      {/* Executive Financial Health Row */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {[
-          { title: "Net Profit Margin", value: "32.4%", change: "+4.2%", icon: Target, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { title: "Customer Lifetime Value vs Acquisition Cost", value: "4.8x Ratio", change: "Optimal", icon: PieChart, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { title: "Monthly Burn Rate (Absolute)", value: "KES 142,000", change: "-8.1%", icon: TrendingUp, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-          { title: "Available Working Capital", value: "KES 2,400,000", change: "Stable", icon: DollarSign, color: "text-amber-500", bg: "bg-amber-500/10" },
-        ].map((metric, i) => (
-          <Card key={i} className="border-none shadow-xl rounded-[2.2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white relative">
-             <div className={cn("absolute top-0 left-0 w-1 h-full", metric.color.replace('text', 'bg'))} />
-            <CardContent className="p-6 md:p-8">
-              <div className="flex justify-between items-center mb-4">
-                <div className={cn("size-12 rounded-2xl flex items-center justify-center", metric.bg, metric.color)}>
-                  <metric.icon className="size-6" />
-                </div>
-                <Badge className={cn("border-none px-2 py-0.5 rounded-full text-[8px] font-black uppercase", metric.color.replace('text', 'bg'), "text-white")}>
-                  {metric.change}
-                </Badge>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.title}</span>
-                <span className="text-3xl font-black text-slate-900 tracking-tighter leading-none italic">{metric.value}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-
-      {/* Critical Department Performance Warning */}
-      <section className="bg-red-50 border-2 border-dashed border-red-200 rounded-[2.5rem] p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
-         <div className="size-16 rounded-[1.5rem] bg-red-500 text-white flex items-center justify-center shadow-xl shadow-red-500/20 shrink-0">
-            <AlertTriangle className="size-8" />
-         </div>
-         <div className="flex-1 text-center md:text-left">
-            <h3 className="text-xl font-black text-red-900 uppercase italic">Underperforming Node Alert: Tinting & Coating</h3>
-            <p className="text-red-700/70 font-bold text-sm uppercase tracking-tight mt-1">This department is currently operating at 3.9/5 customer rating with a 15% revenue decline month-on-month. Action required.</p>
-         </div>
-         <Button className="h-14 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest px-8 border-none gap-2 shadow-lg shadow-red-600/20">
-            Audit Tinting Department <TrendingDown className="size-4" />
-         </Button>
-      </section>
-
-      {/* IoT Resource Grid */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between px-2">
-           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2 italic">
-             <Activity className="size-3" /> Site Infrastructure & Resource Command
-           </h2>
-           <Badge className="bg-emerald-50 text-white border-none font-black text-[8px] uppercase tracking-widest px-3 py-1">SENSORS VERIFIED</Badge>
+      {/* Error state */}
+      {error && (
+        <div className="bg-red-50 border-2 border-dashed border-red-200 rounded-3xl p-6 flex items-center gap-4">
+          <AlertTriangle className="size-8 text-red-500 shrink-0" />
+          <div>
+            <p className="font-black text-red-900 uppercase">Dashboard failed to load</p>
+            <p className="text-red-700 text-sm mt-1">{error}</p>
+          </div>
+          <Button
+            onClick={fetchDashboard}
+            className="ml-auto bg-red-600 text-white rounded-xl border-none"
+          >
+            Retry
+          </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {safeBranches.map((branch) => (
-            <Card key={branch.id} className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden group hover:scale-[1.01] transition-all">
-              <CardContent className="p-8 space-y-8">
-                <header className="flex justify-between items-start">
-                   <div className="flex items-center gap-4">
-                      <div className="size-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                         <Building2 className="size-6" />
-                      </div>
-                      <div>
-                         <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none italic">{branch.name}</h3>
-                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Station Node: {branch.id}</p>
-                      </div>
-                   </div>
-                   {branch.waterLevel < 20 && (
-                     <Badge className="bg-red-500 text-white border-none animate-pulse font-black text-[8px] uppercase px-3 py-1 shadow-lg shadow-red-500/20">LOW RESOURCE</Badge>
-                   )}
-                </header>
+      )}
 
-                <div className="grid grid-cols-2 gap-6">
-                   {/* Water Tank Visualization */}
-                   <div className="relative space-y-3">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Main Reservoir</span>
-                      <div className="h-32 w-full bg-slate-100 rounded-[1.5rem] overflow-hidden relative border-2 border-slate-50 shadow-inner">
-                         <div 
-                           className={cn(
-                             "absolute bottom-0 left-0 w-full transition-all duration-1000 ease-in-out",
-                             branch.waterLevel < 20 ? "bg-gradient-to-t from-red-500 to-red-400" : "bg-gradient-to-t from-primary to-blue-400"
-                           )}
-                           style={{ height: `${branch.waterLevel}%` }}
-                         >
-                            <div className="absolute top-0 left-0 w-full h-2 bg-white/20 animate-pulse" />
-                         </div>
-                         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <span className={cn("text-2xl font-black tracking-tighter", branch.waterLevel < 20 ? "text-red-600" : "text-slate-900")}>{branch.waterLevel}%</span>
-                            <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{branch.waterCapacity.toLocaleString()} Liters</span>
-                         </div>
-                      </div>
-                   </div>
-
-                   {/* Secondary Sensor Telemetry */}
-                   <div className="flex flex-col justify-between">
-                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1 shadow-sm">
-                         <div className="flex items-center gap-2">
-                            <Gauge className="size-3 text-emerald-500" />
-                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Pump Pressure</span>
-                         </div>
-                         <div className="text-lg font-black text-slate-900">{branch.pumpPressure} PSI</div>
-                      </div>
-                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1 shadow-sm">
-                         <div className="flex items-center gap-2">
-                            <Waves className="size-3 text-indigo-500" />
-                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Detergent Flow</span>
-                         </div>
-                         <div className="text-lg font-black text-slate-900">{branch.detergentLevel}%</div>
-                      </div>
-                   </div>
+      {/* KPI Cards */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-36 bg-white rounded-[2rem] animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {kpis.map((metric, i) => (
+            <Card
+              key={i}
+              className="border-none shadow-xl rounded-[2.2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white relative"
+            >
+              <div
+                className={cn(
+                  "absolute top-0 left-0 w-1 h-full",
+                  metric.color.replace("text", "bg")
+                )}
+              />
+              <CardContent className="p-6 md:p-8">
+                <div className="flex justify-between items-center mb-4">
+                  <div
+                    className={cn(
+                      "size-12 rounded-2xl flex items-center justify-center",
+                      metric.bg,
+                      metric.color
+                    )}
+                  >
+                    <metric.icon className="size-6" />
+                  </div>
+                  <ArrowUpRight className={cn("size-4", metric.color)} />
                 </div>
-
-                <div className="pt-2">
-                   {branch.waterLevel < 20 ? (
-                     <Button 
-                       className="w-full h-14 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-red-600/20 border-none gap-2 transition-all"
-                       onClick={() => handleRefillOrder(branch.name)}
-                     >
-                        <Droplets className="size-4" /> Dispatch Tanker
-                     </Button>
-                   ) : (
-                     <Button 
-                       variant="outline" 
-                       className="w-full h-14 border-2 border-slate-100 bg-white hover:bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-widest rounded-2xl transition-all"
-                     >
-                        Infrastructure Diagnostics
-                     </Button>
-                   )}
+                <div className="flex flex-col gap-1">
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                    {metric.title}
+                  </span>
+                  <span className="text-2xl font-black text-slate-900 tracking-tighter leading-none italic">
+                    {metric.value}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium mt-1">
+                    {metric.sub}
+                  </span>
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
-      </section>
+        </section>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        {/* Financial Velocity Chart */}
-        <Card className="lg:col-span-2 border-none shadow-2xl rounded-[2.5rem] bg-white p-6 md:p-10 relative overflow-hidden group">
+        {/* Revenue Chart */}
+        <Card className="lg:col-span-2 border-none shadow-2xl rounded-[2.5rem] bg-white p-6 md:p-10 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Financial Velocity Audit</h3>
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Real-time revenue accumulation vs Projections protocol</p>
-            </div>
-            <div className="flex gap-4">
-               <div className="flex items-center gap-2">
-                 <div className="size-2 rounded-full bg-primary shadow-sm" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Actual Revenue (Month to Date)</span>
-               </div>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">
+                Revenue This Week
+              </h3>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                Today's figure is live · Historical bars will populate in Phase 4
+              </p>
             </div>
           </div>
-          <div className="h-[250px] md:h-[350px] w-full">
+          <div className="h-[250px] md:h-[300px] w-full">
             {mounted && (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={REVENUE_TREND}>
+                <AreaChart data={revTrend}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis 
-                    dataKey="day" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
-                    dy={10}
-                  />
-                  <YAxis 
+                  <XAxis
+                    dataKey="day"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#94a3b8', fontSize: 9, fontWeight: 900 }}
-                    tickFormatter={(val) => `KES ${val.toLocaleString()}`}
+                    tick={{ fill: "#94a3b8", fontSize: 9, fontWeight: 900 }}
+                    dy={10}
                   />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '1rem' }}
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#94a3b8", fontSize: 9, fontWeight: 900 }}
+                    tickFormatter={(val) => `KSh ${val.toLocaleString()}`}
                   />
-                  <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: "1.5rem",
+                      border: "none",
+                      boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+                      padding: "1rem",
+                    }}
+                    formatter={(val: number) => [fmt(val), "Revenue"]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#3b82f6"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorRev)"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
         </Card>
 
-        {/* AI Strategy Layer */}
-        {aiInsights && (
-          <Card className="border-none shadow-2xl rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden p-6 md:p-8 relative group">
-            <div className="absolute top-0 right-0 p-32 -mr-32 -mt-32 bg-primary/20 rounded-full blur-[120px]" />
-            
-            <CardHeader className="p-0 mb-6 flex flex-row items-center gap-4 space-y-0 relative z-10">
-              <div className="size-12 bg-gradient-to-tr from-primary to-blue-400 text-white rounded-xl shadow-2xl flex items-center justify-center rotate-6">
-                <Sparkles className="size-6" />
-              </div>
-              <div>
-                <CardTitle className="text-lg md:text-xl font-black text-white tracking-tighter uppercase leading-none italic">AI Strategy Core</CardTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge className="bg-primary text-white border-none text-[7px] font-black uppercase px-1.5 py-0">REAL-TIME</Badge>
-                  <p className="text-slate-400 text-[7px] font-black uppercase tracking-[0.2em]">Decision Engine v4.2</p>
+        {/* Top Services + Payment breakdown */}
+        <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white p-6 md:p-8 overflow-hidden">
+          <CardHeader className="p-0 mb-6">
+            <CardTitle className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">
+              Top Services Today
+            </CardTitle>
+            <CardDescription className="text-[9px] font-black uppercase tracking-widest">
+              Ranked by transaction count
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 space-y-4">
+            {loading ? (
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="h-8 bg-slate-100 rounded-xl animate-pulse" />
+              ))
+            ) : data?.top_services.length ? (
+              data.top_services.map((svc, i) => (
+                <div key={svc.name} className="space-y-1">
+                  <div className="flex justify-between text-xs font-bold text-slate-600">
+                    <span>
+                      {i + 1}. {svc.name}
+                    </span>
+                    <span>{svc.count}x</span>
+                  </div>
+                  <Progress
+                    value={(svc.count / (data.top_services[0]?.count || 1)) * 100}
+                    className="h-2 rounded-full bg-slate-100"
+                  />
                 </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="p-0 space-y-6 relative z-10">
-              <div className="p-4 md:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-inner">
-                 <p className="text-sm md:text-base leading-snug text-white/95 font-bold tracking-tight italic">"{aiInsights.overallSummary}"</p>
-              </div>
-              
-              <div className="space-y-6">
-                {/* Executive Anomalies */}
-                <div className="space-y-3">
-                  <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-primary flex items-center gap-2">
-                    <div className="h-0.5 w-4 bg-primary" /> FINANCIAL ANOMALIES
-                  </h4>
-                  <ul className="space-y-2">
-                    {aiInsights.identifiedTrends.map((trend, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[10px] bg-white/5 p-3 rounded-xl border border-white/5 group/item hover:bg-white/10 transition-colors">
-                        <Zap className="size-3 text-amber-400 shrink-0 mt-0.5" />
-                        <span className="font-medium text-slate-200">{trend}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              ))
+            ) : (
+              <p className="text-slate-400 text-sm font-medium text-center py-8">
+                No paid transactions yet today
+              </p>
+            )}
 
-                {/* Management Strategy */}
-                <div className="space-y-3">
-                  <h4 className="text-[8px] font-black uppercase tracking-[0.3em] text-emerald-400 flex items-center gap-2">
-                    <div className="h-0.5 w-4 bg-emerald-400" /> GROWTH STRATEGY
-                  </h4>
-                  <ul className="space-y-2">
-                    {aiInsights.recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[10px] bg-emerald-400/5 p-3 rounded-xl border border-emerald-400/10 hover:bg-emerald-400/10 transition-colors">
-                        <div className="size-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
-                        <span className="font-medium text-slate-100">{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            {data && (
+              <div className="pt-4 border-t border-dashed space-y-2 mt-4">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                  Payment Methods
+                </p>
+                {Object.entries(data.revenue.by_method).map(([method, amount]) => (
+                  <div key={method} className="flex justify-between text-sm font-bold text-slate-700">
+                    <span>{method}</span>
+                    <span>{fmt(amount as number)}</span>
+                  </div>
+                ))}
               </div>
-              
-              <Button 
-                className="w-full h-14 bg-white text-slate-900 hover:bg-blue-50 rounded-xl font-black uppercase text-[9px] tracking-[0.2em] shadow-2xl border-none transition-all active:scale-95"
-                onClick={handleApproveStrategy}
-              >
-                 Authorize Strategic Pivot
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
       </div>
-
-      <RoleSwitcher />
     </div>
   );
 }
