@@ -8,19 +8,20 @@ const CreateCustomerSchema = z.object({
   phone:             z.string().min(9),
   email:             z.string().email().optional(),
   subscription_tier: z.enum(['None', 'Silver', 'Gold', 'Platinum']).default('None'),
-  user_id:           z.string().uuid().optional(), // set if customer has an auth account
+  user_id:           z.string().uuid().optional(),
 })
 
-// GET /api/customers?search=amina&tier=Gold
+// GET /api/customers?search=amina&tier=Gold&user_id=<uuid>
 export async function GET(request: NextRequest) {
   const { ctx, error } = await requireAgent()
   if (error) return error
 
   const { searchParams } = new URL(request.url)
-  const search = searchParams.get('search')
-  const tier   = searchParams.get('tier')
-  const limit  = parseInt(searchParams.get('limit') ?? '50')
-  const offset = parseInt(searchParams.get('offset') ?? '0')
+  const search  = searchParams.get('search')
+  const tier    = searchParams.get('tier')
+  const user_id = searchParams.get('user_id')   // ← ADDED: customer portal loyalty lookup
+  const limit   = parseInt(searchParams.get('limit')  ?? '50')
+  const offset  = parseInt(searchParams.get('offset') ?? '0')
 
   const supabase = await createClient()
   let query = supabase
@@ -29,6 +30,11 @@ export async function GET(request: NextRequest) {
     .eq('tenant_id', ctx.tenantId)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
+
+  // ── ADDED: filter by auth user_id so customer portal can find its own record ──
+  if (user_id) {
+    query = query.eq('user_id', user_id)
+  }
 
   if (search) {
     query = query.or(`name.ilike.%${search}%,phone.ilike.%${search}%,email.ilike.%${search}%`)
@@ -52,7 +58,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  // Check for duplicate phone number within tenant
   const supabase = await createClient()
   const { data: existing } = await supabase
     .from('customers')
