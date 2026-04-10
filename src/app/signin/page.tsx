@@ -12,37 +12,48 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { Waves, Loader2 } from 'lucide-react'
+
+// ── Role → destination ────────────────────────────────────────────────────
+function roleToPath(role: string | null): string {
+  switch (role) {
+    case 'manager':   return '/manager'
+    case 'agent':     return '/agent'
+    case 'attendant': return '/attendant'
+    case 'customer':  return '/customer'
+    default:          return '/manager' // fallback
+  }
+}
 
 export default function SignInPage() {
   const router = useRouter()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail]                   = useState('')
+  const [password, setPassword]             = useState('')
+  const [loading, setLoading]               = useState(false)
   const [checkingSession, setCheckingSession] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError]                   = useState<string | null>(null)
 
-  // 🔁 Check if already logged in
+  // ── Check if already signed in ─────────────────────────────────────────
+  // If they have a valid session, skip the sign-in page entirely
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await fetch('/api/auth/me', {
-          credentials: 'include',
-        })
-
+        const res = await fetch('/api/auth/me', { credentials: 'include' })
         if (res.ok) {
-          router.replace('/manager')
+          const data = await res.json()
+          router.replace(roleToPath(data.role))
         }
-      } catch (err) {
-        // ignore
+      } catch {
+        // no session — stay on sign-in page
       } finally {
         setCheckingSession(false)
       }
     }
-
     checkSession()
   }, [router])
 
+  // ── Sign in handler ────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -55,104 +66,142 @@ export default function SignInPage() {
     try {
       setLoading(true)
 
+      // 1. Sign in — sets Supabase session cookie
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // 🔑 REQUIRED
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       })
 
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data?.error || 'Invalid email or password')
+        setError(data?.error || 'Invalid email or password.')
         return
       }
 
-      // ✅ success
-      router.push('/manager')
-    } catch (err) {
+      // 2. Use the role returned directly from the sign-in response
+      //    (POST /api/auth/session already returns { user: { role, ... } })
+      const role = data?.user?.role ?? null
+
+      // 3. Redirect to the correct dashboard for this role
+      router.push(roleToPath(role))
+
+    } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  // ⏳ Prevent flicker while checking session
+  // ── Loading screen while checking existing session ─────────────────────
   if (checkingSession) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-        Checking session...
+      <div className="flex min-h-screen items-center justify-center flex-col gap-3 text-muted-foreground">
+        <Loader2 className="size-6 animate-spin text-primary" />
+        <span className="text-sm">Checking session...</span>
       </div>
     )
   }
 
+  // ── Sign-in form ───────────────────────────────────────────────────────
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Card className="w-full max-w-md shadow-sm">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-semibold">
-            SparkFlow
-          </CardTitle>
-          <CardDescription>
-            Sign in to access the manager dashboard
-          </CardDescription>
-        </CardHeader>
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+      <div className="w-full max-w-md space-y-6">
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="manager@sparkflow.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
-            {/* Submit */}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-
-          {/* Footer */}
-          <div className="mt-6 text-center text-xs text-muted-foreground">
-            SparkFlow ERP • Manager Access
+        {/* Logo */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="p-3 bg-primary rounded-2xl shadow-xl shadow-primary/20">
+            <Waves className="size-8 text-white" />
           </div>
-        </CardContent>
-      </Card>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">SparkFlow</h1>
+          <p className="text-slate-500 text-sm font-medium">Sign in to your account</p>
+        </div>
+
+        <Card className="border-none shadow-xl rounded-[2rem]">
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-bold uppercase text-slate-500 tracking-widest">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@sparkflow.test"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  className="h-12 rounded-xl border-2 font-medium"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-xs font-bold uppercase text-slate-500 tracking-widest">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  className="h-12 rounded-xl border-2 font-medium"
+                  disabled={loading}
+                />
+              </div>
+
+              {/* Error message */}
+              {error && (
+                <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-medium">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg shadow-primary/20"
+                disabled={loading}
+              >
+                {loading
+                  ? <><Loader2 className="size-4 animate-spin mr-2" /> Signing in...</>
+                  : 'Sign In'
+                }
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Role hint for testing */}
+        <div className="bg-white rounded-2xl shadow-sm border p-5 space-y-3">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Test Accounts</p>
+          {[
+            { role: 'Manager',   email: 'manager@sparkflow.test',   dest: '/manager' },
+            { role: 'Agent',     email: 'agent@sparkflow.test',     dest: '/agent' },
+            { role: 'Attendant', email: 'attendant@sparkflow.test', dest: '/attendant' },
+            { role: 'Customer',  email: 'customer@sparkflow.test',  dest: '/customer' },
+          ].map(({ role, email: e, dest }) => (
+            <button
+              key={role}
+              type="button"
+              onClick={() => setEmail(e)}
+              className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+            >
+              <span className="text-xs font-black text-slate-700 uppercase">{role}</span>
+              <span className="text-[10px] text-slate-400 font-mono">{e}</span>
+            </button>
+          ))}
+          <p className="text-[9px] text-slate-400 text-center">Click a row to fill the email field</p>
+        </div>
+
+        <p className="text-center text-xs text-slate-400">
+          SparkFlow ERP · Immersicloud Consulting
+        </p>
+      </div>
     </div>
   )
 }
