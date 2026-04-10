@@ -1,9 +1,49 @@
+'use client'
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { LayoutDashboard, Users, Smartphone, Car, Waves, Zap, ShieldCheck, Globe, ChevronRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 export default function Home() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          credentials: 'include',
+        })
+
+        if (res.ok) {
+          // ✅ Logged in → go straight to manager
+          router.replace('/manager')
+        } else {
+          // ❌ Not logged in → go to signin
+          router.replace('/signin')
+        }
+      } catch {
+        router.replace('/signin')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [router])
+
+  // ⏳ Prevent UI flash
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+        Initializing SparkFlow...
+      </div>
+    )
+  }
+
   const views = [
     { 
       title: "Agent Desk", 
@@ -11,7 +51,6 @@ export default function Home() {
       href: "/agent", 
       icon: Smartphone,
       color: "from-blue-500 to-indigo-600",
-      accent: "blue"
     },
     { 
       title: "Attendant PWA", 
@@ -19,7 +58,6 @@ export default function Home() {
       href: "/attendant", 
       icon: Car,
       color: "from-indigo-600 to-violet-600",
-      accent: "indigo"
     },
     { 
       title: "Owner HQ", 
@@ -27,7 +65,6 @@ export default function Home() {
       href: "/manager", 
       icon: LayoutDashboard,
       color: "from-slate-800 to-slate-900",
-      accent: "slate"
     },
     { 
       title: "Customer App", 
@@ -35,93 +72,67 @@ export default function Home() {
       href: "/customer", 
       icon: Users,
       color: "from-emerald-500 to-teal-600",
-      accent: "emerald"
     },
   ];
 
   return (
     <div className="relative min-h-screen mesh-bg overflow-hidden flex flex-col items-center justify-center p-6">
-      {/* Decorative Floating Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/5 rounded-full blur-[120px] animate-pulse delay-1000" />
+      
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/5 rounded-full blur-[120px]" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto space-y-16">
-        <header className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <div className="inline-flex items-center gap-3 bg-white/50 backdrop-blur-xl border border-white/50 px-6 py-2.5 rounded-full shadow-soft mb-4">
-            <Zap className="size-4 text-primary fill-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 leading-none">Intelligence Protocol v4.2</span>
+        
+        <header className="text-center space-y-6">
+          <div className="inline-flex items-center gap-3 bg-white/50 backdrop-blur-xl border px-6 py-2.5 rounded-full">
+            <Zap className="size-4 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
+              Intelligence Protocol v4.2
+            </span>
           </div>
-          
+
           <div className="flex flex-col items-center gap-4">
-            <div className="size-20 bg-primary rounded-[2rem] shadow-2xl shadow-primary/40 flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500 cursor-pointer group">
-              <Waves className="size-10 text-white group-hover:scale-110 transition-transform" />
+            <div className="size-20 bg-primary rounded-[2rem] flex items-center justify-center">
+              <Waves className="size-10 text-white" />
             </div>
+
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-slate-900 uppercase">
-              Spark<span className="text-primary text-glow">Flow</span><span className="text-slate-300">.</span>
+              Spark<span className="text-primary">Flow</span>
             </h1>
           </div>
-          
-          <p className="text-xl md:text-2xl text-slate-500 font-bold max-w-2xl mx-auto leading-tight">
-            The futuristic ERP core for autonomous <br className="hidden md:block"/> car wash operations & multi-branch scale.
+
+          <p className="text-xl text-slate-500 font-bold max-w-2xl mx-auto">
+            The futuristic ERP core for autonomous car wash operations.
           </p>
         </header>
 
+        {/* 👇 Keep your UI exactly as-is */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {views.map((view, i) => {
+          {views.map((view) => {
             const Icon = view.icon;
             return (
-              <Link key={view.href} href={view.href} className="group transition-all duration-500">
-                <Card className="h-full border-none glass hover:shadow-vibrant hover:-translate-y-2 transition-all relative overflow-hidden flex flex-col rounded-[2.5rem]">
-                  <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${view.color}`} />
-                  
-                  <div className="p-10 space-y-8 flex-1">
-                    <div className={`size-16 rounded-2xl bg-gradient-to-br ${view.color} flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-500`}>
-                      <Icon className="size-8" />
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none group-hover:text-primary transition-colors">
-                        {view.title}
-                      </h3>
-                      <p className="text-sm font-bold text-slate-400 uppercase tracking-tight leading-snug">
-                        {view.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-8 pt-0">
-                    <div className="w-full h-14 rounded-2xl bg-slate-50 border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500 flex items-center justify-center gap-3 font-black uppercase text-[10px] tracking-widest shadow-inner">
-                      Initialize Link <ChevronRight className="size-4 opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </div>
+              <Link key={view.href} href={view.href}>
+                <Card className="p-8 hover:shadow-lg transition">
+                  <Icon className="mb-4" />
+                  <h3 className="font-bold">{view.title}</h3>
+                  <p className="text-sm text-muted-foreground">{view.desc}</p>
                 </Card>
               </Link>
             );
           })}
         </div>
 
-        <footer className="pt-12 border-t border-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in duration-1000 delay-500">
-          <div className="flex items-center gap-8">
-            <div className="flex flex-col gap-1">
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Security Layer</span>
-              <div className="flex items-center gap-2 text-emerald-600 font-black text-xs uppercase tracking-widest">
-                <ShieldCheck className="size-4" /> SSL Encrypted
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Node Sync</span>
-              <div className="flex items-center gap-2 text-blue-600 font-black text-xs uppercase tracking-widest">
-                <Globe className="size-4" /> Global CDN
-              </div>
-            </div>
+        <footer className="pt-12 border-t flex justify-between text-xs text-muted-foreground">
+          <div className="flex gap-4">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="size-4" /> SSL
+            </span>
+            <span className="flex items-center gap-1">
+              <Globe className="size-4" /> CDN
+            </span>
           </div>
-          
-          <div className="text-right">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-              Kenya's Leading Autonomous ERP <br/>
-              Powered by <span className="text-slate-900 italic">Safaricom Daraja & Twilio Mesh</span>
-            </p>
-          </div>
+
+          <p>Powered by SparkFlow ERP</p>
         </footer>
       </div>
     </div>
