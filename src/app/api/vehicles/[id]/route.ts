@@ -61,6 +61,8 @@ export async function PATCH(
   if (error) return error
 
   const { id } = await params
+  console.log('PATCH Vehicle Request:', { id, tenantId: ctx.tenantId })
+
   const body = await request.json()
   const parsed = UpdateVehicleSchema.safeParse(body)
   if (!parsed.success) {
@@ -71,15 +73,22 @@ export async function PATCH(
 
   // If advancing status, validate the transition is legal
   if (parsed.data.status) {
-    const { data: current } = await supabase
+    console.log('Validating status transition for:', parsed.data.status)
+    
+    const { data: current, error: fetchError } = await supabase
       .from('vehicles_live')
-      .select('status')
+      .select('status, tenant_id')
       .eq('id', id)
-      .eq('tenant_id', ctx.tenantId)
       .single()
 
-    if (!current) {
+    if (fetchError || !current) {
+      console.error('Vehicle fetch error:', fetchError)
       return NextResponse.json({ error: 'Vehicle not found' }, { status: 404 })
+    }
+
+    // Verify tenant access
+    if (current.tenant_id !== ctx.tenantId) {
+      return NextResponse.json({ error: 'Unauthorized access to vehicle' }, { status: 403 })
     }
 
     const expectedNext = TRANSITIONS[current.status]
@@ -90,15 +99,32 @@ export async function PATCH(
       )
     }
 
+    console.log('Calling RPC with:', {
+      p_vehicle_id: id,
+      p_new_status: parsed.data.status,
+      p_tenant_id: ctx.tenantId,
+    })
+
     // Use the RPC to handle state change + bay side-effect atomically
     const { error: rpcError } = await supabase.rpc('advance_vehicle_status', {
       p_vehicle_id: id,
       p_new_status: parsed.data.status,
-      p_tenant_id:  ctx.tenantId,
+      p_tenant_id: ctx.tenantId,
     })
 
     if (rpcError) {
-      return NextResponse.json({ error: rpcError.message }, { status: 500 })
+      console.error('RPC Error Details:', {
+        error: rpcError,
+        message: rpcError.message,
+        code: rpcError.code,
+        hint: rpcError.hint,
+        details: rpcError.details
+      });
+      return NextResponse.json({ 
+        error: 'Failed to update vehicle status',
+        details: rpcError.message,
+        code: rpcError.code
+      }, { status: 500 })
     }
   }
 
@@ -111,19 +137,35 @@ export async function PATCH(
   if (parsed.data.total_amount !== undefined) nonStatusUpdates.total_amount = parsed.data.total_amount
 
   if (Object.keys(nonStatusUpdates).length > 0) {
-    await supabase
+    const { error: updateError } = await supabase
       .from('vehicles_live')
       .update(nonStatusUpdates)
       .eq('id', id)
       .eq('tenant_id', ctx.tenantId)
+      
+    if (updateError) {
+      console.error('Update Error:', updateError);
+      return NextResponse.json({ 
+        error: 'Failed to update vehicle fields',
+        details: updateError.message 
+      }, { status: 500 })
+    }
   }
 
   // Fetch and return the updated vehicle
-  const { data: updated } = await supabase
+  const { data: updated, error: fetchError } = await supabase
     .from('vehicles_live')
     .select(`*, bay:bays(id, name), attendant:staff(id, name)`)
     .eq('id', id)
     .single()
+
+  if (fetchError) {
+    console.error('Fetch Updated Vehicle Error:', fetchError);
+    return NextResponse.json({ 
+      error: 'Failed to fetch updated vehicle',
+      details: fetchError.message 
+    }, { status: 500 })
+  }
 
   return NextResponse.json(updated)
 }
