@@ -5,39 +5,26 @@ import { requireAgent } from '@/lib/auth-helpers';
 import { z } from 'zod';
 
 // -----------------------------------------------------------------
-//  Input validation – plate is auto‑upper‑cased & trimmed
+//  Input schema – plate is auto‑upper‑cased & trimmed
 // -----------------------------------------------------------------
 const CheckInSchema = z.object({
   plate:        z.string().min(1).transform(s => s.toUpperCase().trim()),
   bay_id:       z.string().uuid().optional(),
   attendant_id: z.string().uuid().optional(),
   customer_id:  z.string().uuid().optional(),
-  services:     z.array(z.string()).default([]),
+  services:    z.array(z.string()).default([]),
   total_amount: z.number().min(0).default(0),
 });
 
 export async function POST(request: NextRequest) {
-  // -------------------------------------------------------------
-  // 1️⃣  Auth & payload validation
-  // -------------------------------------------------------------
+  // -----------------------------------------------------------------
+  // 1️⃣ Auth & payload validation
+  // -----------------------------------------------------------------
   const { ctx, error } = await requireAgent();
   if (error) return error;
 
-  // -------------------------------------------------------------
-  // 2️⃣  Grab the branch identifier the **correct way**
-  // -------------------------------------------------------------
-  // All current auth‑helpers populate `ctx.branchId` (camelCase).
-  // We keep a fallback to `branch_id` only for absolute safety,
-  // but the primary source is `ctx.branchId`.
-  const branchId = ctx.branchId ?? (ctx as any).branch_id;
-
-  if (!branchId) {
-    console.error('❌ Auth context is missing branchId', ctx);
-    return NextResponse.json(
-      { error: 'Auth context missing branch information' },
-      { status: 500 }
-    );
-  }
+  // At this point `ctx` is guaranteed to have `branchId`
+  const branchId = ctx.branchId; // normalised in auth‑helpers
 
   const body = await request.json();
   console.log('🟢 Received vehicle‑check‑in payload:', body);
@@ -56,15 +43,15 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   try {
-    // -------------------------------------------------------------
-    // 3️⃣  Duplicate‑plate check – now includes branch_id (RLS‑compliant)
-    // -------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // 2️⃣ Duplicate‑plate check (RLS‑compliant)
+    // -----------------------------------------------------------------
     const { data: existingVehicle, error: checkError } = await supabase
       .from('vehicles_live')
       .select('id, status')
       .eq('plate', parsed.data.plate)
       .eq('tenant_id', ctx.tenantId)
-      .eq('branch_id', branchId)            // 👈  MUST be present for RLS
+      .eq('branch_id', branchId)          // 👈  REQUIRED BY RLS
       .neq('status', 'Completed')
       .maybeSingle();
 
@@ -85,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (existingVehicle) {
-      // 409 = Conflict – vehicle already exists in the system
+      // 409 = Conflict – vehicle already exists
       return NextResponse.json(
         {
           error: `Vehicle ${parsed.data.plate} is already checked in with status: ${existingVehicle.status}`,
@@ -94,14 +81,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // -------------------------------------------------------------
-    // 4️⃣  Insert the new vehicle (use the same branchId)
-    // -------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // 3️⃣ Insert the new vehicle row (branchId included)
+    // -----------------------------------------------------------------
     const insertPayload = {
       plate:        parsed.data.plate,
       tenant_id:    ctx.tenantId,
-      branch_id:    branchId,               // 👈  RLS‑compliant
-      customer_id: parsed.data.customer_id ?? null,
+      branch_id:    branchId,              // 👈  RLS‑compliant
+      customer_id:  parsed.data.customer_id ?? null,
       bay_id:       parsed.data.bay_id ?? null,
       services:     parsed.data.services,
       total_amount: parsed.data.total_amount,
@@ -125,9 +112,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // -------------------------------------------------------------
-    // 5️⃣  If a bay was supplied, mark that bay as Occupied
-    // -------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // 4️⃣ If a bay was assigned, mark it Occupied
+    // -----------------------------------------------------------------
     if (parsed.data.bay_id) {
       const { error: bayError } = await supabase
         .from('bays')
@@ -140,7 +127,7 @@ export async function POST(request: NextRequest) {
         .eq('tenant_id', ctx.tenantId);
 
       if (bayError) {
-        // Non‑fatal – we still return the vehicle record.
+        // Non‑fatal – we still return the vehicle record
         console.error('⚠️ Bay update error (non‑fatal):', bayError);
       }
     }
