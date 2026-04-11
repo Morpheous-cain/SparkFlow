@@ -1,7 +1,7 @@
 // src/app/api/auth/session/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { createClient } from '@/lib/supabase/server'; // your existing wrapper
 
 // -----------------------------------------------------------------
 //  Input validation
@@ -12,11 +12,11 @@ const SignInSchema = z.object({
 });
 
 // -----------------------------------------------------------------
-//  POST /api/auth/session – sign‑in and set JWT cookie
+//  POST /api/auth/session – sign‑in & set JWT cookie
 // -----------------------------------------------------------------
 export async function POST(request: NextRequest) {
   // -------------------------------------------------------------
-  // 1️⃣  Parse & validate payload
+  // 1️⃣  Parse & validate the request body
   // -------------------------------------------------------------
   const body = await request.json();
   const parsed = SignInSchema.safeParse(body);
@@ -29,10 +29,13 @@ export async function POST(request: NextRequest) {
   }
 
   // -------------------------------------------------------------
-  // 2️⃣  Sign‑in with Supabase Auth (public anon key client)
+  // 2️⃣  Create a **regular** Supabase client (the one you already use)
   // -------------------------------------------------------------
   const supabase = await createClient();
 
+  // -------------------------------------------------------------
+  // 3️⃣  Sign‑in with email + password
+  // -------------------------------------------------------------
   const { data, error } = await supabase.auth.signInWithPassword({
     email:    parsed.data.email,
     password: parsed.data.password,
@@ -46,7 +49,7 @@ export async function POST(request: NextRequest) {
   }
 
   // -------------------------------------------------------------
-  // 3️⃣  Pull the user’s role / tenant / branch from `user_roles`
+  // 4️⃣  Pull role / tenant / branch from the `user_roles` table
   // -------------------------------------------------------------
   const {
     data: roleData,
@@ -66,12 +69,7 @@ export async function POST(request: NextRequest) {
   }
 
   // -------------------------------------------------------------
-  // 4️⃣  **Set the HttpOnly auth cookie** so future requests are
-  //     authenticated.  The `setAuthCookie` helper lives on the
-  //     *server* version of the Supabase client.  Because our
-  //     `createClient()` returns a normal client (which lacks typings
-  //     for the method), we cast to `any` – the method still works at
-  //     runtime.
+  // 5️⃣  Build the JSON payload that the front‑end expects
   // -------------------------------------------------------------
   const response = NextResponse.json({
     user: {
@@ -83,46 +81,59 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // -----------------------------------------------------------------
-  // 5️⃣  Build the Set‑Cookie header
-  // -----------------------------------------------------------------
-  // Options mirror what Supabase docs recommend.
-  // Adjust maxAge / sameSite / secure to your needs.
-  const cookie = (supabase as any).auth.setAuthCookie(
-    data.session?.access_token ?? '',
-    {
-      maxAge:   60 * 60 * 24 * 7,         // 7 days
-      httpOnly: true,
-      sameSite: 'lax',
-      path:     '/',
-      secure:   process.env.NODE_ENV === 'production',
-    }
-  );
+  // -------------------------------------------------------------
+  // 6️⃣  **Manually create the Set‑Cookie header**.
+  // -------------------------------------------------------------
+  // Supabase returns the access token in `data.session.access_token`.
+  // If for some reason `session` is undefined (should not happen), we fall back to an empty string.
+  const accessToken = data.session?.access_token ?? '';
 
-  response.headers.set('Set-Cookie', cookie);
+  // Build a proper cookie string.
+  //   - `sb-access-token` is the default cookie name Supabase uses for the access token.
+  //   - `maxAge` is 7 days (604800 seconds). Adjust if you need a different lifetime.
+  //   - `HttpOnly` prevents JS from reading it.
+  //   - `SameSite=Lax` is safe for most CSRF scenarios.
+  //   - `Secure` is only added in production (HTTPS) environments.
+  const maxAge = 60 * 60 * 24 * 7; // 7 days in seconds
+  const cookieParts = [
+    `sb-access-token=${accessToken}`,
+    `Path=/`,
+    `HttpOnly`,
+    `Max-Age=${maxAge}`,
+    `SameSite=Lax`,
+    process.env.NODE_ENV === 'production' ? `Secure` : '',
+  ]
+    .filter(Boolean) // removes empty string when not in production
+    .join('; ');
+
+  response.headers.set('Set-Cookie', cookieParts);
   return response;
 }
 
 // -----------------------------------------------------------------
-//  DELETE /api/auth/session – sign‑out & clear cookie
+//  DELETE /api/auth/session – sign‑out & clear the auth cookie
 // -----------------------------------------------------------------
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  // Use the same client we used for sign‑in.
   const supabase = await createClient();
 
-  // Revoke the server‑side session (removes refresh token, etc.)
+  // Invalidate the server‑side session (revokes refresh token etc.).
   await supabase.auth.signOut();
 
-  // Build a response that clears the auth cookie on the client
+  // Build a response that tells the client the sign‑out succeeded.
   const response = NextResponse.json({ success: true });
 
-  // Setting the cookie with an empty value & maxAge 0 removes it.
-  const clearCookie = (supabase as any).auth.setAuthCookie('', {
-    maxAge:   0,
-    httpOnly: true,
-    sameSite: 'lax',
-    path:     '/',
-    secure:   process.env.NODE_ENV === 'production',
-  });
+  // Clear the cookie by setting an empty value and Max‑Age=0.
+  const clearCookie = [
+    `sb-access-token=`,
+    `Path=/`,
+    `HttpOnly`,
+    `Max-Age=0`,
+    `SameSite=Lax`,
+    process.env.NODE_ENV === 'production' ? `Secure` : '',
+  ]
+    .filter(Boolean)
+    .join('; ');
 
   response.headers.set('Set-Cookie', clearCookie);
   return response;
