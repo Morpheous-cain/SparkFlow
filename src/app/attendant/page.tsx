@@ -1,23 +1,16 @@
 "use client";
 
+// attendance_status values from DB: "Present", "Late", "Absent", "On-Leave" (capital first letter)
+// The previous version filtered on "present" (lowercase) which never matched — fixed here.
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
-  Play,
-  CheckCircle2,
-  Clock,
-  MapPin,
-  Car,
-  Check,
-  Waves,
-  BellRing,
-  ClipboardCheck,
-  Loader2,
-  RefreshCw,
-  AlertTriangle,
+  Play, CheckCircle2, Clock, MapPin, Car, Check,
+  Waves, BellRing, ClipboardCheck, Loader2, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -28,31 +21,31 @@ type Vehicle = {
   status: "Queue" | "In-Bay" | "Ready" | "Completed";
   progress: number;
   services: string[];
+  total_amount: number;
   arrival_time: string;
-  bay?: { id: string; name: string };
-  attendant?: { id: string; name: string };
-  customer?: { name: string; phone: string };
+  bay?: { id: string; name: string } | null;
+  attendant?: { id: string; name: string } | null;
+  customer?: { name: string; phone: string } | null;
 };
 
-type Ctx = { branch_id: string; email: string; userId: string };
+type Ctx = { branch_id: string; email: string; id: string };
 
 export default function AttendantPWA() {
   const { toast } = useToast();
-  const [ctx, setCtx]         = useState<Ctx | null>(null);
-  const [jobs, setJobs]       = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState<string | null>(null);
-  const [actionId, setActionId] = useState<string | null>(null); // vehicle being updated
-  const [mounted, setMounted] = useState(false);
+  const [ctx, setCtx]           = useState<Ctx | null>(null);
+  const [jobs, setJobs]         = useState<Vehicle[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState<string | null>(null);
+  const [actionId, setActionId] = useState<string | null>(null);
+  const [mounted, setMounted]   = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
-  // ── Fetch context then jobs ─────────────────────────────────────────────
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
       .then((r) => r.json())
       .then((me) => {
-        setCtx({ branch_id: me.branch_id, email: me.email, userId: me.id });
+        setCtx({ branch_id: me.branch_id, email: me.email, id: me.id });
         fetchJobs(me.branch_id);
       })
       .catch(() => setError("Not authenticated — please sign in"));
@@ -65,7 +58,6 @@ export default function AttendantPWA() {
       const res = await fetch(`/api/vehicles?branch_id=${branchId}`, { credentials: "include" });
       if (!res.ok) throw new Error((await res.json()).error ?? `HTTP ${res.status}`);
       const data: Vehicle[] = await res.json();
-      // Exclude completed, show Queue and In-Bay for this attendant
       setJobs(data.filter((v) => v.status !== "Completed"));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to load jobs");
@@ -74,7 +66,6 @@ export default function AttendantPWA() {
     }
   }
 
-  // ── Advance vehicle state ────────────────────────────────────────────────
   async function advanceStatus(vehicle: Vehicle, newStatus: "In-Bay" | "Ready") {
     setActionId(vehicle.id);
     try {
@@ -88,11 +79,11 @@ export default function AttendantPWA() {
         const err = await res.json();
         throw new Error(err.error ?? "Update failed");
       }
-      if (newStatus === "In-Bay") {
-        toast({ title: "Wash Initiated", description: `Job Card ${vehicle.plate} is now LIVE. Status synced to Agent desk.` });
-      } else {
-        toast({ title: "Job Card Closed", description: `Vehicle ${vehicle.plate} marked as READY. Customer notified.` });
-      }
+      const messages = {
+        "In-Bay": `Job Card ${vehicle.plate} is now LIVE. Status synced to Agent desk.`,
+        "Ready":  `Vehicle ${vehicle.plate} marked READY. Customer notified.`,
+      };
+      toast({ title: newStatus === "In-Bay" ? "Wash Initiated ✓" : "Job Card Closed ✓", description: messages[newStatus] });
       if (ctx) fetchJobs(ctx.branch_id);
     } catch (e: unknown) {
       toast({ title: "Error", description: e instanceof Error ? e.message : "Failed", variant: "destructive" });
@@ -101,11 +92,12 @@ export default function AttendantPWA() {
     }
   }
 
-  const activeJobs = jobs.filter((j) => j.status !== "Completed");
-  const attendantName = ctx?.email?.split("@")[0] ?? "Attendant";
+  const activeJobs      = jobs.filter((j) => j.status !== "Completed");
+  const attendantName   = ctx?.email?.split("@")[0] ?? "Attendant";
 
   return (
     <div className="min-h-screen pb-32 bg-slate-50">
+
       {/* Header */}
       <header className="bg-slate-900 text-white p-6 shadow-2xl rounded-b-[2.5rem] mb-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-12 -mr-12 -mt-12 bg-primary/20 rounded-full blur-2xl" />
@@ -153,11 +145,11 @@ export default function AttendantPWA() {
         <div className="flex items-center justify-between px-2">
           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">My Active Job Cards</h2>
           <Badge className="bg-emerald-500 text-white font-black text-[9px] px-3 py-1">
-            {loading ? "..." : `${activeJobs.length} TOTAL`}
+            {loading ? "…" : `${activeJobs.length} ACTIVE`}
           </Badge>
         </div>
 
-        {/* Loading skeletons */}
+        {/* Loading */}
         {loading && (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
@@ -166,11 +158,11 @@ export default function AttendantPWA() {
           </div>
         )}
 
-        {/* Empty state */}
+        {/* Empty */}
         {!loading && activeJobs.length === 0 && !error && (
           <div className="text-center py-24 flex flex-col items-center gap-6 opacity-30">
-            <div className="w-24 h-24 bg-slate-200 rounded-[3rem] flex items-center justify-center text-slate-400 shadow-inner">
-              <ClipboardCheck className="w-12 h-12" />
+            <div className="w-24 h-24 bg-slate-200 rounded-[3rem] flex items-center justify-center shadow-inner">
+              <ClipboardCheck className="w-12 h-12 text-slate-400" />
             </div>
             <p className="text-slate-500 font-black uppercase text-xs tracking-widest leading-relaxed">
               No pending jobs.<br />Awaiting assignment from Agent...
@@ -218,8 +210,7 @@ export default function AttendantPWA() {
                 </div>
               </CardHeader>
 
-              <CardContent className="px-6 md:px-8 space-y-6">
-                {/* Services */}
+              <CardContent className="px-6 md:px-8 space-y-4">
                 <div className="flex flex-wrap gap-2">
                   {job.services.map((s) => (
                     <Badge key={s} variant="outline" className="font-black text-[9px] uppercase tracking-tighter border-slate-100 bg-slate-50 text-slate-500 px-3 py-1">
@@ -228,9 +219,14 @@ export default function AttendantPWA() {
                   ))}
                 </div>
 
-                {/* Progress bar for In-Bay */}
+                {job.total_amount > 0 && (
+                  <p className="text-sm font-black text-emerald-600">
+                    KSh {job.total_amount.toLocaleString("en-KE")}
+                  </p>
+                )}
+
                 {job.status === "In-Bay" && (
-                  <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner space-y-4">
+                  <div className="p-5 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner space-y-3">
                     <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                       <span>Live Progress</span>
                       <span className="text-primary">{job.progress}%</span>
@@ -242,7 +238,6 @@ export default function AttendantPWA() {
                   </div>
                 )}
 
-                {/* Customer name if available */}
                 {job.customer?.name && (
                   <p className="text-xs font-bold text-slate-400 uppercase">
                     Customer: {job.customer.name}
@@ -257,18 +252,16 @@ export default function AttendantPWA() {
                     onClick={() => advanceStatus(job, "In-Bay")}
                     disabled={isActioning}
                   >
-                    {isActioning
-                      ? <Loader2 className="size-5 animate-spin mr-2" />
-                      : <Play className="mr-3 size-5 fill-current" />}
-                    {isActioning ? "Starting..." : "Initialize Job Card"}
+                    {isActioning ? <Loader2 className="size-5 animate-spin mr-2" /> : <Play className="mr-3 size-5 fill-current" />}
+                    {isActioning ? "Starting…" : "Initialize Job Card"}
                   </Button>
                 ) : job.status === "Ready" ? (
-                  <div className="w-full p-5 bg-emerald-50 border-2 border-dashed border-emerald-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-emerald-700 font-black uppercase text-[10px] tracking-[0.2em]">
+                  <div className="w-full p-5 bg-emerald-50 border-2 border-dashed border-emerald-200 rounded-2xl flex flex-col items-center gap-2 text-emerald-700 font-black uppercase text-[10px] tracking-[0.2em]">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="size-5" />
-                      Job Completed — Vehicle Ready for Collection
+                      Vehicle Ready for Collection
                     </div>
-                    <span className="text-[8px] opacity-60">Cleared for payment</span>
+                    <span className="text-[8px] opacity-60">Cleared for payment at agent desk</span>
                   </div>
                 ) : job.status === "In-Bay" ? (
                   <Button
@@ -276,10 +269,8 @@ export default function AttendantPWA() {
                     onClick={() => advanceStatus(job, "Ready")}
                     disabled={isActioning}
                   >
-                    {isActioning
-                      ? <Loader2 className="size-5 animate-spin mr-2" />
-                      : <Check className="mr-3 size-5" />}
-                    {isActioning ? "Syncing..." : "Finish & Sync Data"}
+                    {isActioning ? <Loader2 className="size-5 animate-spin mr-2" /> : <Check className="mr-3 size-5" />}
+                    {isActioning ? "Syncing…" : "Finish & Sync Data"}
                   </Button>
                 ) : null}
               </CardFooter>
