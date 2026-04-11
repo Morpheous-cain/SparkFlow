@@ -1,120 +1,145 @@
 // src/app/api/vehicles/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { requireAgent } from '@/lib/auth-helpers';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { requireAgent, requireAttendant } from '@/lib/auth-helpers'
+import { z } from 'zod'
 
-// -----------------------------------------------------------------
-//  Input schema – plate is auto‑upper‑cased & trimmed
-// -----------------------------------------------------------------
+// ── Input schema ───────────────────────────────────────────────────────────────
 const CheckInSchema = z.object({
   plate:        z.string().min(1).transform(s => s.toUpperCase().trim()),
   bay_id:       z.string().uuid().optional(),
   attendant_id: z.string().uuid().optional(),
   customer_id:  z.string().uuid().optional(),
-  services:    z.array(z.string()).default([]),
+  services:     z.array(z.string()).default([]),
   total_amount: z.number().min(0).default(0),
-});
+})
 
-export async function POST(request: NextRequest) {
-  // -----------------------------------------------------------------
-  // 1️⃣ Auth & payload validation
-  // -----------------------------------------------------------------
-  const { ctx, error } = await requireAgent();
-  if (error) return error;
+// ── GET /api/vehicles ──────────────────────────────────────────────────────────
+// Returns all non-completed vehicles for the branch.
+// Used by: attendant job console, agent workflow tab, manager bays page.
+// Query params:
+//   branch_id  — override the caller's branch (manager viewing other branches)
+//   status     — filter by status (Queue, In-Bay, Ready, Completed)
+//   plate      — search by plate (partial, case-insensitive)
+export async function GET(request: NextRequest) {
+  const { ctx, error } = await requireAttendant()
+  if (error) return error
 
-  // At this point `ctx` is guaranteed to have `branchId`
-  const branchId = ctx.branchId; // normalised in auth‑helpers
+  const { searchParams } = new URL(request.url)
+  const branch_id = searchParams.get('branch_id') ?? ctx.branchId
+  const status    = searchParams.get('status')
+  const plate     = searchParams.get('plate')
 
-  const body = await request.json();
-  console.log('🟢 Received vehicle‑check‑in payload:', body);
+  const supabase = await createClient()
 
-  const parsed = CheckInSchema.safeParse(body);
-  console.log('🔎 Zod parsing result:', parsed);
+  let query = supabase
+    .from('vehicles_live')
+    .select(`
+      *,
+      customer:customers(id, name, phone, subscription_tier),
+      bay:bays(id, name),
+      attendant:staff(id, name)
+    `)
+    .eq('tenant_id', ctx.tenantId)
+    .order('arrival_time', { ascending: true })
 
-  if (!parsed.success) {
-    console.error('❌ Validation error:', parsed.error.flatten());
-    return NextResponse.json(
-      { error: parsed.error.flatten() },
-      { status: 400 }
-    );
+  // Apply branch filter — always scope to branch unless manager omits it
+  if (branch_id) {
+    query = query.eq('branch_id', branch_id)
   }
 
-  const supabase = await createClient();
+  // By default exclude completed vehicles (they clutter the UI)
+  // Pass status=Completed explicitly if you need them
+  if (status) {
+    query = query.eq('status', status)
+  } else {
+    query = query.neq('status', 'Completed')
+  }
+
+  // Plate search (agent workflow search)
+  if (plate) {
+    query = query.ilike('plate', `%${plate}%`)
+  }
+
+  const { data, error: dbError } = await query
+
+  if (dbError) {
+    console.error('GET /api/vehicles error:', dbError)
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
+  }
+
+  return NextResponse.json(data ?? [])
+}
+
+// ── POST /api/vehicles ─────────────────────────────────────────────────────────
+// Check in a new vehicle.
+export async function POST(request: NextRequest) {
+  const { ctx, error } = await requireAgent()
+  if (error) return error
+
+  const branchId = ctx.branchId
+
+  const body = await request.json()
+  console.log('🟢 Vehicle check-in payload:', body)
+
+  const parsed = CheckInSchema.safeParse(body)
+  if (!parsed.success) {
+    console.error('❌ Validation error:', parsed.error.flatten())
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  }
+
+  const supabase = await createClient()
 
   try {
-    // -----------------------------------------------------------------
-    // 2️⃣ Duplicate‑plate check (RLS‑compliant)
-    // -----------------------------------------------------------------
+    // 1. Duplicate plate check
     const { data: existingVehicle, error: checkError } = await supabase
       .from('vehicles_live')
       .select('id, status')
       .eq('plate', parsed.data.plate)
       .eq('tenant_id', ctx.tenantId)
-      .eq('branch_id', branchId)          // 👈  REQUIRED BY RLS
+      .eq('branch_id', branchId!)
       .neq('status', 'Completed')
-      .maybeSingle();
-
-    console.log('🔎 Existing‑vehicle query result:', {
-      existingVehicle,
-      checkError,
-    });
+      .maybeSingle()
 
     if (checkError) {
-      console.error(
-        '⚠️ RLS / DB error while checking existing vehicle:',
-        checkError
-      );
+      console.error('⚠️ DB error while checking vehicle:', checkError)
       return NextResponse.json(
         { error: 'Database error while checking vehicle' },
         { status: 500 }
-      );
+      )
     }
 
     if (existingVehicle) {
-      // 409 = Conflict – vehicle already exists
       return NextResponse.json(
-        {
-          error: `Vehicle ${parsed.data.plate} is already checked in with status: ${existingVehicle.status}`,
-        },
+        { error: `${parsed.data.plate} is already checked in (status: ${existingVehicle.status})` },
         { status: 409 }
-      );
+      )
     }
 
-    // -----------------------------------------------------------------
-    // 3️⃣ Insert the new vehicle row (branchId included)
-    // -----------------------------------------------------------------
-    const insertPayload = {
-      plate:        parsed.data.plate,
-      tenant_id:    ctx.tenantId,
-      branch_id:    branchId,              // 👈  RLS‑compliant
-      customer_id:  parsed.data.customer_id ?? null,
-      bay_id:       parsed.data.bay_id ?? null,
-      services:     parsed.data.services,
-      total_amount: parsed.data.total_amount,
-      status:       'Queue',
-      progress:     0,
-    };
-
-    console.log('🛠️ Inserting vehicle with payload:', insertPayload);
-
+    // 2. Insert vehicle
     const { data: vehicle, error: vehicleError } = await supabase
       .from('vehicles_live')
-      .insert(insertPayload)
+      .insert({
+        plate:        parsed.data.plate,
+        tenant_id:    ctx.tenantId,
+        branch_id:    branchId,
+        customer_id:  parsed.data.customer_id ?? null,
+        bay_id:       parsed.data.bay_id ?? null,
+        attendant_id: parsed.data.attendant_id ?? null,
+        services:     parsed.data.services,
+        total_amount: parsed.data.total_amount,
+        status:       'Queue',
+        progress:     0,
+      })
       .select()
-      .single();
+      .single()
 
     if (vehicleError) {
-      console.error('❌ Error inserting vehicle:', vehicleError);
-      return NextResponse.json(
-        { error: vehicleError.message },
-        { status: 500 }
-      );
+      console.error('❌ Error inserting vehicle:', vehicleError)
+      return NextResponse.json({ error: vehicleError.message }, { status: 500 })
     }
 
-    // -----------------------------------------------------------------
-    // 4️⃣ If a bay was assigned, mark it Occupied
-    // -----------------------------------------------------------------
+    // 3. Mark bay occupied if assigned
     if (parsed.data.bay_id) {
       const { error: bayError } = await supabase
         .from('bays')
@@ -124,21 +149,18 @@ export async function POST(request: NextRequest) {
           updated_at:            new Date().toISOString(),
         })
         .eq('id', parsed.data.bay_id)
-        .eq('tenant_id', ctx.tenantId);
+        .eq('tenant_id', ctx.tenantId)
 
       if (bayError) {
-        // Non‑fatal – we still return the vehicle record
-        console.error('⚠️ Bay update error (non‑fatal):', bayError);
+        console.error('⚠️ Bay update error (non-fatal):', bayError)
       }
     }
 
-    console.log('✅ Vehicle inserted successfully:', vehicle);
-    return NextResponse.json(vehicle, { status: 201 });
+    console.log('✅ Vehicle checked in:', vehicle.plate)
+    return NextResponse.json(vehicle, { status: 201 })
+
   } catch (err) {
-    console.error('🔥 Unexpected error in POST /api/vehicles:', err);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('🔥 Unexpected error in POST /api/vehicles:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
