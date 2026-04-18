@@ -30,6 +30,15 @@ import {
   Waves,
   LogOut,
   ShieldCheck,
+  Wrench,
+  Banknote,
+  Send,
+  Truck,
+  Crown,
+  PieChart,
+  Building2,
+  ClipboardList,
+  FileText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,42 +50,21 @@ import {
 
 // ── Nav items ──────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
-  {
-    label:    'Dashboard',
-    href:     '/manager',
-    icon:     LayoutDashboard,
-    exact:    true,   // only active when path === href
-  },
-  {
-    label:    'Bays',
-    href:     '/manager/bays',
-    icon:     Warehouse,
-    exact:    false,
-  },
-  {
-    label:    'Staff',
-    href:     '/manager/staff',
-    icon:     Users,
-    exact:    false,
-  },
-  {
-    label:    'Inventory',
-    href:     '/manager/inventory',
-    icon:     Package,
-    exact:    false,
-  },
-  {
-    label:    'Sales',
-    href:     '/manager/sales',
-    icon:     CreditCard,
-    exact:    false,
-  },
-  {
-    label:    'Analytics',
-    href:     '/manager/analytics',
-    icon:     BarChart3,
-    exact:    false,
-  },
+  { label: 'Dashboard',     href: '/manager',                icon: LayoutDashboard, exact: true  },
+  { label: 'Bays',          href: '/manager/bays',           icon: Warehouse,       exact: false },
+  { label: 'Staff',         href: '/manager/staff',          icon: Users,           exact: false },
+  { label: 'Inventory',     href: '/manager/inventory',      icon: Package,         exact: false },
+  { label: 'Sales',         href: '/manager/sales',          icon: CreditCard,      exact: false },
+  { label: 'Services',      href: '/manager/services',       icon: Wrench,          exact: false },
+  { label: 'Payroll',       href: '/manager/payroll',        icon: Banknote,        exact: false },
+  { label: 'Analytics',     href: '/manager/analytics',      icon: BarChart3,       exact: false },
+  { label: 'Marketing',     href: '/manager/marketing',      icon: Send,            exact: false },
+  { label: 'Logistics',     href: '/manager/logistics',      icon: Truck,           exact: false },
+  { label: 'Subscriptions', href: '/manager/subscriptions',  icon: Crown,           exact: false },
+  { label: 'Accounts',      href: '/manager/accounts',       icon: PieChart,        exact: false },
+  { label: 'Branches',      href: '/manager/branches',       icon: Building2,       exact: false },
+  { label: 'Tasks',         href: '/manager/tasks',          icon: ClipboardList,   exact: false },
+  { label: 'Reports',       href: '/manager/reports',        icon: FileText,        exact: false },
 ] as const
 
 const BOTTOM_ITEMS = [
