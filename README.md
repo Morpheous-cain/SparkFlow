@@ -45,7 +45,7 @@ SparkFlow replaces paper-based carwash operations with a live, cloud-connected p
 <div align="center">
 
 **Production Repo:** [github.com/Morpheous-cain/SparkFlow](https://github.com/Morpheous-cain/SparkFlow)  
-**Live App:** [sparkflow-sable.vercel.app](https://safiops.co.ke)  
+**Live App:** [safiops.co.ke](https://safiops.co.ke)  
 **Spec:** MasterSpec v4 — April 2026
 
 <br/>
