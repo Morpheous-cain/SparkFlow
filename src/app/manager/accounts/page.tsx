@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { STAFF, EXPENSES, CHART_OF_ACCOUNTS, BRANCHES } from "@/lib/mock-data";
+import type { ChartOfAccount, Expense } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,8 @@ const REVENUE_STREAMS = [
 export default function AccountsManagementPage() {
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
+  const [chartOfAccounts, setChartOfAccounts] = useState<ChartOfAccount[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const currentProfit = 90500;
   const targetProfit = 100000;
   const achievementRate = (currentProfit / targetProfit) * 100;
@@ -60,6 +62,13 @@ export default function AccountsManagementPage() {
 
   useEffect(() => {
     setMounted(true);
+    fetch('/api/accounts', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.chart_of_accounts) setChartOfAccounts(data.chart_of_accounts);
+        if (data.expenses) setExpenses(data.expenses);
+      })
+      .catch(() => {});
   }, []);
 
   const handleReconciliation = () => {
@@ -291,7 +300,7 @@ export default function AccountsManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {CHART_OF_ACCOUNTS.map((acc) => (
+                {chartOfAccounts.map((acc) => (
                   <TableRow key={acc.code} className="h-16 border-slate-50 hover:bg-slate-50">
                     <TableCell className="pl-8 font-black text-slate-400 text-xs tracking-widest">{acc.code}</TableCell>
                     <TableCell className="font-black text-slate-900 uppercase text-xs italic">{acc.name}</TableCell>
@@ -338,7 +347,7 @@ export default function AccountsManagementPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {EXPENSES.map((exp) => (
+                  {expenses.map((exp) => (
                     <TableRow key={exp.id} className="h-16 border-slate-50 hover:bg-slate-50">
                       <TableCell className="pl-8 font-bold text-slate-400 text-xs uppercase">{exp.date}</TableCell>
                       <TableCell className="font-black text-slate-900 uppercase text-xs italic">{exp.category}</TableCell>

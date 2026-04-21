@@ -1,7 +1,8 @@
 
 "use client";
 
-import { MOCK_LOGISTICS, STAFF } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import type { LogisticsRequest, Staff } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -63,8 +64,22 @@ const WORKFLOW_STEPS = [
 ];
 
 export default function LogisticsManagementPage() {
+  const [logistics, setLogistics] = useState<LogisticsRequest[]>([]);
+  const [staff, setStaff] = useState<Staff[]>([]);
+
+  useEffect(() => {
+    fetch('/api/logistics', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setLogistics)
+      .catch(() => {});
+    fetch('/api/staff', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setStaff)
+      .catch(() => {});
+  }, []);
+
   const kpis = [
-    { label: "Active Requests Count", value: MOCK_LOGISTICS.length.toString(), icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Active Requests Count", value: logistics.length.toString(), icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Pending Pickups", value: "8 Requests", icon: MapPin, color: "text-amber-600", bg: "bg-amber-50" },
     { label: "Laundry Tags Issued", value: "24 Unique Nodes", icon: QrCode, color: "text-indigo-600", bg: "bg-indigo-50" },
     { label: "Fleet Shift Earnings", value: "KES 42,100", icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -156,13 +171,13 @@ export default function LogisticsManagementPage() {
               <Button size="sm" className="rounded-xl h-10 font-black text-[9px] uppercase tracking-widest shadow-lg shadow-primary/20 bg-slate-900 text-white hover:bg-black border-none">
                 Optimize Fleet Routes
               </Button>
-              <Badge className="bg-primary text-white border-none px-4 py-1.5 font-black text-[9px] uppercase shadow-sm">{MOCK_LOGISTICS.length} Active Nodes</Badge>
+              <Badge className="bg-primary text-white border-none px-4 py-1.5 font-black text-[9px] uppercase shadow-sm">{logistics.length} Active Nodes</Badge>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {MOCK_LOGISTICS.map((log) => {
-              const staff = STAFF.find(s => s.id === log.assignedStaffId);
+            {logistics.map((log) => {
+              const staffMember = staff.find(s => s.id === log.assignedStaffId);
               return (
                 <Card key={log.id} className="border-none shadow-sm rounded-[2.5rem] overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white">
                   <CardContent className="p-8 space-y-6">
@@ -207,7 +222,7 @@ export default function LogisticsManagementPage() {
                     <div className="pt-4 border-t border-dashed flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Assigned Fleet Agent</span>
-                        <span className="font-black text-slate-900 text-[11px] uppercase italic">{staff?.name || "Unassigned"}</span>
+                        <span className="font-black text-slate-900 text-[11px] uppercase italic">{staffMember?.name || "Unassigned"}</span>
                       </div>
                       <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-primary hover:text-white transition-all transform hover:scale-110">
                         <ChevronRight className="size-5" />
@@ -226,7 +241,7 @@ export default function LogisticsManagementPage() {
             <CardDescription className="font-bold text-slate-500 uppercase text-[10px] tracking-widest">Real-time driver & tech telemetry</CardDescription>
           </CardHeader>
           <div className="space-y-6">
-            {STAFF.filter(s => s.role === 'Driver' || s.role === 'Technician').map((s) => (
+            {staff.filter(s => s.role === 'Driver' || s.role === 'Technician').map((s) => (
               <div key={s.id} className="flex flex-col gap-4 p-5 bg-slate-50 rounded-[2rem] border border-slate-100/50 group hover:bg-white hover:shadow-lg transition-all">
                 <div className="flex items-center gap-4">
                   <div className="size-12 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">

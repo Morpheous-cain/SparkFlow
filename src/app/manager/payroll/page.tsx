@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { PAYROLL } from "@/lib/mock-data";
+import type { PayrollRecord } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ export default function PayrollPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [records, setRecords] = useState(PAYROLL);
+  const [records, setRecords] = useState<PayrollRecord[]>([]);
   
   // Modal States
   const [editingRecord, setEditingRecord] = useState<any>(null);
@@ -64,11 +64,21 @@ export default function PayrollPage() {
 
   useEffect(() => {
     setMounted(true);
+    fetch('/api/payroll', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => setRecords(data))
+      .catch(() => {});
   }, []);
 
   const totalPayroll = records.reduce((acc, r) => acc + r.netPay, 0);
 
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
+    await fetch(`/api/payroll/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'Approved' }),
+    });
     setRecords(prev => prev.map(r => r.id === id ? { ...r, status: 'Approved' as const } : r));
     toast({
       title: "Payroll Approved",
@@ -76,9 +86,14 @@ export default function PayrollPage() {
     });
   };
 
-  const handleDisburse = () => {
+  const handleDisburse = async () => {
     if (!confirmingDisburse) return;
-    
+    await fetch(`/api/payroll/${confirmingDisburse.id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'Disbursed' }),
+    });
     setRecords(prev => prev.map(r => r.id === confirmingDisburse.id ? { ...r, status: 'Disbursed' as const } : r));
     toast({
       title: "M-Pesa Push Successful",

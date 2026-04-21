@@ -1,7 +1,8 @@
 
 "use client";
 
-import { BRANCHES } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import type { Branch } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,16 @@ import { MapPin, Phone, User, Plus, Building2, TrendingUp, Warehouse, Globe, Set
 import { cn } from "@/lib/utils";
 
 export default function BranchManagementPage() {
-  const totalRevenue = BRANCHES.reduce((acc, b) => acc + b.revenueMTD, 0);
+  const [branches, setBranches] = useState<Branch[]>([]);
+
+  useEffect(() => {
+    fetch('/api/branches', { credentials: 'include' })
+      .then(r => r.json())
+      .then(setBranches)
+      .catch(() => {});
+  }, []);
+
+  const totalRevenue = branches.reduce((acc, b) => acc + b.revenueMTD, 0);
 
   return (
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
@@ -30,9 +40,9 @@ export default function BranchManagementPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: "Total Active Branches", value: BRANCHES.length.toString(), icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Total Active Branches", value: branches.length.toString(), icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Total Monthly Revenue", value: `KES ${totalRevenue.toLocaleString()}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { label: "Consolidated Service Bays", value: BRANCHES.reduce((acc, b) => acc + b.activeBays, 0).toString(), icon: Warehouse, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Consolidated Service Bays", value: branches.reduce((acc, b) => acc + b.activeBays, 0).toString(), icon: Warehouse, color: "text-indigo-600", bg: "bg-indigo-50" },
           { label: "Network Connectivity Health", value: "98.2%", icon: Settings2, color: "text-amber-600", bg: "bg-amber-50" },
         ].map((kpi, i) => (
           <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group">
@@ -53,7 +63,7 @@ export default function BranchManagementPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {BRANCHES.map((branch) => (
+        {branches.map((branch) => (
           <Card key={branch.id} className="border-none shadow-sm rounded-[2.5rem] overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500">
             <CardHeader className="p-8 pb-4">
               <div className="flex justify-between items-start mb-4">

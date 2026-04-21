@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SERVICES } from "@/lib/mock-data";
+import type { Service } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Tag, Wrench, Plus, Star, Zap, Gauge, Check, Settings2, Trash2 } from "lucide-react";
@@ -22,7 +22,7 @@ import Image from "next/image";
 
 export default function ServicesPage() {
   const { toast } = useToast();
-  const [services, setServices] = useState(SERVICES);
+  const [services, setServices] = useState<Service[]>([]);
   const [editingService, setEditingService] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -32,6 +32,10 @@ export default function ServicesPage() {
 
   useEffect(() => {
     setMounted(true);
+    fetch('/api/services', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => setServices(data))
+      .catch(() => {});
   }, []);
 
   const kpis = [
