@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -12,7 +12,14 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Waves, Loader2 } from 'lucide-react'
+import { Waves, Loader2, ArrowLeft, LayoutDashboard, UserCheck, Wrench, Car } from 'lucide-react'
+
+const ROLE_META: Record<string, { label: string; color: string; icon: React.ElementType }> = {
+  manager:   { label: 'Manager Portal',   color: '#00A8CC', icon: LayoutDashboard },
+  agent:     { label: 'Agent Desk',       color: '#10B981', icon: UserCheck },
+  attendant: { label: 'Attendant Console',color: '#F59E0B', icon: Wrench },
+  customer:  { label: 'Customer Portal',  color: '#8B5CF6', icon: Car },
+}
 
 // ── Role → destination ────────────────────────────────────────────────────
 function roleToPath(role: string | null): string {
@@ -21,12 +28,15 @@ function roleToPath(role: string | null): string {
     case 'agent':     return '/agent'
     case 'attendant': return '/attendant'
     case 'customer':  return '/customer'
-    default:          return '/manager' // fallback
+    default:          return '/manager'
   }
 }
 
-export default function SignInPage() {
+function SignInContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const roleParam = searchParams.get('role')
+  const roleMeta = roleParam ? ROLE_META[roleParam] : null
 
   const [email, setEmail]                   = useState('')
   const [password, setPassword]             = useState('')
@@ -110,13 +120,32 @@ export default function SignInPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-md space-y-6">
 
+        {/* Back to portal selector */}
+        <button
+          onClick={() => router.push('/')}
+          className="flex items-center gap-2 text-slate-400 hover:text-slate-600 transition-colors text-xs font-bold uppercase tracking-widest"
+        >
+          <ArrowLeft className="size-3" /> All Portals
+        </button>
+
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
           <div className="p-3 bg-primary rounded-2xl shadow-xl shadow-primary/20">
             <Waves className="size-8 text-white" />
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">SparkFlow</h1>
-          <p className="text-slate-500 text-sm font-medium">Sign in to your account</p>
+
+          {/* Role context badge */}
+          {roleMeta ? (
+            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border" style={{ borderColor: roleMeta.color + '40', backgroundColor: roleMeta.color + '10' }}>
+              <roleMeta.icon size={12} style={{ color: roleMeta.color }} />
+              <span className="text-xs font-black uppercase tracking-widest" style={{ color: roleMeta.color }}>
+                {roleMeta.label}
+              </span>
+            </div>
+          ) : (
+            <p className="text-slate-500 text-sm font-medium">Sign in to your account</p>
+          )}
         </div>
 
         <Card className="border-none shadow-xl rounded-[2rem]">
@@ -203,5 +232,13 @@ export default function SignInPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-sm text-slate-400">Loading...</div>}>
+      <SignInContent />
+    </Suspense>
   )
 }

@@ -32,7 +32,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ── Route classification ───────────────────────────────────────────────
-  const isSignIn = pathname === '/signin' || pathname === '/'
+  const isLanding = pathname === '/'
+  const isSignIn  = pathname === '/signin'
 
   const isProtectedDashboard =
     pathname.startsWith('/manager') ||
@@ -43,24 +44,24 @@ export async function middleware(request: NextRequest) {
   const isProtectedApi =
     pathname.startsWith('/api') &&
     !pathname.startsWith('/api/auth') &&
-    !pathname.startsWith('/api/services')  // public service list if needed
+    !pathname.startsWith('/api/services')
 
   // ── Redirect unauthenticated users to /signin ─────────────────────────
   if ((isProtectedDashboard || isProtectedApi) && !user) {
     const redirectUrl = new URL('/signin', request.url)
-    // Preserve the page they were trying to reach so we can send them back after login
     if (isProtectedDashboard) {
       redirectUrl.searchParams.set('redirect', pathname)
     }
     return NextResponse.redirect(redirectUrl)
   }
 
-  // ── Redirect already-authenticated users away from /signin ───────────
-  // Avoids flicker: if they have a session and hit /, send them to /manager
-  // The signin page itself also does this check client-side for a better UX
+  // ── Authenticated users on /signin → their dashboard ─────────────────
   if (isSignIn && user) {
     return NextResponse.redirect(new URL('/manager', request.url))
   }
+
+  // ── / is always public — show the role selector ───────────────────────
+  // (authenticated users can still see it to switch portals)
 
   return response
 }

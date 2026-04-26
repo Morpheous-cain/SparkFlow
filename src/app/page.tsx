@@ -1,140 +1,218 @@
 'use client'
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { LayoutDashboard, UserCheck, Wrench, Car, ArrowRight, Zap } from 'lucide-react'
 
-import { LayoutDashboard, Users, Smartphone, Car, Waves, Zap, ShieldCheck, Globe, ChevronRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+const ROLES = [
+  {
+    key: 'manager',
+    label: 'Manager',
+    description: 'Full operations control. Revenue, staff, payroll, analytics and reporting.',
+    icon: LayoutDashboard,
+    accent: '#00A8CC',
+    accentDim: '#00A8CC15',
+    tag: 'HQ COMMAND',
+  },
+  {
+    key: 'agent',
+    label: 'Agent',
+    description: 'Customer check-in, vehicle intake and payment processing.',
+    icon: UserCheck,
+    accent: '#10B981',
+    accentDim: '#10B98115',
+    tag: 'FRONT DESK',
+  },
+  {
+    key: 'attendant',
+    label: 'Attendant',
+    description: 'Job console, bay assignments and state machine controls.',
+    icon: Wrench,
+    accent: '#F59E0B',
+    accentDim: '#F59E0B15',
+    tag: 'BAY OPS',
+  },
+  {
+    key: 'customer',
+    label: 'Customer',
+    description: 'Track your vehicle, view transaction history and loyalty points.',
+    icon: Car,
+    accent: '#8B5CF6',
+    accentDim: '#8B5CF615',
+    tag: 'SELF SERVICE',
+  },
+]
 
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/me', {
-          credentials: 'include',
-        })
-
-        if (res.ok) {
-          // ✅ Logged in → go straight to manager
-          router.replace('/manager')
-        } else {
-          // ❌ Not logged in → go to signin
-          router.replace('/signin')
-        }
-      } catch {
-        router.replace('/signin')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    checkAuth()
-  }, [router])
-
-  // ⏳ Prevent UI flash
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-        Initializing SparkFlow...
-      </div>
-    )
-  }
-
-  const views = [
-    { 
-      title: "Agent Desk", 
-      desc: "High-speed intake and workflow routing control.", 
-      href: "/agent", 
-      icon: Smartphone,
-      color: "from-blue-500 to-indigo-600",
-    },
-    { 
-      title: "Attendant PWA", 
-      desc: "Real-time job card execution and task sync.", 
-      href: "/attendant", 
-      icon: Car,
-      color: "from-indigo-600 to-violet-600",
-    },
-    { 
-      title: "Owner HQ", 
-      desc: "Global analytics and AI-driven predictive logic.", 
-      href: "/manager", 
-      icon: LayoutDashboard,
-      color: "from-slate-800 to-slate-900",
-    },
-    { 
-      title: "Customer App", 
-      desc: "On-demand booking and concierge tracking.", 
-      href: "/customer", 
-      icon: Users,
-      color: "from-emerald-500 to-teal-600",
-    },
-  ];
+  const [hovering, setHovering] = useState<string | null>(null)
 
   return (
-    <div className="relative min-h-screen mesh-bg overflow-hidden flex flex-col items-center justify-center p-6">
-      
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/5 rounded-full blur-[120px]" />
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#060E1E',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '48px 24px',
+      fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto space-y-16">
-        
-        <header className="text-center space-y-6">
-          <div className="inline-flex items-center gap-3 bg-white/50 backdrop-blur-xl border px-6 py-2.5 rounded-full">
-            <Zap className="size-4 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
-              Intelligence Protocol v4.2
-            </span>
-          </div>
+      {/* Background grid */}
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.025,
+        backgroundImage: 'linear-gradient(#00A8CC 1px, transparent 1px), linear-gradient(90deg, #00A8CC 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        pointerEvents: 'none',
+      }} />
 
-          <div className="flex flex-col items-center gap-4">
-            <div className="size-20 bg-primary rounded-[2rem] flex items-center justify-center">
-              <Waves className="size-10 text-white" />
-            </div>
+      {/* Top glow */}
+      <div style={{
+        position: 'absolute', top: '-200px', left: '50%', transform: 'translateX(-50%)',
+        width: '600px', height: '400px',
+        background: 'radial-gradient(ellipse, #00A8CC20 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
 
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-slate-900 uppercase">
-              Spark<span className="text-primary">Flow</span>
-            </h1>
-          </div>
-
-          <p className="text-xl text-slate-500 font-bold max-w-2xl mx-auto">
-            The futuristic ERP core for autonomous car wash operations.
-          </p>
-        </header>
-
-        {/* 👇 Keep your UI exactly as-is */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {views.map((view) => {
-            const Icon = view.icon;
-            return (
-              <Link key={view.href} href={view.href}>
-                <Card className="p-8 hover:shadow-lg transition">
-                  <Icon className="mb-4" />
-                  <h3 className="font-bold">{view.title}</h3>
-                  <p className="text-sm text-muted-foreground">{view.desc}</p>
-                </Card>
-              </Link>
-            );
-          })}
+      {/* Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+        <div style={{
+          width: '48px', height: '48px', borderRadius: '14px',
+          backgroundColor: '#00A8CC',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 40px #00A8CC44',
+        }}>
+          <Zap size={24} color="#fff" fill="#fff" />
         </div>
-
-        <footer className="pt-12 border-t flex justify-between text-xs text-muted-foreground">
-          <div className="flex gap-4">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="size-4" /> SSL
-            </span>
-            <span className="flex items-center gap-1">
-              <Globe className="size-4" /> CDN
-            </span>
-          </div>
-
-          <p>Powered by SparkFlow ERP</p>
-        </footer>
+        <span style={{
+          color: '#fff', fontSize: '22px', fontWeight: 900,
+          letterSpacing: '6px', textTransform: 'uppercase',
+        }}>
+          SparkFlow
+        </span>
       </div>
+
+      {/* Subtitle */}
+      <p style={{
+        color: '#7A8FB0', fontSize: '10px', fontWeight: 700,
+        letterSpacing: '4px', textTransform: 'uppercase',
+        marginBottom: '64px',
+        textAlign: 'center',
+      }}>
+        Carwash Management ERP &nbsp;·&nbsp; Select Your Portal
+      </p>
+
+      {/* Role Cards */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+        gap: '14px',
+        width: '100%',
+        maxWidth: '940px',
+      }}>
+        {ROLES.map((role) => {
+          const Icon = role.icon
+          const isHovered = hovering === role.key
+          return (
+            <button
+              key={role.key}
+              onMouseEnter={() => setHovering(role.key)}
+              onMouseLeave={() => setHovering(null)}
+              onClick={() => router.push(`/signin?role=${role.key}`)}
+              style={{
+                background: isHovered ? '#0F1F3D' : '#0A1628',
+                border: `1px solid ${isHovered ? role.accent + '55' : '#1A2F55'}`,
+                borderRadius: '20px',
+                padding: '28px 24px',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s ease',
+                transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+                boxShadow: isHovered ? `0 20px 48px ${role.accent}20` : 'none',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Top accent line */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+                backgroundColor: isHovered ? role.accent : 'transparent',
+                transition: 'background-color 0.2s ease',
+                borderRadius: '20px 20px 0 0',
+              }} />
+
+              {/* Tag */}
+              <div style={{
+                display: 'inline-block',
+                backgroundColor: role.accentDim,
+                border: `1px solid ${role.accent}25`,
+                borderRadius: '6px',
+                padding: '3px 10px',
+                marginBottom: '18px',
+              }}>
+                <span style={{
+                  color: role.accent, fontSize: '8px', fontWeight: 800,
+                  letterSpacing: '3px', textTransform: 'uppercase',
+                }}>
+                  {role.tag}
+                </span>
+              </div>
+
+              {/* Icon */}
+              <div style={{
+                width: '46px', height: '46px', borderRadius: '13px',
+                backgroundColor: role.accentDim,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: '16px',
+                transition: 'transform 0.2s ease',
+                transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+              }}>
+                <Icon size={20} color={role.accent} />
+              </div>
+
+              {/* Label */}
+              <div style={{
+                color: '#fff', fontSize: '17px', fontWeight: 900,
+                letterSpacing: '2px', textTransform: 'uppercase',
+                marginBottom: '8px',
+              }}>
+                {role.label}
+              </div>
+
+              {/* Description */}
+              <div style={{
+                color: '#7A8FB0', fontSize: '11px', fontWeight: 500,
+                lineHeight: '1.65', marginBottom: '22px',
+              }}>
+                {role.description}
+              </div>
+
+              {/* CTA arrow */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                color: isHovered ? role.accent : '#2A3F65',
+                fontSize: '9px', fontWeight: 800,
+                letterSpacing: '2px', textTransform: 'uppercase',
+                transition: 'color 0.2s ease',
+              }}>
+                Sign In <ArrowRight size={11} />
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Footer */}
+      <p style={{
+        color: '#1A2F55', fontSize: '10px', fontWeight: 600,
+        letterSpacing: '2px', marginTop: '56px',
+        textTransform: 'uppercase',
+      }}>
+        Immersicloud Consulting · SparkFlow v4 · {new Date().getFullYear()}
+      </p>
     </div>
-  );
+  )
 }
