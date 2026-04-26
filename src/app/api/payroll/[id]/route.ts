@@ -1,52 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { requireManager } from '@/lib/auth-helpers'
-import { z } from 'zod'
-
-const UpdatePayrollSchema = z.object({
-  status:        z.enum(['Approved', 'Disbursed']),
-  mpesa_receipt: z.string().optional(),
-})
+import { adminClient } from '@/lib/supabase/admin'
 
 // PATCH /api/payroll/[id]
-// Approve or mark as disbursed. Disbursed requires mpesa_receipt.
+// Body: { status: 'Approved' | 'Disbursed' }
 export async function PATCH(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { ctx, error } = await requireManager()
-  if (error) return error
+  const { error: authError, user } = await requireManager(req)
+  if (authError) return authError
 
-  const body = await request.json()
-  const parsed = UpdatePayrollSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  const body = await req.json()
+  const { status } = body
+
+  if (!['Approved', 'Disbursed'].includes(status)) {
+    return NextResponse.json(
+      { error: 'status must be Approved or Disbursed' },
+      { status: 400 }
+    )
   }
 
-  if (parsed.data.status === 'Disbursed' && !parsed.data.mpesa_receipt) {
-    return NextResponse.json({ error: 'mpesa_receipt is required when disbursing' }, { status: 400 })
-  }
-
-  const supabase = await createClient()
-  const updatePayload: Record<string, unknown> = {
-    status:     parsed.data.status,
+  const update: Record<string, any> = {
+    status,
     updated_at: new Date().toISOString(),
   }
 
-  if (parsed.data.status === 'Disbursed') {
-    updatePayload.mpesa_receipt = parsed.data.mpesa_receipt
-    updatePayload.disbursed_at  = new Date().toISOString()
+  // Set disbursed_at timestamp when disbursing
+  if (status === 'Disbursed') {
+    update.disbursed_at = new Date().toISOString()
   }
 
-  const { data, error: dbError } = await supabase
+  const { data, error } = await adminClient
     .from('payroll_records')
-    .update(updatePayload)
+    .update(update)
     .eq('id', params.id)
-    .eq('tenant_id', ctx.tenantId)
+    .eq('tenant_id', user.tenant_id) // RLS safety — can't patch another tenant's records
     .select()
     .single()
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
-  if (!data)   return NextResponse.json({ error: 'Payroll record not found' }, { status: 404 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }

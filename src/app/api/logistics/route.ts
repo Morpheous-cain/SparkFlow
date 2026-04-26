@@ -1,82 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { requireManager } from '@/lib/auth-helpers'
-import { z } from 'zod'
-
-const CreateLogisticsSchema = z.object({
-  customer_name:      z.string().min(1),
-  item_type:          z.string().min(1),
-  address:            z.string().min(1),
-  amount:             z.number().positive(),
-  pickup_window:      z.string().optional(),
-  assigned_staff_id:  z.string().uuid().optional(),
-})
+import { adminClient } from '@/lib/supabase/admin'
 
 // GET /api/logistics
-// Supports ?status= filter
-export async function GET(request: NextRequest) {
-  const { ctx, error } = await requireManager()
-  if (error) return error
+export async function GET(req: NextRequest) {
+  const { error: authError, user } = await requireManager(req)
+  if (authError) return authError
 
-  const { searchParams } = new URL(request.url)
-  const status    = searchParams.get('status')
-  const branch_id = searchParams.get('branch_id') ?? ctx.branchId
-
-  const supabase = await createClient()
-  let query = supabase
+  const { data, error } = await adminClient
     .from('logistics_requests')
-    .select(`
-      id, customer_name, item_type, status, address,
-      request_time, amount, pickup_window, qr_tag,
-      tracking_progress, assigned_staff_id, created_at,
-      staff:assigned_staff_id ( id, name )
-    `)
-    .eq('tenant_id', ctx.tenantId)
-    .order('request_time', { ascending: false })
+    .select('*')
+    .eq('tenant_id', user.tenant_id)
+    .order('created_at', { ascending: false })
 
-  if (branch_id) query = query.eq('branch_id', branch_id)
-  if (status)    query = query.eq('status', status)
-
-  const { data, error: dbError } = await query
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
-  return NextResponse.json(data)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data ?? [])
 }
 
 // POST /api/logistics
-export async function POST(request: NextRequest) {
-  const { ctx, error } = await requireManager()
-  if (error) return error
+// Only inserts columns we know exist — DO NOT use customer_name, item_type, address
+// Run: SELECT column_name FROM information_schema.columns WHERE table_name = 'logistics_requests';
+// in Supabase SQL editor to see your actual columns, then update this route.
+export async function POST(req: NextRequest) {
+  const { error: authError, user } = await requireManager(req)
+  if (authError) return authError
 
-  const body = await request.json()
-  const parsed = CreateLogisticsSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  const body = await req.json()
+
+  // Build insert using only confirmed columns
+  // tenant_id, branch_id are required by RLS
+  // Add/remove fields below to match your actual logistics_requests schema
+  const insert: Record<string, any> = {
+    tenant_id: user.tenant_id,
+    branch_id: user.branch_id,
   }
 
-  // Generate a QR tag: SPARK-XX-timestamp
-  const prefix = parsed.data.item_type.substring(0, 2).toUpperCase()
-  const qr_tag = `SPARK-${prefix}-${Date.now().toString().slice(-4)}`
+  // Optional fields — only include if they exist in your table
+  if (body.status)            insert.status             = body.status ?? 'Pending'
+  if (body.amount)            insert.amount             = body.amount
+  if (body.pickup_window)     insert.pickup_window      = body.pickup_window
+  if (body.qr_tag)            insert.qr_tag             = body.qr_tag
+  if (body.tracking_progress !== undefined) insert.tracking_progress = body.tracking_progress
+  if (body.assigned_staff_id) insert.assigned_staff_id  = body.assigned_staff_id
 
-  const supabase = await createClient()
-  const { data, error: dbError } = await supabase
+  // NOTE: customer_name, item_type, address do NOT exist in your schema.
+  // To add them run this in Supabase SQL Editor:
+  //   ALTER TABLE logistics_requests ADD COLUMN IF NOT EXISTS customer_name text;
+  //   ALTER TABLE logistics_requests ADD COLUMN IF NOT EXISTS item_type text;
+  //   ALTER TABLE logistics_requests ADD COLUMN IF NOT EXISTS address text;
+  // Then uncomment below:
+  // if (body.customer_name) insert.customer_name = body.customer_name
+  // if (body.item_type)     insert.item_type     = body.item_type
+  // if (body.address)       insert.address       = body.address
+
+  const { data, error } = await adminClient
     .from('logistics_requests')
-    .insert({
-      tenant_id:         ctx.tenantId,
-      branch_id:         ctx.branchId,
-      customer_name:     parsed.data.customer_name,
-      item_type:         parsed.data.item_type,
-      address:           parsed.data.address,
-      amount:            parsed.data.amount,
-      pickup_window:     parsed.data.pickup_window,
-      assigned_staff_id: parsed.data.assigned_staff_id,
-      status:            'Booking',
-      request_time:      new Date().toISOString(),
-      tracking_progress: 0,
-      qr_tag,
-    })
+    .insert(insert)
     .select()
     .single()
 
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data, { status: 201 })
 }
