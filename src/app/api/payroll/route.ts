@@ -1,24 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 import { requireManager } from '@/lib/auth-helpers'
-import { adminClient } from '@/lib/supabase/admin'
 
 // GET /api/payroll
-export async function GET(req: NextRequest) {
-  const { error: authError, user } = await requireManager(req)
-  if (authError) return authError
+export async function GET(request: NextRequest) {
+  const { ctx, error } = await requireManager()
+  if (error) return error
 
-  const { data, error } = await adminClient
+  const supabase = await createClient()
+
+  const { data, error: dbError } = await supabase
     .from('payroll_records')
-    .select(`
-      *,
-      staff:staff(id, name)
-    `)
-    .eq('tenant_id', user.tenant_id)
+    .select(`*, staff:staff(id, name)`)
+    .eq('tenant_id', ctx.tenantId)
     .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
 
-  // Normalise to camelCase shape expected by the frontend
   const normalised = (data ?? []).map((r: any) => ({
     id:          r.id,
     staffId:     r.staff_id,
@@ -37,35 +35,24 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/payroll
-export async function POST(req: NextRequest) {
-  const { error: authError, user } = await requireManager(req)
-  if (authError) return authError
+export async function POST(request: NextRequest) {
+  const { ctx, error } = await requireManager()
+  if (error) return error
 
-  const body = await req.json()
-  const { staff_id, month, base_amount, commission, deductions } = body
+  const body = await request.json()
+  const { staff_id, month, base_amount, commission = 0, deductions = 0 } = body
 
   if (!staff_id || !month || base_amount === undefined) {
-    return NextResponse.json(
-      { error: 'staff_id, month, and base_amount are required' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'staff_id, month, and base_amount are required' }, { status: 400 })
   }
 
-  const { data, error } = await adminClient
+  const supabase = await createClient()
+  const { data, error: dbError } = await supabase
     .from('payroll_records')
-    .insert({
-      tenant_id:   user.tenant_id,
-      branch_id:   user.branch_id,
-      staff_id,
-      month,
-      base_amount:  base_amount ?? 0,
-      commission:   commission  ?? 0,
-      deductions:   deductions  ?? 0,
-      // net_pay is GENERATED — do NOT insert it
-    })
+    .insert({ tenant_id: ctx.tenantId, branch_id: ctx.branchId, staff_id, month, base_amount, commission, deductions })
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   return NextResponse.json(data, { status: 201 })
 }
