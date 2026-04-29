@@ -56,6 +56,7 @@ export default function SettingsPage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [billTo, setBillTo] = useState("Emma Johnson\nSparkFlow Westlands\nRing Road, Westlands\nNairobi, Kenya");
   const [statementNotes, setStatementNotes] = useState("Thank you for your continued partnership with SparkFlow ERP.");
+<<<<<<< HEAD
 
   // Controlled settings fields
   const [businessName,    setBusinessName]    = useState("SparkFlow Westlands");
@@ -87,12 +88,19 @@ export default function SettingsPage() {
       .catch(() => {});
   }, []);
 
+=======
+  
+  // Editable statement items
+  const [editableInvoices, setEditableInvoices] = useState<any[]>([]);
+
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   useEffect(() => {
     if (isPreviewOpen) {
       setEditableInvoices([...SAAS_BILLING_HISTORY]);
     }
   }, [isPreviewOpen]);
 
+<<<<<<< HEAD
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -122,6 +130,13 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
+=======
+  const handleSave = () => {
+    toast({
+      title: "Configuration Synchronized",
+      description: "Business identity and logo updated successfully across all nodes.",
+    });
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   };
 
   const handleLogoUpload = () => {
@@ -191,8 +206,13 @@ export default function SettingsPage() {
           <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter leading-none">Tenant Configuration</h1>
           <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">SaaS Controls & Organizational Branding</p>
         </div>
+<<<<<<< HEAD
         <Button className="gap-2 rounded-2xl h-12 px-6 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest bg-primary hover:bg-blue-600 transition-all text-white border-none" onClick={handleSave} disabled={saving}>
           <Save className="size-4" /> {saving ? 'Saving...' : 'Save Configuration'}
+=======
+        <Button className="gap-2 rounded-2xl h-12 px-6 shadow-xl shadow-primary/20 font-black uppercase text-[10px] tracking-widest bg-primary hover:bg-blue-600 transition-all text-white border-none" onClick={handleSave}>
+          <Save className="size-4" /> Save Configuration
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
         </Button>
       </header>
 
@@ -266,16 +286,28 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Business Name</Label>
+<<<<<<< HEAD
                   <Input value={businessName} onChange={e => setBusinessName(e.target.value)} className="h-12 rounded-xl font-bold border-2 focus:border-primary transition-all" />
+=======
+                  <Input defaultValue="SparkFlow Westlands" className="h-12 rounded-xl font-bold border-2 focus:border-primary transition-all" />
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Default Currency</Label>
+<<<<<<< HEAD
                     <Input value={invoicePrefix} onChange={e => setInvoicePrefix(e.target.value)} className="h-12 rounded-xl font-bold border-2 focus:border-primary transition-all" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Primary Contact</Label>
                     <Input value={businessPhone} onChange={e => setBusinessPhone(e.target.value)} className="h-12 rounded-xl font-bold border-2 focus:border-primary transition-all" />
+=======
+                    <Input defaultValue="KES" className="h-12 rounded-xl font-bold border-2 focus:border-primary transition-all" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Primary Contact</Label>
+                    <Input defaultValue="+254 700 000000" className="h-12 rounded-xl font-bold border-2 focus:border-primary transition-all" />
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
                   </div>
                 </div>
               </div>

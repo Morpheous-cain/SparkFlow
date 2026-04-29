@@ -59,6 +59,7 @@ const STAFF_EFFICIENCY = [
 export default function AnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState("Last 7 Months");
   const [mounted, setMounted] = useState(false);
+<<<<<<< HEAD
   const [dashboard, setDashboard] = useState<any>(null);
   const [staff, setStaff] = useState<any[]>([]);
 
@@ -85,6 +86,13 @@ export default function AnalyticsDashboard() {
 
   const topStaff = staffEfficiency.reduce((a: any, b: any) => a.efficiency > b.efficiency ? a : b, staffEfficiency[0] ?? { name: '—' });
 
+=======
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   return (
     <div className="p-8 space-y-8 bg-[#f8fafc] min-h-screen">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -109,10 +117,17 @@ export default function AnalyticsDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
+<<<<<<< HEAD
           { label: "Total Revenue (MTD)", value: dashboard ? `KES ${Number(dashboard.revenue?.total ?? 0).toLocaleString()}` : "—", trend: "+18%", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Active Vehicles Today", value: dashboard ? String(dashboard.vehicles?.active ?? 0) : "—", trend: "+2.1%", icon: Clock, color: "text-indigo-600", bg: "bg-indigo-50" },
           { label: "Bay Utilisation", value: dashboard ? `${dashboard.bays?.utilisation ?? 0}%` : "—", trend: "+0.8%", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
           { label: "Paid Transactions", value: dashboard ? String(dashboard.revenue?.tx_count ?? 0) : "—", trend: "+4.2%", icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
+=======
+          { label: "Customer Lifetime Value", value: "KES 14,200", trend: "+18%", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Average Service Time", value: "32.5 Minutes", trend: "-4.2%", icon: Clock, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Customer Conversion Rate", value: "24.8%", trend: "+2.1%", icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
+          { label: "Regional Market Share", value: "12.4%", trend: "+0.8%", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
         ].map((kpi, i) => (
           <Card key={i} className="border-none shadow-sm rounded-[2rem] overflow-hidden group bg-white">
             <CardContent className="p-8">
@@ -140,8 +155,12 @@ export default function AnalyticsDashboard() {
               <CardTitle className="text-xl font-black uppercase italic">Revenue Performance Audit</CardTitle>
               <CardDescription className="text-[10px] font-black uppercase text-slate-400">Monthly growth vs operational costs</CardDescription>
             </div>
+<<<<<<< HEAD
             <div className="flex items-center gap-4">
               <span className="text-[8px] font-black uppercase tracking-widest bg-amber-50 text-amber-600 px-3 py-1 rounded-full border border-amber-200">📊 Illustrative — Phase 4 wires real data</span>
+=======
+            <div className="flex gap-4">
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
               <div className="flex items-center gap-2">
                 <div className="size-3 rounded-full bg-primary" />
                 <span className="text-[10px] font-black text-slate-500 uppercase">Gross Revenue</span>
@@ -196,7 +215,11 @@ export default function AnalyticsDashboard() {
           <div className="h-[350px] w-full">
             {mounted && (
               <ResponsiveContainer width="100%" height="100%">
+<<<<<<< HEAD
                 <BarChart data={staffEfficiency} layout="vertical">
+=======
+                <BarChart data={STAFF_EFFICIENCY} layout="vertical">
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                   <XAxis type="number" hide />
                   <YAxis 
@@ -212,7 +235,11 @@ export default function AnalyticsDashboard() {
                     contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', padding: '1rem' }}
                   />
                   <Bar dataKey="efficiency" radius={[0, 10, 10, 0]} barSize={24}>
+<<<<<<< HEAD
                     {staffEfficiency.map((entry: any, index: number) => (
+=======
+                    {STAFF_EFFICIENCY.map((entry, index) => (
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
                       <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#6366f1'} />
                     ))}
                   </Bar>
@@ -223,7 +250,11 @@ export default function AnalyticsDashboard() {
           <div className="mt-6 pt-6 border-t border-dashed">
             <div className="flex justify-between items-center">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Top Performance Node</span>
+<<<<<<< HEAD
               <Badge className="bg-primary text-white border-none font-black text-[8px] uppercase px-3 py-1 shadow-lg shadow-primary/20">{topStaff?.name ?? '—'}</Badge>
+=======
+              <Badge className="bg-primary text-white border-none font-black text-[8px] uppercase px-3 py-1 shadow-lg shadow-primary/20">Grace Mutua</Badge>
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
             </div>
           </div>
         </Card>

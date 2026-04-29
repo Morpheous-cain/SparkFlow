@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data, error: dbError } = await supabase
     .from('payroll_records')
+<<<<<<< HEAD
     .insert({
       tenant_id:  ctx.tenantId,
       branch_id:  ctx.branchId,
@@ -78,4 +79,12 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(record, { status: 201 })
+=======
+    .insert({ tenant_id: ctx.tenantId, branch_id: ctx.branchId, staff_id, month, base_amount, commission, deductions })
+    .select()
+    .single()
+
+  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+  return NextResponse.json(data, { status: 201 })
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
 }

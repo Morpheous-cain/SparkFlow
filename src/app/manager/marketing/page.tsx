@@ -1,7 +1,11 @@
 
 "use client";
 
+<<<<<<< HEAD
 import { useState, useEffect } from "react";
+=======
+import { useState } from "react";
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +40,7 @@ export default function MarketingPage() {
   const { toast } = useToast();
   const [smsBalance, setSmsBalance] = useState(2450);
   const [message, setMessage] = useState("");
+<<<<<<< HEAD
   const [customerCount, setCustomerCount] = useState<number | null>(null);
   const [campaigns, setCampaigns] = useState(CAMPAIGNS);
 
@@ -45,6 +50,8 @@ export default function MarketingPage() {
       .then(data => setCustomerCount(Array.isArray(data) ? data.length : null))
       .catch(() => {});
   }, []);
+=======
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   
   const handleBroadcast = () => {
     if (!message) return;
@@ -127,6 +134,7 @@ export default function MarketingPage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Audience Segment</label>
                 <div className="flex gap-2">
+<<<<<<< HEAD
                    {[
                      { label: 'All Customers', count: customerCount },
                      { label: 'Subscribers Only', count: null },
@@ -134,6 +142,11 @@ export default function MarketingPage() {
                    ].map(seg => (
                      <Button key={seg.label} variant="outline" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest flex-1 border-2">
                         {seg.label}{seg.count !== null ? ` (${seg.count})` : ''}
+=======
+                   {['All Customers', 'Subscribers Only', 'Inactive (30+ days)'].map(seg => (
+                     <Button key={seg} variant="outline" className="h-10 rounded-xl font-black uppercase text-[8px] tracking-widest flex-1 border-2">
+                        {seg}
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
                      </Button>
                    ))}
                 </div>

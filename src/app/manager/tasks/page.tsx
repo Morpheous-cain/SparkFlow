@@ -1,7 +1,11 @@
 
 "use client";
 
+<<<<<<< HEAD
 import { useState, useMemo, useEffect } from "react";
+=======
+import { useState, useMemo } from "react";
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,14 +28,32 @@ interface Task {
   completed: boolean;
 }
 
+<<<<<<< HEAD
+=======
+const SEED_TASKS: Task[] = [
+  { id: 1, title: "Refill detergent in Bay 1",             assignee: "Peter O.",  priority: "High",   time: "10:30 AM", completed: false },
+  { id: 2, title: "Quarterly equipment maintenance check", assignee: "John K.",   priority: "Medium", time: "11:00 AM", completed: false },
+  { id: 3, title: "Update weekend promotional prices",     assignee: "Manager",   priority: "Low",    time: "01:00 PM", completed: true  },
+  { id: 4, title: "Restock microfibre cloths — Bay 3",    assignee: "Sarah W.",  priority: "High",   time: "09:00 AM", completed: false },
+  { id: 5, title: "Send daily revenue summary to owner",   assignee: "Manager",   priority: "Medium", time: "05:00 PM", completed: true  },
+];
+
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
 const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
   High:   { label: "High",   color: "text-red-400",   bg: "bg-red-500/10",   border: "border-red-500/20",   icon: Flame },
   Medium: { label: "Medium", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", icon: Minus },
   Low:    { label: "Low",    color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", icon: ChevronDown },
 };
 
+<<<<<<< HEAD
 export default function TasksPage() {
   const [tasks, setTasks]         = useState<Task[]>([]);
+=======
+let nextId = SEED_TASKS.length + 1;
+
+export default function TasksPage() {
+  const [tasks, setTasks]         = useState<Task[]>(SEED_TASKS);
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   const [filter, setFilter]       = useState<FilterState>("All");
   const [showModal, setShowModal] = useState(false);
   const [newTitle,    setNewTitle]    = useState("");
@@ -39,6 +61,7 @@ export default function TasksPage() {
   const [newPriority, setNewPriority] = useState<Priority>("Medium");
   const [newTime,     setNewTime]     = useState("");
 
+<<<<<<< HEAD
   useEffect(() => {
     fetch('/api/tasks', { credentials: 'include' })
       .then(r => r.json())
@@ -57,6 +80,8 @@ export default function TasksPage() {
       .catch(() => {});
   }, []);
 
+=======
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   const completed = tasks.filter(t => t.completed).length;
   const pending   = tasks.filter(t => !t.completed).length;
   const highCount = tasks.filter(t => t.priority === "High" && !t.completed).length;
@@ -68,6 +93,7 @@ export default function TasksPage() {
     return tasks;
   }, [tasks, filter]);
 
+<<<<<<< HEAD
   async function toggle(id: number) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
@@ -115,6 +141,17 @@ export default function TasksPage() {
       };
       setTasks(prev => [task, ...prev]);
     }
+=======
+  function toggle(id: number) {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  }
+  function remove(id: number) {
+    setTasks(prev => prev.filter(t => t.id !== id));
+  }
+  function addTask() {
+    if (!newTitle.trim() || !newAssignee.trim()) return;
+    setTasks(prev => [{ id: nextId++, title: newTitle.trim(), assignee: newAssignee.trim(), priority: newPriority, time: newTime || "—", completed: false }, ...prev]);
+>>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
     setNewTitle(""); setNewAssignee(""); setNewPriority("Medium"); setNewTime("");
     setShowModal(false);
   }
