@@ -1,0 +1,70 @@
+
+{
+  "entities": {
+    "Tenant": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Tenant",
+      "type": "object",
+      "description": "Represents a distinct car wash business or organization subscribed to the SparkFlow SaaS platform.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "logoUrl": { "type": "string", "format": "uri", "description": "URL to the organization's custom logo." },
+        "plan": { "type": "string", "enum": ["Basic", "Professional", "Enterprise"] },
+        "status": { "type": "string", "enum": ["Active", "Suspended", "Trial"] },
+        "subscriptionExpiry": { "type": "string", "format": "date-time" },
+        "ownerUid": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["id", "name", "plan", "status", "ownerUid"]
+    },
+    "Bay": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bay",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "tenantId", "name", "status"]
+    },
+    "Service": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Service",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "basePrice": { "type": "number" },
+        "category": { "type": "string" }
+      },
+      "required": ["id", "tenantId", "name", "basePrice", "category"]
+    }
+  },
+  "auth": {
+    "providers": ["password", "anonymous"]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/tenants/{tenantId}",
+        "definition": {
+          "entityName": "Tenant",
+          "schema": { "$ref": "#/backend/entities/Tenant" },
+          "description": "Tenant-level configuration and subscription data."
+        }
+      },
+      {
+        "path": "/tenants/{tenantId}/bays/{bayId}",
+        "definition": {
+          "entityName": "Bay",
+          "schema": { "$ref": "#/backend/entities/Bay" },
+          "description": "Scoped bays for a specific tenant."
+        }
+      }
+    ]
+  }
+}

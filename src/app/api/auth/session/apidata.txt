@@ -1,0 +1,114 @@
+{
+  "id": "20182387-78a2-4ff8-9903-5b689bd4c7e8",
+  "user_id": null,
+  "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+  "name": "Test Customer",
+  "phone": "0712345678",
+  "email": null,
+  "subscription_tier": "None",
+  "loyalty_points": 0,
+  "total_visits": 0,
+  "total_spent": 0,
+  "created_at": "2026-03-26T20:23:26.730875+00:00"
+}
+
+{
+  "id": "afb9a917-c75e-4477-987a-da3cb97af13a",
+  "plate": "KDG 001A",
+  "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+  "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+  "customer_id": "20182387-78a2-4ff8-9903-5b689bd4c7e8",
+  "status": "Queue",
+  "arrival_time": "2026-03-26T20:29:10.602785+00:00",
+  "bay_id": null,
+  "attendant_id": null,
+  "services": [
+    "Basic Wash"
+  ],
+  "total_amount": 500,
+  "progress": 0
+}
+[
+  {
+    "id": "31f9f5a5-1dac-4f92-99fb-b7e6d469d7cc",
+    "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+    "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+    "name": "Air Freshener Units",
+    "stock": 40,
+    "low_stock_threshold": 10,
+    "wholesale": 80,
+    "retail": 150,
+    "is_essential": false,
+    "updated_at": "2026-03-22T18:34:53.008538+00:00",
+    "is_low_stock": false
+  },
+  {
+    "id": "4bf0f299-31bf-4f85-b628-a6d0f6e9e99c",
+    "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+    "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+    "name": "Car Shampoo (5L)",
+    "stock": 12,
+    "low_stock_threshold": 3,
+    "wholesale": 1200,
+    "retail": 1800,
+    "is_essential": true,
+    "updated_at": "2026-03-22T18:34:53.008538+00:00",
+    "is_low_stock": false
+  },
+  {
+    "id": "e08fc333-61ae-488f-b115-3ecb783259c7",
+    "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+    "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+    "name": "Dashboard Wax",
+    "stock": 5,
+    "low_stock_threshold": 2,
+    "wholesale": 350,
+    "retail": 550,
+    "is_essential": false,
+    "updated_at": "2026-03-22T18:34:53.008538+00:00",
+    "is_low_stock": false
+  },
+  {
+    "id": "6f6e1af8-1869-4948-830d-ea190e9b319d",
+    "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+    "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+    "name": "Microfibre Cloths",
+    "stock": 30,
+    "low_stock_threshold": 10,
+    "wholesale": 80,
+    "retail": 150,
+    "is_essential": true,
+    "updated_at": "2026-03-22T18:34:53.008538+00:00",
+    "is_low_stock": false
+  },
+  {
+    "id": "63743edd-8f39-4050-8e10-497f37ac7e57",
+    "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+    "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+    "name": "Tyre Polish (1L)",
+    "stock": 8,
+    "low_stock_threshold": 3,
+    "wholesale": 450,
+    "retail": 700,
+    "is_essential": false,
+    "updated_at": "2026-03-22T18:34:53.008538+00:00",
+    "is_low_stock": false
+  }
+]
+{
+  "id": "54160479-0ddd-4f53-b18f-4a64e91edc16",
+  "tenant_id": "5ff71fbc-a8c1-4cc8-871f-7f6dc769939b",
+  "branch_id": "657d1bc6-38d9-4a3e-a742-dd2de567e000",
+  "plate": "KDG 001A",
+  "customer_id": "20182387-78a2-4ff8-9903-5b689bd4c7e8",
+  "amount": 500,
+  "status": "Pending",
+  "payment_method": "Cash",
+  "mpesa_ref": null,
+  "receipt_url": null,
+  "services": [
+    "Basic Wash"
+  ],
+  "duration": 0,
+  "date": "2026-03-26T20:33:53.869309+00:00"
+}
