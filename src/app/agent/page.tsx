@@ -128,7 +128,6 @@ export default function AgentPortal() {
     // auth context → then branch‑specific data
     fetch("/api/auth/me", { credentials: "include" })
       .then((r) => r.json())
-<<<<<<< HEAD
       .then(async (me: AuthCtx) => {
         let branchId = me.branch_id;
         if (!branchId) {
@@ -138,11 +137,6 @@ export default function AgentPortal() {
         const ctx = { ...me, branch_id: branchId };
         setCtx(ctx);
         if (branchId) loadAll(branchId);
-=======
-      .then((me: AuthCtx) => {
-        setCtx(me);
-        loadAll(me.branch_id);
->>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
       })
       .catch(() =>
         toast({

@@ -25,7 +25,6 @@ export default function BayMonitorPage() {
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
       .then((r) => r.json())
-<<<<<<< HEAD
       .then(async (d) => {
         if (d.branch_id) {
           setBranchId(d.branch_id);
@@ -43,11 +42,6 @@ export default function BayMonitorPage() {
             setAuthError("Could not resolve branch");
           }
         }
-=======
-      .then((d) => {
-        if (d.branch_id) setBranchId(d.branch_id);
-        else setAuthError("Could not get branch_id from session");
->>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
       })
       .catch(() => setAuthError("Not authenticated"));
   }, []);

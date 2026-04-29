@@ -44,7 +44,6 @@ export default function AttendantPWA() {
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
       .then((r) => r.json())
-<<<<<<< HEAD
       .then(async (me) => {
         let branchId = me.branch_id;
         // Fallback: if branch_id is null, fetch first branch for tenant
@@ -59,11 +58,6 @@ export default function AttendantPWA() {
         }
         setCtx({ branch_id: branchId, email: me.email, id: me.id });
         fetchJobs(branchId);
-=======
-      .then((me) => {
-        setCtx({ branch_id: me.branch_id, email: me.email, id: me.id });
-        fetchJobs(me.branch_id);
->>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
       })
       .catch(() => setError("Not authenticated — please sign in"));
   }, []);

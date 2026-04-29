@@ -63,7 +63,6 @@ export default function ReportsPage() {
 
   useEffect(() => {
     setMounted(true);
-<<<<<<< HEAD
     // Fetch real data for report metrics
     Promise.all([
       fetch('/api/dashboard', { credentials: 'include' }).then(r => r.json()),
@@ -84,8 +83,6 @@ export default function ReportsPage() {
         { id: 'BI-006', metric: 'Active Vehicles',          value: String(active),                             status: 'Live' },
       ]);
     }).catch(() => {});
-=======
->>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
   }, []);
 
   const reportCategories = [

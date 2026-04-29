@@ -12,11 +12,7 @@ export async function GET(request: NextRequest) {
     .from('logistics_requests')
     .select('*')
     .eq('tenant_id', ctx.tenantId)
-<<<<<<< HEAD
     .order('request_time', { ascending: false })
-=======
-    .order('created_at', { ascending: false })
->>>>>>> cf2696b58bfcdaf8b5cd7b0a5b1b777ae0d0753f
 
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
   return NextResponse.json(data ?? [])
