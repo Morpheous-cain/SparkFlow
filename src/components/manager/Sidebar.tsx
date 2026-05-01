@@ -1,22 +1,10 @@
 'use client'
 
-/**
- * src/components/manager/Sidebar.tsx
- *
- * Left-side navigation toolbar for the /manager dashboard.
- * Matches SparkFlow's design system:
- *   - Dark slate (#0F1F3D) base with cyan accent
- *   - Uppercase tracking, font-black labels
- *   - rounded-2xl / rounded-3xl geometry
- *   - shadcn/ui primitives only (no new deps)
- *   - Active state driven by usePathname — zero extra API calls
- *   - Collapsible on mobile (icon-only), expanded on desktop
- */
-
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/lib/theme'
 import {
   LayoutDashboard,
   Warehouse,
@@ -33,6 +21,8 @@ import {
   Wrench,
   Banknote,
   Send,
+  Moon,
+  Sun,
   Truck,
   Crown,
   PieChart,
@@ -87,6 +77,7 @@ interface SidebarProps {
 export function Sidebar({ onSignOut, userEmail }: SidebarProps) {
   const pathname              = usePathname()
   const [collapsed, setCollapsed] = useState(false)
+  const { theme, toggle } = useTheme()
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href)
@@ -100,7 +91,7 @@ export function Sidebar({ onSignOut, userEmail }: SidebarProps) {
           // Base
           'relative flex flex-col h-screen bg-[#0F1F3D] transition-all duration-300 ease-in-out shrink-0',
           // Width
-          collapsed ? 'w-[72px]' : 'w-[220px]',
+          collapsed ? 'w-[64px]' : 'w-[200px]',
           // Subtle right border
           'border-r border-white/5'
         )}
@@ -126,20 +117,58 @@ export function Sidebar({ onSignOut, userEmail }: SidebarProps) {
         </div>
 
         {/* ── Main nav ───────────────────────────────────────────────────── */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-0.5">
-          {NAV_ITEMS.map(({ label, href, icon: Icon, exact }) => {
-            const active = isActive(href, exact)
-            return (
-              <NavItem
-                key={href}
-                label={label}
-                href={href}
-                icon={Icon}
-                active={active}
-                collapsed={collapsed}
-              />
-            )
-          })}
+        <nav className="flex-1 overflow-hidden py-3 px-2">
+          {collapsed ? (
+            // Collapsed: single icon column
+            <div className="space-y-0.5">
+              {NAV_ITEMS.map(({ label, href, icon: Icon, exact }) => {
+                const active = isActive(href, exact)
+                return (
+                  <NavItem
+                    key={href}
+                    label={label}
+                    href={href}
+                    icon={Icon}
+                    active={active}
+                    collapsed={collapsed}
+                  />
+                )
+              })}
+            </div>
+          ) : (
+            // Expanded: 2-column icon grid — all 15 links visible without scrolling
+            <div className="grid grid-cols-2 gap-1">
+              {NAV_ITEMS.map(({ label, href, icon: Icon, exact }) => {
+                const active = isActive(href, exact)
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      'flex flex-col items-center gap-1.5 px-2 py-2.5 rounded-xl transition-all duration-150 group',
+                      active
+                        ? 'bg-[#00A8CC]/20 text-[#00A8CC]'
+                        : 'text-white/40 hover:text-white hover:bg-white/5'
+                    )}
+                  >
+                    <Icon className={cn(
+                      'size-4 shrink-0 transition-colors',
+                      active ? 'text-[#00A8CC]' : 'text-white/40 group-hover:text-white'
+                    )} />
+                    <span className={cn(
+                      'text-[8px] font-black uppercase tracking-wide leading-none text-center',
+                      active ? 'text-[#00A8CC]' : 'text-white/40 group-hover:text-white'
+                    )}>
+                      {label}
+                    </span>
+                    {active && (
+                      <div className="absolute left-0 w-0.5 h-6 bg-[#00A8CC] rounded-r-full" />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </nav>
 
         {/* ── Bottom section ─────────────────────────────────────────────── */}
@@ -171,6 +200,36 @@ export function Sidebar({ onSignOut, userEmail }: SidebarProps) {
               </div>
             </div>
           )}
+
+          {/* Dark mode toggle */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={toggle}
+                className={cn(
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl',
+                  'text-white/40 hover:text-cyan-400 hover:bg-cyan-500/10',
+                  'transition-colors duration-150',
+                  collapsed && 'justify-center px-0'
+                )}
+              >
+                {theme === 'dark'
+                  ? <Sun className="size-4 shrink-0" />
+                  : <Moon className="size-4 shrink-0" />
+                }
+                {!collapsed && (
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  </span>
+                )}
+              </button>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700">
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </TooltipContent>
+            )}
+          </Tooltip>
 
           {/* Sign out */}
           {onSignOut && (

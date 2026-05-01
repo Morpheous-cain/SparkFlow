@@ -19,17 +19,19 @@ export async function GET(request: NextRequest) {
   if (error) return error
 
   const { searchParams } = new URL(request.url)
-  const role      = searchParams.get('role')
+  const role = searchParams.get('role')
+  // If manager has no branch_id, fetch all staff for the tenant
   const branch_id = searchParams.get('branch_id') ?? ctx.branchId
 
   const supabase = await createClient()
   let query = supabase
     .from('staff')
-    .select('id, name, role, branch_id, performance, rating, attendance_status, points, created_at')
+    .select('id, name, role, email, branch_id, base_salary, performance, rating, attendance_status, points, created_at')
     .eq('tenant_id', ctx.tenantId)
-    .eq('branch_id', branch_id!)
     .order('name')
 
+  // Only filter by branch if we have one
+  if (branch_id) query = query.eq('branch_id', branch_id)
   if (role) query = query.eq('role', role)
 
   const { data, error: dbError } = await query

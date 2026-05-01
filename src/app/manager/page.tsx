@@ -152,130 +152,79 @@ export default function ManagerDashboard() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 md:gap-8 bg-[#f1f5f9]">
+    <div className="h-screen p-4 md:p-6 flex flex-col gap-4 bg-[#f1f5f9] dark:bg-[#060E1E] overflow-hidden">
+
       {/* Header */}
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <header className="flex items-center justify-between shrink-0">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none italic">
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-none italic">
             Manager Dashboard
           </h1>
-          <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-2">
-            SparkFlow Carwash · Westlands Branch ·{" "}
-            {new Date().toLocaleDateString("en-KE", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
+          <p className="text-slate-500 font-bold uppercase text-[9px] tracking-[0.2em] mt-1">
+            SparkFlow · {new Date().toLocaleDateString("en-KE", { weekday: "long", day: "numeric", month: "long" })}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative w-64">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-            <Input
-              placeholder="Search..."
-              className="pl-12 h-12 rounded-2xl bg-white border-none shadow-sm text-sm font-bold"
-            />
+        <div className="flex items-center gap-2">
+          <div className="relative w-48 hidden md:block">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+            <Input placeholder="Search..." className="pl-10 h-10 rounded-xl bg-white dark:bg-slate-800 border-none shadow-sm text-sm font-bold" />
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-2xl bg-white shadow-sm size-12 border-none"
-          >
-            <Bell className="size-5 text-slate-600" />
+          <Button variant="ghost" size="icon" className="rounded-xl bg-white dark:bg-slate-800 shadow-sm size-10 border-none">
+            <Bell className="size-4 text-slate-600 dark:text-slate-300" />
           </Button>
-          <Button
-            onClick={fetchDashboard}
-            disabled={loading}
-            className="gap-2 bg-slate-900 hover:bg-black text-white shadow-xl h-12 rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest border-none"
-          >
-            <Activity className="size-4" />
+          <Button onClick={fetchDashboard} disabled={loading}
+            className="gap-2 bg-slate-900 dark:bg-cyan-600 hover:bg-black text-white shadow-xl h-10 rounded-xl px-4 font-black uppercase text-[9px] tracking-widest border-none">
+            <Activity className="size-3.5" />
             {loading ? "Loading..." : "Refresh"}
           </Button>
         </div>
       </header>
 
-      {/* Error state */}
+      {/* Error */}
       {error && (
-        <div className="bg-red-50 border-2 border-dashed border-red-200 rounded-3xl p-6 flex items-center gap-4">
-          <AlertTriangle className="size-8 text-red-500 shrink-0" />
-          <div>
-            <p className="font-black text-red-900 uppercase">Dashboard failed to load</p>
-            <p className="text-red-700 text-sm mt-1">{error}</p>
-          </div>
-          <Button
-            onClick={fetchDashboard}
-            className="ml-auto bg-red-600 text-white rounded-xl border-none"
-          >
-            Retry
-          </Button>
+        <div className="bg-red-50 border-2 border-dashed border-red-200 rounded-2xl p-4 flex items-center gap-3 shrink-0">
+          <AlertTriangle className="size-6 text-red-500 shrink-0" />
+          <p className="text-red-700 text-sm font-bold">{error}</p>
+          <Button onClick={fetchDashboard} className="ml-auto bg-red-600 text-white rounded-xl border-none h-9 text-xs">Retry</Button>
         </div>
       )}
 
-      {/* KPI Cards */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-36 bg-white rounded-[2rem] animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {kpis.map((metric, i) => (
-            <Card
-              key={i}
-              className="border-none shadow-xl rounded-[2.2rem] overflow-hidden group hover:scale-[1.02] transition-all bg-white relative"
-            >
-              <div
-                className={cn(
-                  "absolute top-0 left-0 w-1 h-full",
-                  metric.color.replace("text", "bg")
-                )}
-              />
-              <CardContent className="p-6 md:p-8">
-                <div className="flex justify-between items-center mb-4">
-                  <div
-                    className={cn(
-                      "size-12 rounded-2xl flex items-center justify-center",
-                      metric.bg,
-                      metric.color
-                    )}
-                  >
-                    <metric.icon className="size-6" />
+      {/* KPI Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+        {loading
+          ? [...Array(4)].map((_, i) => <div key={i} className="h-24 bg-white dark:bg-slate-800 rounded-2xl animate-pulse" />)
+          : kpis.map((metric, i) => (
+            <Card key={i} className="border-none shadow-md rounded-2xl overflow-hidden group bg-white dark:bg-[#0F1F3D] relative">
+              <div className={cn("absolute top-0 left-0 w-1 h-full", metric.color.replace("text", "bg"))} />
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <div className={cn("size-8 rounded-xl flex items-center justify-center", metric.bg, metric.color)}>
+                    <metric.icon className="size-4" />
                   </div>
-                  <ArrowUpRight className={cn("size-4", metric.color)} />
+                  <ArrowUpRight className={cn("size-3.5", metric.color)} />
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                    {metric.title}
-                  </span>
-                  <span className="text-2xl font-black text-slate-900 tracking-tighter leading-none italic">
-                    {metric.value}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-medium mt-1">
-                    {metric.sub}
-                  </span>
-                </div>
+                <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">{metric.title}</span>
+                <div className="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none italic">{metric.value}</div>
+                <span className="text-[9px] text-slate-400 font-medium">{metric.sub}</span>
               </CardContent>
             </Card>
-          ))}
-        </section>
-      )}
+          ))
+        }
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+      {/* 2x2 Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
+
         {/* Revenue Chart */}
-        <Card className="lg:col-span-2 border-none shadow-2xl rounded-[2.5rem] bg-white p-6 md:p-10 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <Card className="border-none shadow-xl rounded-2xl bg-white dark:bg-[#0F1F3D] p-5 relative overflow-hidden flex flex-col">
+          <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+          <div className="flex justify-between items-center mb-4 shrink-0">
             <div>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter italic">
-                Revenue This Week
-              </h3>
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                Today's figure is live · Historical bars will populate in Phase 4
-              </p>
+              <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Revenue This Week</h3>
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Today live · History in Phase 4</p>
             </div>
           </div>
-          <div className="h-[250px] md:h-[300px] w-full">
+          <div className="flex-1 min-h-0">
             {mounted && (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revTrend}>
@@ -286,93 +235,113 @@ export default function ManagerDashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis
-                    dataKey="day"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#94a3b8", fontSize: 9, fontWeight: 900 }}
-                    dy={10}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#94a3b8", fontSize: 9, fontWeight: 900 }}
-                    tickFormatter={(val) => `KSh ${val.toLocaleString()}`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: "1.5rem",
-                      border: "none",
-                      boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-                      padding: "1rem",
-                    }}
-                    formatter={(val: number) => [fmt(val), "Revenue"]}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorRev)"
-                  />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 8, fontWeight: 900 }} dy={8} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 8, fontWeight: 900 }} tickFormatter={(val) => `KSh ${val.toLocaleString()}`} />
+                  <Tooltip contentStyle={{ borderRadius: "1rem", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.1)", padding: "0.75rem" }} formatter={(val: number) => [fmt(val), "Revenue"]} />
+                  <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRev)" />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
         </Card>
 
-        {/* Top Services + Payment breakdown */}
-        <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white p-6 md:p-8 overflow-hidden">
-          <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">
-              Top Services Today
-            </CardTitle>
-            <CardDescription className="text-[9px] font-black uppercase tracking-widest">
-              Ranked by transaction count
-            </CardDescription>
+        {/* Top Services + Payment Methods */}
+        <Card className="border-none shadow-xl rounded-2xl bg-white dark:bg-[#0F1F3D] p-5 flex flex-col overflow-hidden">
+          <CardHeader className="p-0 mb-4 shrink-0">
+            <CardTitle className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Top Services Today</CardTitle>
+            <CardDescription className="text-[8px] font-black uppercase tracking-widest">Ranked by transaction count</CardDescription>
           </CardHeader>
-          <CardContent className="p-0 space-y-4">
-            {loading ? (
-              [...Array(4)].map((_, i) => (
-                <div key={i} className="h-8 bg-slate-100 rounded-xl animate-pulse" />
-              ))
-            ) : data?.top_services.length ? (
-              data.top_services.map((svc, i) => (
-                <div key={svc.name} className="space-y-1">
-                  <div className="flex justify-between text-xs font-bold text-slate-600">
-                    <span>
-                      {i + 1}. {svc.name}
-                    </span>
-                    <span>{svc.count}x</span>
+          <CardContent className="p-0 flex-1 overflow-y-auto space-y-3">
+            {loading
+              ? [...Array(3)].map((_, i) => <div key={i} className="h-7 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />)
+              : data?.top_services.length
+                ? data.top_services.map((svc, i) => (
+                  <div key={svc.name} className="space-y-1">
+                    <div className="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+                      <span>{i + 1}. {svc.name}</span>
+                      <span>{svc.count}x</span>
+                    </div>
+                    <Progress value={(svc.count / (data.top_services[0]?.count || 1)) * 100} className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-700" />
                   </div>
-                  <Progress
-                    value={(svc.count / (data.top_services[0]?.count || 1)) * 100}
-                    className="h-2 rounded-full bg-slate-100"
-                  />
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-400 text-sm font-medium text-center py-8">
-                No paid transactions yet today
-              </p>
-            )}
-
+                ))
+                : <p className="text-slate-400 text-sm text-center py-6">No paid transactions yet today</p>
+            }
             {data && (
-              <div className="pt-4 border-t border-dashed space-y-2 mt-4">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                  Payment Methods
-                </p>
+              <div className="pt-3 border-t border-dashed border-slate-200 dark:border-slate-700 space-y-2">
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Payment Methods</p>
                 {Object.entries(data.revenue.by_method).map(([method, amount]) => (
-                  <div key={method} className="flex justify-between text-sm font-bold text-slate-700">
-                    <span>{method}</span>
-                    <span>{fmt(amount as number)}</span>
+                  <div key={method} className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <span>{method}</span><span>{fmt(amount as number)}</span>
                   </div>
                 ))}
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Bay Status */}
+        <Card className="border-none shadow-xl rounded-2xl bg-white dark:bg-[#0F1F3D] p-5 flex flex-col">
+          <CardHeader className="p-0 mb-4 shrink-0">
+            <CardTitle className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Bay Status</CardTitle>
+            <CardDescription className="text-[8px] font-black uppercase tracking-widest">Live via Supabase Realtime</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 flex flex-col justify-center gap-3">
+            {data ? (
+              <>
+                <div className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="size-3 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="font-black text-sm text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">Available</span>
+                  </div>
+                  <span className="text-2xl font-black text-emerald-600">{data.bays.total - data.bays.occupied}</span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="size-3 bg-blue-500 rounded-full" />
+                    <span className="font-black text-sm text-blue-700 dark:text-blue-400 uppercase tracking-wide">Occupied</span>
+                  </div>
+                  <span className="text-2xl font-black text-blue-600">{data.bays.occupied}</span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <Gauge className="size-4 text-slate-400" />
+                    <span className="font-black text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wide">Utilisation</span>
+                  </div>
+                  <span className="text-2xl font-black text-slate-700 dark:text-white">{data.bays.utilisation}%</span>
+                </div>
+              </>
+            ) : (
+              [...Array(3)].map((_, i) => <div key={i} className="h-14 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />)
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card className="border-none shadow-xl rounded-2xl bg-white dark:bg-[#0F1F3D] p-5 flex flex-col">
+          <CardHeader className="p-0 mb-4 shrink-0">
+            <CardTitle className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">Quick Actions</CardTitle>
+            <CardDescription className="text-[8px] font-black uppercase tracking-widest">Common manager tasks</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 grid grid-cols-2 gap-3 content-start">
+            {[
+              { label: "View Bays",      href: "/manager/bays",      icon: Warehouse, color: "bg-blue-500" },
+              { label: "Manage Staff",   href: "/manager/staff",     icon: Users,     color: "bg-indigo-500" },
+              { label: "Sales Report",   href: "/manager/sales",     icon: PieChart,  color: "bg-emerald-500" },
+              { label: "Analytics",      href: "/manager/analytics", icon: TrendingUp,color: "bg-amber-500" },
+              { label: "Inventory",      href: "/manager/inventory", icon: Sparkles,  color: "bg-red-500" },
+              { label: "Settings",       href: "/manager/settings",  icon: Target,    color: "bg-slate-700" },
+            ].map((action) => (
+              <a key={action.href} href={action.href}
+                className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group">
+                <div className={cn("size-8 rounded-lg flex items-center justify-center shrink-0", action.color)}>
+                  <action.icon className="size-4 text-white" />
+                </div>
+                <span className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide leading-tight">{action.label}</span>
+              </a>
+            ))}
+          </CardContent>
+        </Card>
+
       </div>
     </div>
   );
