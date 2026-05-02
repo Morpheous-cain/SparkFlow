@@ -117,7 +117,7 @@ export function Sidebar({ onSignOut, userEmail }: SidebarProps) {
         </div>
 
         {/* ── Main nav ───────────────────────────────────────────────────── */}
-        <nav className="flex-1 overflow-hidden py-3 px-2">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {collapsed ? (
             // Collapsed: single icon column
             <div className="space-y-0.5">

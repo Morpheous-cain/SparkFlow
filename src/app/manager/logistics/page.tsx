@@ -70,11 +70,11 @@ export default function LogisticsManagementPage() {
   useEffect(() => {
     fetch('/api/logistics', { credentials: 'include' })
       .then(r => r.json())
-      .then(setLogistics)
+      .then(data => setLogistics(Array.isArray(data) ? data : []))
       .catch(() => {});
     fetch('/api/staff', { credentials: 'include' })
       .then(r => r.json())
-      .then(setStaff)
+      .then(data => setStaff(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, []);
 

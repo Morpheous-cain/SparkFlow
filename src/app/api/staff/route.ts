@@ -14,91 +14,92 @@ const CreateStaffSchema = z.object({
 })
 
 // GET /api/staff
+// NOTE: staff table does NOT have email or base_salary columns.
+// Those live in auth.users and will be added via migration if needed.
+// For now we select only confirmed columns.
 export async function GET(request: NextRequest) {
   const { ctx, error } = await requireManager()
   if (error) return error
 
   const { searchParams } = new URL(request.url)
-  const role = searchParams.get('role')
-  // If manager has no branch_id, fetch all staff for the tenant
+  const role      = searchParams.get('role')
   const branch_id = searchParams.get('branch_id') ?? ctx.branchId
 
   const supabase = await createClient()
   let query = supabase
     .from('staff')
-    .select('id, name, role, email, branch_id, base_salary, performance, rating, attendance_status, points, created_at')
+    .select('id, name, role, branch_id, performance, rating, attendance_status, points, created_at')
     .eq('tenant_id', ctx.tenantId)
     .order('name')
 
   // Only filter by branch if we have one
   if (branch_id) query = query.eq('branch_id', branch_id)
-  if (role) query = query.eq('role', role)
+  if (role)      query = query.eq('role', role)
 
   const { data, error: dbError } = await query
   if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
-  return NextResponse.json(data)
+
+  // Normalise — add email as null so frontend doesn't crash on member.email
+  const normalised = (data ?? []).map((s: any) => ({
+    ...s,
+    email:       null,
+    base_salary: 0,
+  }))
+
+  return NextResponse.json(normalised)
 }
 
 // POST /api/staff
-// Creates both an auth user AND a staff profile AND a user_roles entry.
-// Uses the admin client because creating auth users requires the service role key.
 export async function POST(request: NextRequest) {
   const { ctx, error } = await requireManager()
   if (error) return error
 
-  const body = await request.json()
+  const body   = await request.json()
   const parsed = CreateStaffSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  // Use admin client to create the Supabase auth user
   const admin = createAdminClient()
+
+  // Create Supabase auth user
   const { data: authUser, error: authError } = await admin.auth.admin.createUser({
     email:         parsed.data.email,
     password:      parsed.data.password,
-    email_confirm: true, // auto-confirm for staff created by manager
+    email_confirm: true,
   })
 
   if (authError) {
     return NextResponse.json({ error: authError.message }, { status: 400 })
   }
 
-  // Create the staff profile
+  // Create staff profile — only columns that exist in the table
   const supabase = await createClient()
   const { data: staffRecord, error: staffError } = await supabase
     .from('staff')
     .insert({
-      user_id:     authUser.user.id,
-      tenant_id:   ctx.tenantId,
-      branch_id:   parsed.data.branch_id,
-      name:        parsed.data.name,
-      role:        parsed.data.role,
-      base_salary: parsed.data.base_salary,
+      user_id:   authUser.user.id,
+      tenant_id: ctx.tenantId,
+      branch_id: parsed.data.branch_id,
+      name:      parsed.data.name,
+      role:      parsed.data.role,
+      // base_salary not in schema yet — skip
     })
     .select()
     .single()
 
   if (staffError) {
-    // Roll back: delete the auth user we just created
     await admin.auth.admin.deleteUser(authUser.user.id)
     return NextResponse.json({ error: staffError.message }, { status: 500 })
   }
 
   // Create user_roles entry
-  const { error: roleError } = await supabase
-    .from('user_roles')
-    .insert({
-      user_id:   authUser.user.id,
-      role:      parsed.data.role,
-      tenant_id: ctx.tenantId,
-      branch_id: parsed.data.branch_id,
-    })
+  await supabase.from('user_roles').insert({
+    user_id:   authUser.user.id,
+    role:      parsed.data.role,
+    tenant_id: ctx.tenantId,
+    branch_id: parsed.data.branch_id,
+  })
 
-  if (roleError) {
-    // Non-fatal — log but don't fail the whole request
-    console.error('Failed to create user_roles entry:', roleError.message)
-  }
-
-  return NextResponse.json(staffRecord, { status: 201 })
+  return NextResponse.json({ ...staffRecord, email: parsed.data.email }, { status: 201 })
 }
