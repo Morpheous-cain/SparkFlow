@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/lib/theme';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'SparkFlow Ops - Car Wash ERP',
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className="font-body antialiased bg-background min-h-screen text-foreground">
         <ThemeProvider>
           {children}
+          <Analytics/>
           <Toaster />
         </ThemeProvider>
       </body>

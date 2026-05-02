@@ -53,8 +53,8 @@ const NAV_ITEMS = [
   { label: 'Subscriptions', href: '/manager/subscriptions',  icon: Crown,           exact: false },
   { label: 'Accounts',      href: '/manager/accounts',       icon: PieChart,        exact: false },
   { label: 'Branches',      href: '/manager/branches',       icon: Building2,       exact: false },
-  { label: 'Tasks',         href: '/manager/tasks',          icon: ClipboardList,   exact: false },
-  { label: 'Reports',       href: '/manager/reports',        icon: FileText,        exact: false },
+  { label: 'Tasks',         href: '/manager/tasks',          icon: ClipboardList,   exact: false }
+  
 ] as const
 
 const BOTTOM_ITEMS = [
