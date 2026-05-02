@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+// @ts-ignore: CSS side-effect import declaration is handled by Next.js
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/lib/theme';
